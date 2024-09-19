@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_complaint"
+        android:icon="@mipmap/complaint_icon"
+        android:title="@string/complaint"
+        android:enabled="true"/>
+
+
+    <item
+        android:id="@+id/navigation_routes"
+        android:icon="@mipmap/routes"
+        android:title="@string/route"
+
+        android:enabled="true"/>
+
+
+    <item
+        android:id="@+id/navigation_unsync"
+        android:icon="@mipmap/unsync"
+        android:title="@string/unsync"
+
+        android:enabled="true"/>
+
+
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@mipmap/profile"
+        android:title="@string/profile"
+        android:enabled="true"/>
+
+
+
+
+
+</menu>

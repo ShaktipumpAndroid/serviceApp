@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/routeItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="@dimen/_10sdp"
+    app:cardElevation="@dimen/_2sdp"
+    app:cardUseCompatPadding="true">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_10sdp"
+            android:layout_toStartOf="@+id/arrow_rl"
+            android:orientation="horizontal">
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/assignRoute"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textSize="@dimen/_12sdp"
+                android:textColor="@color/colorPrimary"/>
+
+            <TextView
+                android:id="@+id/routeNameTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Shubham jha"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textSize="@dimen/_12sdp"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:textColor="@color/black"/>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/arrow_rl"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_alignParentEnd="true">
+
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/baseline_keyboard_arrow_right_24"
+                android:layout_centerInParent="true"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+
+
+</androidx.cardview.widget.CardView>
