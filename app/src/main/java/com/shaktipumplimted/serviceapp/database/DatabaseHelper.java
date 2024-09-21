@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.LocalConveyanceModel;
 
 import java.util.ArrayList;
 
@@ -17,6 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /*-------------------------------------------TABLE NAME---------------------------------------------------*/
     public static final String TABLE_COMPLAINT_IMAGE_DATA = "tbl_beneficiary_image_data";
+    public static final String TABLE_LOCAL_CONVEYANCE_DATA = "tbl_local_conveyance_data";
 
     /*------------------------------------------------KET IDS--------------------------------------------------------*/
 
@@ -30,6 +32,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_IMAGE_LONGITUDE = "image_longitude";
     public static final String KEY_IMAGE_POSITION = "image_position";
 
+    public static final String KEY_START_LATITUDE = "start_latitude";
+
+    public static final String KEY_START_LONGITUDE = "start_longitude";
+
+    public static final String KEY_END_LATITUDE = "end_latitude";
+
+    public static final String KEY_END_LONGITUDE = "end_longitude";
+
+    public static final String KEY_START_ADDRESS = "start_address";
+
+    public static final String KEY_END_ADDRESS = "end_address";
+
+    public static final String KEY_START_DATE = "start_date";
+
+    public static final String KEY_END_DATE = "end_date";
+
+    public static final String KEY_START_TIME = "start_time";
+    public static final String KEY_END_TIME = "end_time";
+    public static final String KEY_START_TRAVEL_IMG = "startTravelImg";
+    public static final String KEY_END_TRAVEL_IMG = "endTravelImg";
+
+
+
 
     /*-----------------------------------------------------Create Image Tables---------------------------------------------*/
     private static final String CREATE_TABLE_COMPLAINT_IMAGES = "CREATE TABLE "
@@ -42,6 +67,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_IMAGE_LONGITUDE + " TEXT,"
             + KEY_IMAGE_POSITION + " TEXT)";
 
+    /*-----------------------------------------------------Local Conveyance Tables---------------------------------------------*/
+    private static final String CREATE_TABLE_LOCAL_CONVEYANCE_DATA = "CREATE TABLE "
+            + TABLE_LOCAL_CONVEYANCE_DATA + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + KEY_START_LATITUDE + " TEXT,"
+            + KEY_START_LONGITUDE + " TEXT,"
+            + KEY_END_LATITUDE + " BOOLEAN,"
+            + KEY_END_LONGITUDE + " TEXT,"
+            + KEY_START_ADDRESS + " TEXT,"
+            + KEY_END_ADDRESS + " TEXT,"
+            + KEY_START_DATE + " TEXT,"
+            + KEY_END_DATE + " TEXT,"
+            + KEY_START_TIME + " TEXT,"
+            + KEY_END_TIME + " TEXT,"
+            + KEY_START_TRAVEL_IMG + " TEXT,"
+            + KEY_END_TRAVEL_IMG + " TEXT)";
+
 
 
 
@@ -53,12 +94,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_COMPLAINT_IMAGES);
+        db.execSQL(CREATE_TABLE_LOCAL_CONVEYANCE_DATA);
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_IMAGE_DATA);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCAL_CONVEYANCE_DATA);
         onCreate(db);
     }
 
@@ -125,7 +168,95 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return  imageModelArrayList;
     }
 
-    /*------------------------------------------Delete Database-----------------------------------------------------*/
+
+    /*---------------------------------------------Local Conveyance Data--------------------------------------------------*/
+    public void insertLocalConveyanceData(LocalConveyanceModel localConveyanceModel) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_START_LATITUDE, localConveyanceModel.getStartLatitude());
+        contentValues.put(KEY_START_LONGITUDE, localConveyanceModel.getStartLongitude());
+        contentValues.put(KEY_END_LATITUDE, localConveyanceModel.getEndLatitude());
+        contentValues.put(KEY_END_LONGITUDE, localConveyanceModel.getEndLongitude());
+        contentValues.put(KEY_START_ADDRESS, localConveyanceModel.getStartAddress());
+        contentValues.put(KEY_END_ADDRESS, localConveyanceModel.getEndAddress());
+        contentValues.put(KEY_START_DATE, localConveyanceModel.getStartDate());
+        contentValues.put(KEY_END_DATE, localConveyanceModel.getEndDate());
+        contentValues.put(KEY_START_TIME, localConveyanceModel.getStartTime());
+        contentValues.put(KEY_END_TIME, localConveyanceModel.getEndTime());
+        contentValues.put(KEY_START_TRAVEL_IMG, localConveyanceModel.getStartImgPath());
+        contentValues.put(KEY_END_TRAVEL_IMG, localConveyanceModel.getEndImgPath());
+
+        database.insert(TABLE_LOCAL_CONVEYANCE_DATA, null, contentValues);
+        database.close();
+    }
+
+    public void updateLocalConveyanceData(LocalConveyanceModel localConveyanceModel) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_START_LATITUDE, localConveyanceModel.getStartLatitude());
+        contentValues.put(KEY_START_LONGITUDE, localConveyanceModel.getStartLongitude());
+        contentValues.put(KEY_END_LATITUDE, localConveyanceModel.getEndLatitude());
+        contentValues.put(KEY_END_LONGITUDE, localConveyanceModel.getEndLongitude());
+        contentValues.put(KEY_START_ADDRESS, localConveyanceModel.getStartAddress());
+        contentValues.put(KEY_END_ADDRESS, localConveyanceModel.getEndAddress());
+        contentValues.put(KEY_START_DATE, localConveyanceModel.getStartDate());
+        contentValues.put(KEY_END_DATE, localConveyanceModel.getEndDate());
+        contentValues.put(KEY_START_TIME, localConveyanceModel.getStartTime());
+        contentValues.put(KEY_END_TIME, localConveyanceModel.getEndTime());
+        contentValues.put(KEY_START_TRAVEL_IMG, localConveyanceModel.getStartImgPath());
+        contentValues.put(KEY_END_TRAVEL_IMG, localConveyanceModel.getEndImgPath());
+        // update Row
+     String   where = KEY_START_DATE + "='" + localConveyanceModel.getStartDate() + "'" + " AND " +
+             KEY_START_TIME + "='" + localConveyanceModel.getStartTime() + "'" + " AND " +
+             KEY_START_LATITUDE + "='" + localConveyanceModel.getStartLatitude() + "'" + " AND " +
+             KEY_START_LONGITUDE + "='" + localConveyanceModel.getStartLongitude() + "'";
+        db.update(TABLE_LOCAL_CONVEYANCE_DATA, contentValues, where, null);
+        db.close();
+    }
+
+
+    public ArrayList<LocalConveyanceModel> getAllLocalConveyanceData(boolean isRetrieveLastData) {
+        String selectQuery;
+        ArrayList<LocalConveyanceModel> imageModelArrayList = new ArrayList<LocalConveyanceModel>();
+        SQLiteDatabase database = this.getWritableDatabase();
+        if (doesTableExist(database, TABLE_LOCAL_CONVEYANCE_DATA)) {
+
+            if(isRetrieveLastData) {
+                 selectQuery = "SELECT * FROM " + TABLE_LOCAL_CONVEYANCE_DATA;
+            }else {
+                 selectQuery = "SELECT * FROM " + TABLE_LOCAL_CONVEYANCE_DATA + " WHERE " + KEY_END_DATE + " != '" + "" + "'" + " AND " + KEY_END_TIME + " != '" + "" + "'";
+            }
+            Cursor mcursor = database.rawQuery(selectQuery, null);
+
+            imageModelArrayList.clear();
+            LocalConveyanceModel localConveyanceModel;
+            if (mcursor.getCount() > 0) {
+                for (int i = 0; i < mcursor.getCount(); i++) {
+                    mcursor.moveToNext();
+                    localConveyanceModel = new LocalConveyanceModel();
+                    localConveyanceModel.setUniqId(mcursor.getString(0));
+                    localConveyanceModel.setStartLatitude(mcursor.getString(1));
+                    localConveyanceModel.setStartLongitude(mcursor.getString(2));
+                    localConveyanceModel.setEndLatitude(mcursor.getString(3));
+                    localConveyanceModel.setEndLongitude(mcursor.getString(4));
+                    localConveyanceModel.setStartAddress(mcursor.getString(5));
+                    localConveyanceModel.setEndAddress(mcursor.getString(6));
+                    localConveyanceModel.setStartDate(mcursor.getString(7));
+                    localConveyanceModel.setEndDate(mcursor.getString(8));
+                    localConveyanceModel.setStartTime(mcursor.getString(9));
+                    localConveyanceModel.setEndTime(mcursor.getString(10));
+                    localConveyanceModel.setStartImgPath(mcursor.getString(11));
+                    localConveyanceModel.setEndImgPath(mcursor.getString(12));
+                    imageModelArrayList.add(localConveyanceModel);
+                }
+            }
+            mcursor.close();
+            database.close();
+        }
+        return  imageModelArrayList;
+    }
+
+  /*------------------------------------------Delete Database-----------------------------------------------------*/
     public void deleteData(String tableName) {
         SQLiteDatabase db = this.getWritableDatabase();
         if (doesTableExist(db, tableName)) {

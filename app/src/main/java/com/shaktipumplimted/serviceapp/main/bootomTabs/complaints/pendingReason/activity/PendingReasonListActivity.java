@@ -14,8 +14,10 @@ import android.widget.TextView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.adapter.PendingReasonAdapter;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonListModel;
+import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,7 @@ public class PendingReasonListActivity extends AppCompatActivity {
     FloatingActionButton addPendingReasonBtn;
     SwipeRefreshLayout pullToRefresh;
 
+    ComplaintListModel complaintListModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +42,9 @@ public class PendingReasonListActivity extends AppCompatActivity {
 
         Init();
         listner();
+        retrieveValue();
     }
+
 
 
 
@@ -59,6 +64,12 @@ public class PendingReasonListActivity extends AppCompatActivity {
             getList();
         }else {
             Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
+        }
+    }
+
+    private void retrieveValue() {
+        if(getIntent().getExtras()!=null){
+            complaintListModel = (ComplaintListModel) getIntent().getSerializableExtra(Constant.complaintData);
         }
     }
 
@@ -93,6 +104,7 @@ public class PendingReasonListActivity extends AppCompatActivity {
 
         addPendingReasonBtn.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(),AddPendingReasonActivity.class);
+            intent.putExtra(Constant.complaintData,complaintListModel);
             startActivity(intent);
         });
     }

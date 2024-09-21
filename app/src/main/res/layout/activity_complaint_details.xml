@@ -657,7 +657,8 @@
                     android:layout_marginTop="@dimen/_5sdp"
                     android:fontFamily="sans-serif-condensed-medium"
                     android:hint="@string/CustomerCommentClosureRemark"
-                    android:textColorHint="@color/colorPrimary">
+                    android:textColorHint="@color/colorPrimary"
+                    android:layout_marginBottom="@dimen/_10sdp">
 
                     <!--this is the actual edit text which takes the input-->
                     <com.google.android.material.textfield.TextInputEditText
@@ -673,17 +674,6 @@
                         android:textSize="@dimen/_12sdp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/compImagesList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginBottom="@dimen/_10sdp"
-
-                    android:nestedScrollingEnabled="true"
-
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 
             </LinearLayout>

@@ -16,6 +16,8 @@ public class Constant {
 
     public static int ResponseTokenExpire = 401;
 
+    public static String APIKEY = "AIzaSyAohhwZ11LRwoxsS8lJ0VHGkA4L-cwjWmw";
+
 
     /*------------------------------------Other Objects---------------------------------------*/
     public static String imagePath = "image";
@@ -30,5 +32,7 @@ public class Constant {
     public static String complaintData ="complaintData";
     public static String complaintNo = "complaintNo";
     public static String customerDetails = "customerDetails";
+
+    public static String localConveyanceJourneyStart = "localConveyanceJourneyStart";
 
 }

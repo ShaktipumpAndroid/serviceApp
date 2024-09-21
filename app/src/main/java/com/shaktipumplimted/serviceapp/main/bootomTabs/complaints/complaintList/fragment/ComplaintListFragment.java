@@ -90,11 +90,12 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
         complaintStatusArrayList = new ArrayList<>();
 
         complaintStatusArrayList.add(new ComplaintStatusModel("01", "New", true));
-        complaintStatusArrayList.add(new ComplaintStatusModel("02", "Replay", false));
-        complaintStatusArrayList.add(new ComplaintStatusModel("03", "Awaiting For Approval", false));
-        complaintStatusArrayList.add(new ComplaintStatusModel("04", "Approved Complaint", false));
-        complaintStatusArrayList.add(new ComplaintStatusModel("05", "Pending For Closure", false));
-        complaintStatusArrayList.add(new ComplaintStatusModel("06", "Closure", false));
+        complaintStatusArrayList.add(new ComplaintStatusModel("02", "Reply", false));
+        complaintStatusArrayList.add(new ComplaintStatusModel("03", "Pending For Approval", false));
+        complaintStatusArrayList.add(new ComplaintStatusModel("04", "Awaiting For Approval", false));
+        complaintStatusArrayList.add(new ComplaintStatusModel("05", "Approved Complaint", false));
+        complaintStatusArrayList.add(new ComplaintStatusModel("06", "Pending For Closure", false));
+        complaintStatusArrayList.add(new ComplaintStatusModel("07", "Closure", false));
 
         complaintStatusAdapter = new ComplaintStatusAdapter(mContext, complaintStatusArrayList);
         compStatusList.setHasFixedSize(true);

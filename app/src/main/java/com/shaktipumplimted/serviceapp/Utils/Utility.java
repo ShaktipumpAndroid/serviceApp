@@ -35,6 +35,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.login.LoginActivity;
+import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -371,8 +372,7 @@ public class Utility {
 
             if (!addresses.isEmpty()) {
 
-                address = "Latitude : " + latitude + "\n" + "Longitude : " + longitude + "\n" + "Address : " + addresses.get(0).getAddressLine(0) + ","
-                        + addresses.get(0).getAdminArea() + " " + addresses.get(0).getPostalCode() + "," + addresses.get(0).getCountryName();
+                address =  addresses.get(0).getAddressLine(0) + "," + addresses.get(0).getAdminArea() + " " + addresses.get(0).getPostalCode() + "," + addresses.get(0).getCountryName();
 
             }
 
@@ -382,6 +382,8 @@ public class Utility {
 
         return address;
     }
+
+
     public static String parseError(Response<?> response){
         JSONArray jsonArray = null;
         String value ="";
@@ -394,6 +396,18 @@ public class Utility {
             e.printStackTrace();
         }
         return value;
+    }
+
+    public static boolean isTravelStart(Context context){
+        boolean isTravelStart;
+        if (getSharedPreferences(context, Constant.localConveyanceJourneyStart) != null &&
+                !getSharedPreferences(context, Constant.localConveyanceJourneyStart).isEmpty()
+                && getSharedPreferences(context, Constant.localConveyanceJourneyStart).equals("true")) {
+            isTravelStart = true;
+        }else {
+            isTravelStart = false;
+        }
+        return isTravelStart;
     }
 
     public static void logout(Context context) {

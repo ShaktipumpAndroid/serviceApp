@@ -2,6 +2,7 @@ package com.shaktipumplimted.serviceapp.main.bootomTabs.profile;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.LocalConveyanceActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customerDetails.CustomerDetailActivity;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
@@ -82,6 +84,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
                 break;
             case R.id.localConveyanceLinear:
+                Intent intent = new Intent(getActivity(), LocalConveyanceActivity.class);
+                startActivity(intent);
 
                 break;
             case R.id.reportLinear:

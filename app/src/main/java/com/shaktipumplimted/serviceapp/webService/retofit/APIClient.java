@@ -50,7 +50,7 @@ public class APIClient {
         return retrofit;
     }
 
-    public static Retrofit getRetrofitOTP(Context context) {
+    public static Retrofit getRetrofitDirection(Context context) {
         mContext = context;
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -73,7 +73,7 @@ public class APIClient {
 
         if (retrofit2 == null) {
             retrofit2 = new Retrofit.Builder()
-                    .baseUrl(APIS.OTPBASEURL)
+                    .baseUrl(APIS.DIRECTIONBASEURL)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(httpClient.build())
                     .build();

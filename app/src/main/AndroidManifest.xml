@@ -26,6 +26,9 @@
         android:theme="@style/Theme.ServiceApp"
         tools:targetApi="31">
         <activity
+            android:name=".main.bootomTabs.profile.localconveyance.LocalConveyanceActivity"
+            android:exported="false" />
+        <activity
             android:name=".main.bootomTabs.routes.checkOut.CheckOutActivity"
             android:exported="false" />
         <activity
