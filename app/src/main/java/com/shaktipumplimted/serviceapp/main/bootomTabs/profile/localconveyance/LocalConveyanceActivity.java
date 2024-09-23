@@ -133,12 +133,10 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
 
         switch (v.getId()) {
             case R.id.startTravelBtn:
-
                 startEndTravel("1");
-
                 break;
             case R.id.endTravelBtn:
-                startEndTravel("2");
+                startEndTravel("3");
                 break;
             case R.id.startLocImg:
                 if (checkPermission()) {
@@ -225,7 +223,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
         TextView confirmBtn = layout.findViewById(R.id.confirmBtn);
         TextView cancelBtn = layout.findViewById(R.id.cancelBtn);
 
-        if (value.equals("2")) {
+        if (value.equals("3")) {
             localConveyanceList = new ArrayList<>();
             localConveyanceList = databaseHelper.getAllLocalConveyanceData(true);
             LocalConveyanceModel localConveyance = localConveyanceList.get(localConveyanceList.size() - 1);
@@ -238,16 +236,47 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             endLongitudeLayout.setVisibility(View.VISIBLE);
             endAddressLayout.setVisibility(View.VISIBLE);
             travelModeEdt.setVisibility(View.VISIBLE);
-            distanceEdt.setVisibility(View.VISIBLE);
 
+            startLatitudeLayout.setVisibility(View.GONE);
+            startLongitudeLayout.setVisibility(View.GONE);
+            startAddressLayout.setVisibility(View.GONE);
+            travelModeEdt.setVisibility(View.GONE);
+            distanceEdt.setVisibility(View.GONE);
+
+            Log.e("latitude2=>", String.valueOf(gpsTracker.getLatitude()));
+            Log.e("longitude2=>", String.valueOf(gpsTracker.getLongitude()));
             startLatitudeExt.setText(localConveyance.getStartLatitude());
             startLongitudeExt.setText(localConveyance.getStartLongitude());
             startAddressExt.setText(localConveyance.getStartAddress());
             endLatitudeExt.setText(String.valueOf(gpsTracker.getLatitude()));
             endLongitudeExt.setText(String.valueOf(gpsTracker.getLongitude()));
             endAddressExt.setText(Utility.getAddressFromLatLng(mContext, String.valueOf(gpsTracker.getLatitude()), String.valueOf(gpsTracker.getLongitude())));
+
+        }else if(value.equals("2")){
+            localConveyanceList = new ArrayList<>();
+            localConveyanceList = databaseHelper.getAllLocalConveyanceData(true);
+            LocalConveyanceModel localConveyance = localConveyanceList.get(localConveyanceList.size() - 1);
+
+            startLatitudeLayout.setHint(getResources().getString(R.string.startLatitude));
+            startLongitudeLayout.setHint(getResources().getString(R.string.startLongitude));
+            startAddressLayout.setHint(getResources().getString(R.string.startAddress));
+            startLocImgTxt.setText(getResources().getString(R.string.endLocImg));
+            endtLatitudeLayout.setVisibility(View.VISIBLE);
+            endLongitudeLayout.setVisibility(View.VISIBLE);
+            endAddressLayout.setVisibility(View.VISIBLE);
+            travelModeEdt.setVisibility(View.VISIBLE);
+            distanceEdt.setVisibility(View.VISIBLE);
+
+
+            startLatitudeExt.setText(localConveyance.getStartLatitude());
+            startLongitudeExt.setText(localConveyance.getStartLongitude());
+            startAddressExt.setText(localConveyance.getStartAddress());
+            endLatitudeExt.setText(localConveyance.getEndLatitude());
+            endLongitudeExt.setText(localConveyance.getEndLongitude());
+            endAddressExt.setText(localConveyance.getEndAddress());
             distanceEdt.setText(distance);
-        } else {
+            endAddressExt.setText(localConveyance.getEndAddress());
+        }else {
             Log.e("latitude=>", String.valueOf(gpsTracker.getLatitude()));
             Log.e("longitude=>", String.valueOf(gpsTracker.getLongitude()));
             startLatitudeExt.setText(String.valueOf(gpsTracker.getLatitude()));
@@ -273,7 +302,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
                 databaseHelper.insertLocalConveyanceData(localConveyanceModel);
 
                 tripStarted();
-            } else {
+            } else if(value.equals("3")){
                 localConveyanceList = new ArrayList<>();
                 localConveyanceList = databaseHelper.getAllLocalConveyanceData(true);
 
@@ -291,10 +320,12 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
                 localConveyanceModel.setEndTime(Utility.getCurrentTime());
                 localConveyanceModel.setStartImgPath(localConveyance.getStartImgPath());
                 localConveyanceModel.setEndImgPath(imagePath);
+                Log.e("endLat=>",endLatitudeExt.getText().toString().trim());
                 databaseHelper.updateLocalConveyanceData(localConveyanceModel);
 
                 tripEnded();
                 getAllData();
+            } else if (value.equals("2")) {
 
             }
             alertDialog.dismiss();
@@ -310,6 +341,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
         localConveyanceList = databaseHelper.getAllLocalConveyanceData(false);
 
         if (localConveyanceList.size() > 0) {
+            Log.e("localconve===>", localConveyanceList.toString());
             localConveyanceAdapter = new LocalConveyanceAdapter(this, localConveyanceList);
             savedTravelList.setHasFixedSize(true);
             savedTravelList.setAdapter(localConveyanceAdapter);
