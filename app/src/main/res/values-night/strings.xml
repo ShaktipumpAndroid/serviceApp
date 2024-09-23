@@ -152,5 +152,7 @@
     <string name="enter_travel_mode">Enter Travel Mode<font color='#FF0000'>*</font></string>
     <string name="endAddress">End Address</string>
     <string name="distance">Distance</string>
+    <string name="in">IN</string>
+    <string name="out">Out</string>
 
 </resources>
