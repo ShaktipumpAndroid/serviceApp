@@ -1,19 +1,17 @@
 package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
 public class ComplaintStatusModel {
-    String status,id;
-    boolean isSelected;
-
-    public ComplaintStatusModel( String id,String status,boolean isSelected) {
-        this.id = id;
-        this.status = status;
-        this.isSelected = isSelected;
-    }
-
-    public ComplaintStatusModel() {
-
-    }
-
+    @SerializedName("status")
+    @Expose
+    private String status;
+    @SerializedName("data")
+    @Expose
+    private List<Datum> data;
 
     public String getStatus() {
         return status;
@@ -23,19 +21,47 @@ public class ComplaintStatusModel {
         this.status = status;
     }
 
-    public String getId() {
-        return id;
+    public List<Datum> getData() {
+        return data;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setData(List<Datum> data) {
+        this.data = data;
     }
 
-    public boolean isSelected() {
-        return isSelected;
-    }
 
-    public void setSelected(boolean selected) {
-        isSelected = selected;
+    public static class Datum {
+
+        @SerializedName("valpos")
+        @Expose
+        private String valpos;
+        @SerializedName("domvalue_l")
+        @Expose
+        private String domvalueL;
+
+        boolean isSelected;
+
+        public String getValpos() {
+            return valpos;
+        }
+
+        public void setValpos(String valpos) {
+            this.valpos = valpos;
+        }
+
+        public String getDomvalueL() {
+            return domvalueL;
+        }
+
+        public void setDomvalueL(String domvalueL) {
+            this.domvalueL = domvalueL;
+        }
+        public boolean isSelected() {
+            return isSelected;
+        }
+
+        public void setSelected(boolean selected) {
+            isSelected = selected;
+        }
     }
 }

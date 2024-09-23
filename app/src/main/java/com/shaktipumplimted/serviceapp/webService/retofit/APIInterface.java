@@ -1,6 +1,8 @@
 package com.shaktipumplimted.serviceapp.webService.retofit;
 
 import com.shaktipumplimted.serviceapp.login.model.LoginRespModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.DistanceCalculateModel;
 import com.shaktipumplimted.serviceapp.webService.api.APIS;
 
@@ -24,6 +26,15 @@ public interface APIInterface {
 
     @GET(APIS.DIRECTIONAPI)
     Call<DistanceCalculateModel> getDistance(@Query("origin") String origin, @Query("destination") String destination, @Query("key") String key);
+
+    @GET(APIS.STATUSLIST)
+    Call<ComplaintStatusModel> getStatusList(@Query("token") String token);
+
+
+
+    @GET(APIS.CUSTOMER_COMPLAINT)
+    Call<ComplaintListModel> getComplaintList(@Query("token") String token);
+
 }
 
 

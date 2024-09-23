@@ -5,7 +5,9 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-    <uses-feature android:name="android.hardware.camera.front" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -26,6 +28,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ServiceApp"
         tools:targetApi="31">
+        <activity
+            android:name=".main.bootomTabs.profile.dsrEntry.DSREntryActivity"
+            android:exported="false" />
         <activity
             android:name=".main.bootomTabs.profile.markAttendance.MarkAttendanceActivity"
             android:exported="false" />

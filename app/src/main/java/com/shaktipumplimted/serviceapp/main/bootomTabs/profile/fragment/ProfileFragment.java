@@ -1,10 +1,9 @@
-package com.shaktipumplimted.serviceapp.main.bootomTabs.profile;
+package com.shaktipumplimted.serviceapp.main.bootomTabs.profile.fragment;
 
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +15,9 @@ import androidx.fragment.app.Fragment;
 
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.DSREntryActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.LocalConveyanceActivity;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customerDetails.CustomerDetailActivity;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.MarkAttendanceActivity;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
 
@@ -78,14 +78,17 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.attendanceLinear:
+                Intent intent = new Intent(getActivity(), MarkAttendanceActivity.class);
+                startActivity(intent);
 
                 break;
             case R.id.dsrEntryLinear:
-
+                Intent intent1 = new Intent(getActivity(), DSREntryActivity.class);
+                startActivity(intent1);
                 break;
             case R.id.localConveyanceLinear:
-                Intent intent = new Intent(getActivity(), LocalConveyanceActivity.class);
-                startActivity(intent);
+                Intent intent2 = new Intent(getActivity(), LocalConveyanceActivity.class);
+                startActivity(intent2);
 
                 break;
             case R.id.reportLinear:

@@ -34,7 +34,7 @@
                     android:layout_width="@dimen/_80sdp"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/_12sdp"
-                    android:text="@string/in"
+                    android:text="@string/in_attendance"
                     android:gravity="center"
                     android:layout_gravity="center"
                     android:background="@drawable/rounded_bg_blue"
@@ -47,7 +47,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="In Time"
                     android:fontFamily="sans-serif-condensed"
                     android:textSize="@dimen/_10sdp"/>
 
@@ -65,7 +64,7 @@
                     android:layout_width="@dimen/_80sdp"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/_12sdp"
-                    android:text="@string/out"
+                    android:text="@string/out_attendance"
                     android:gravity="center"
                     android:layout_gravity="center"
                     android:background="@drawable/rounded_bg_grey"
@@ -78,12 +77,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Out Time"
                     android:fontFamily="sans-serif-condensed"
                     android:textSize="@dimen/_10sdp"/>
 
             </LinearLayout>
         </LinearLayout>
 
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/attendance_report"
+            android:padding="@dimen/_10sdp"
+            android:textSize="@dimen/_12sdp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:textColor="@color/colorPrimary"/>
+
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/attendanceList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
     </LinearLayout>
 </RelativeLayout>
