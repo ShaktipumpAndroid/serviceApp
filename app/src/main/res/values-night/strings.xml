@@ -149,5 +149,7 @@
     <string name="endLocImg">End Location Image</string>
     <string name="tripStart">Trip Started</string>
     <string name="sync">Sync</string>
+    <string name="in">IN</string>
+    <string name="out">Out</string>
 
 </resources>
