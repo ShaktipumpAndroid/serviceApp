@@ -215,7 +215,8 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
         TextInputEditText endLongitudeExt = layout.findViewById(R.id.endLongitudeExt);
         TextInputEditText endAddressExt = layout.findViewById(R.id.endAddressExt);
         EditText travelModeEdt = layout.findViewById(R.id.travelModeEdt);
-        EditText distanceEdt = layout.findViewById(R.id.distanceEdt);
+        TextInputLayout distanceLayout = layout.findViewById(R.id.distanceLayout);
+        TextInputEditText distanceEdt = layout.findViewById(R.id.distanceEdt);
 
         TextView startLocImgTxt = layout.findViewById(R.id.startLocImgTxt);
         imgIcon = layout.findViewById(R.id.imgIcon);
@@ -241,7 +242,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             startLongitudeLayout.setVisibility(View.GONE);
             startAddressLayout.setVisibility(View.GONE);
             travelModeEdt.setVisibility(View.GONE);
-            distanceEdt.setVisibility(View.GONE);
+            distanceLayout.setVisibility(View.GONE);
 
             Log.e("latitude2=>", String.valueOf(gpsTracker.getLatitude()));
             Log.e("longitude2=>", String.valueOf(gpsTracker.getLongitude()));
@@ -265,7 +266,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             endLongitudeLayout.setVisibility(View.VISIBLE);
             endAddressLayout.setVisibility(View.VISIBLE);
             travelModeEdt.setVisibility(View.VISIBLE);
-            distanceEdt.setVisibility(View.VISIBLE);
+            distanceLayout.setVisibility(View.VISIBLE);
 
 
             startLatitudeExt.setText(localConveyance.getStartLatitude());
