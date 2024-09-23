@@ -159,5 +159,6 @@
     <string name="selectOperationPerformed">Please Select Performed Operation</string>
     <string name="enterPurpouse">Enter purpose of visit</string>
     <string name="enterOutcomes">Enter outcome of visit</string>
+    <string name="travel_mode">Travel mode</string>
 
 </resources>

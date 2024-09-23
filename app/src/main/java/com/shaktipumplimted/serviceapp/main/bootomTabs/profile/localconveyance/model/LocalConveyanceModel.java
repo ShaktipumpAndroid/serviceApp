@@ -106,4 +106,23 @@ public class LocalConveyanceModel {
     public void setEndImgPath(String endImgPath) {
         this.endImgPath = endImgPath;
     }
+
+    @Override
+    public String toString() {
+        return "LocalConveyanceModel{" +
+                "uniqId='" + uniqId + '\'' +
+                ", startLatitude='" + startLatitude + '\'' +
+                ", startLongitude='" + startLongitude + '\'' +
+                ", endLatitude='" + endLatitude + '\'' +
+                ", endLongitude='" + endLongitude + '\'' +
+                ", startAddress='" + startAddress + '\'' +
+                ", endAddress='" + endAddress + '\'' +
+                ", startDate='" + startDate + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", endDate='" + endDate + '\'' +
+                ", endTime='" + endTime + '\'' +
+                ", startImgPath='" + startImgPath + '\'' +
+                ", endImgPath='" + endImgPath + '\'' +
+                '}';
+    }
 }

@@ -179,20 +179,56 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
-            <EditText
-                android:id="@+id/distanceEdt"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/distanceLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:enabled="false"
-                android:hint="@string/distance"/>
+                android:fontFamily="sans-serif-condensed-medium"
+                android:hint="@string/distance"
+                android:textColorHint="@color/colorPrimary">
 
-            <EditText
-                android:id="@+id/travelModeEdt"
+                <!--this is the actual edit text which takes the input-->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/distanceEdt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:enabled="false"
+                    android:textSize="@dimen/_12sdp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/travelLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:hint="@string/enter_travel_mode"/>
+                android:fontFamily="sans-serif-condensed-medium"
+                android:hint="@string/travel_mode"
+                android:textColorHint="@color/colorPrimary">
+
+                <!--this is the actual edit text which takes the input-->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/travelModeEdt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12sdp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
 
 
             <RelativeLayout

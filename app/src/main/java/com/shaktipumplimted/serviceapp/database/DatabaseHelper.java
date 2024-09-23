@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
+import android.util.Log;
 
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
@@ -93,7 +94,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + TABLE_LOCAL_CONVEYANCE_DATA + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
             + KEY_START_LATITUDE + " TEXT,"
             + KEY_START_LONGITUDE + " TEXT,"
-            + KEY_END_LATITUDE + " BOOLEAN,"
+            + KEY_END_LATITUDE + " TEXT,"
             + KEY_END_LONGITUDE + " TEXT,"
             + KEY_START_ADDRESS + " TEXT,"
             + KEY_END_ADDRESS + " TEXT,"
@@ -225,6 +226,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void updateLocalConveyanceData(LocalConveyanceModel localConveyanceModel) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        Log.e("dbLat==>",localConveyanceModel.getEndLatitude());
         contentValues.put(KEY_START_LATITUDE, localConveyanceModel.getStartLatitude());
         contentValues.put(KEY_START_LONGITUDE, localConveyanceModel.getStartLongitude());
         contentValues.put(KEY_END_LATITUDE, localConveyanceModel.getEndLatitude());
