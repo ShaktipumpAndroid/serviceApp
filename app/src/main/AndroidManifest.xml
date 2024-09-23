@@ -5,6 +5,7 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+    <uses-feature android:name="android.hardware.camera.front" android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -66,6 +67,9 @@
             android:exported="false" />
         <activity
             android:name=".login.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Utils.common.activity.SurfaceCameraActivity"
             android:exported="false" />
         <activity
             android:name=".Splash.SplashActivity"

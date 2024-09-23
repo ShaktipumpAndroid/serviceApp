@@ -21,24 +21,14 @@ import com.shaktipumplimted.serviceapp.R;
 public class GpsTracker extends Service implements LocationListener {
 
     private final Context mContext;
-
-
     boolean checkGPS = false;
-
-
     boolean checkNetwork = false;
-
     boolean canGetLocation = false;
-
     Location loc;
     double latitude;
     double longitude;
-
-
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
-
-
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60;
     protected LocationManager locationManager;
 
     public GpsTracker(Context mContext) {
@@ -94,7 +84,7 @@ public class GpsTracker extends Service implements LocationListener {
                 }
 
 
-                /*if (checkNetwork) {
+                if (checkNetwork) {
 
 
                     if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -121,7 +111,7 @@ public class GpsTracker extends Service implements LocationListener {
                         latitude = loc.getLatitude();
                         longitude = loc.getLongitude();
                     }
-                }*/
+                }
 
             }
 
