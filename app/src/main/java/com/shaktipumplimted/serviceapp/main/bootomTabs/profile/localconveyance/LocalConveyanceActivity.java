@@ -248,8 +248,6 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             endAddressExt.setText(Utility.getAddressFromLatLng(mContext, String.valueOf(gpsTracker.getLatitude()), String.valueOf(gpsTracker.getLongitude())));
             distanceEdt.setText(distance);
         } else {
-            Log.e("latitude=>", String.valueOf(gpsTracker.getLatitude()));
-            Log.e("longitude=>", String.valueOf(gpsTracker.getLongitude()));
             startLatitudeExt.setText(String.valueOf(gpsTracker.getLatitude()));
             startLongitudeExt.setText(String.valueOf(gpsTracker.getLongitude()));
             startAddressExt.setText(Utility.getAddressFromLatLng(mContext, String.valueOf(gpsTracker.getLatitude()), String.valueOf(gpsTracker.getLongitude())));

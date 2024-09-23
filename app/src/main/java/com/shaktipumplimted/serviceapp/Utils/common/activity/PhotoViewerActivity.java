@@ -37,7 +37,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
         mToolbar.setTitle(getResources().getString(R.string.photoGallery));
         mToolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
-        Log.e("imagePath1111=====>",getIntent().getStringExtra(Constant.imagePath));
+
         Bitmap myBitmap = BitmapFactory.decodeFile(getIntent().getStringExtra(Constant.imagePath));
 
         showImg.setImageBitmap(myBitmap);

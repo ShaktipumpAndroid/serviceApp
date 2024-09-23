@@ -82,8 +82,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             Utility.showProgressDialogue(this);
             Call<LoginRespModel> call3 = apiInterface.login(userNameExt.getText().toString().trim(),
-                    Constant.OnRoll,
                     loginType,
+                    Constant.OnRoll,
                     passwordExt.getText().toString().trim(), fcmToken, pInfo.versionName, String.valueOf(Build.VERSION.SDK_INT), Build.VERSION.RELEASE, Utility.getDeviceName());
             call3.enqueue(new Callback<LoginRespModel>() {
                 @Override

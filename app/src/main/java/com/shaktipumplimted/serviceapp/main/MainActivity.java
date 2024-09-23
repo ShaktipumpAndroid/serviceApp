@@ -15,7 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.fragment.ComplaintListFragment;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.ProfileFragment;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.fragment.ProfileFragment;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.routeList.fragment.RouteListFragment;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.unsync.UnsyncListFragment;
 

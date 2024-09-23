@@ -2,6 +2,10 @@ package com.shaktipumplimted.serviceapp.webService.extra;
 
 public class Constant {
 
+    /*--------------------------------------------API Status Manage-------------------------------------------------------*/
+    public static String TRUE = "true";
+    public static String FALSE = "false";
+    public static String FAILED = "failed";
 /*--------------------------------------------User Details-------------------------------------------------------*/
     public static String userID = "userID";
     public static String userName = "userName";
@@ -14,9 +18,12 @@ public class Constant {
     public static String OnRoll = "ONROLL";
     public static String employee = "Employee";
 
-    public static int ResponseTokenExpire = 401;
+
 
     public static String APIKEY = "AIzaSyAohhwZ11LRwoxsS8lJ0VHGkA4L-cwjWmw";
+
+    public static String attendanceIN = "IN";
+    public static String attendanceOut = "OUT";
 
 
     /*------------------------------------Other Objects---------------------------------------*/

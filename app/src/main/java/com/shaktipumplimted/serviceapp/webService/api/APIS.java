@@ -8,9 +8,11 @@ public class APIS {
     public static final String DIRECTIONBASEURL = "https://maps.googleapis.com/maps/api/";
     public static final String OTPBASEURL = "http://control.yourbulksms.com/api/";
 
-
-    public static final String LOGIN =  "login.htm?pernr=5051&objs=Employee&login=onroll&pass=pqpc&fcmtoken=gragragreagragah&app_version=1.0&api=10&apiversion=10&deviceid=baskd4a65";
-
-
     public static final String DIRECTIONAPI = "directions/json";
+    public static final String LOGIN =  "login.htm";
+
+    public static final String STATUSLIST =  "listing_status.htm";
+
+    public static final String CUSTOMER_COMPLAINT = "get_customer_complain.htm";
+
 }

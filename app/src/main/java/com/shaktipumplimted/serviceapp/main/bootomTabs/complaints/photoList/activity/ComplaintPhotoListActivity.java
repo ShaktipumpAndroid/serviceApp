@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.View;
@@ -12,13 +13,14 @@ import android.widget.TextView;
 
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
+import com.shaktipumplimted.serviceapp.Utils.common.activity.PhotoViewerActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.photoList.adapter.PhotoListAdapter;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.photoList.model.PhotoListModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComplaintPhotoListActivity extends AppCompatActivity {
+public class ComplaintPhotoListActivity extends AppCompatActivity implements PhotoListAdapter.ItemClickListener {
 
     Toolbar toolbar;
     RecyclerView photoList;
@@ -80,12 +82,19 @@ public class ComplaintPhotoListActivity extends AppCompatActivity {
             photoListAdapter = new PhotoListAdapter(this, photoArrayList);
             photoList.setHasFixedSize(true);
             photoList.setAdapter(photoListAdapter);
-
+            photoListAdapter.ItemClick(this);
             noPhotoAvailable.setVisibility(View.GONE);
             photoList.setVisibility(View.VISIBLE);
         }else {
             noPhotoAvailable.setVisibility(View.VISIBLE);
             photoList.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void SetOnItemClickListener(PhotoListModel response, int position) {
+        Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
+        startActivity(intent);
+
     }
 }

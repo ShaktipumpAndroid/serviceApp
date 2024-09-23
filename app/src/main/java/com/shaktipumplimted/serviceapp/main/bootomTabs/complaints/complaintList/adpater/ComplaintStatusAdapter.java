@@ -19,13 +19,13 @@ import java.util.List;
 
 public class ComplaintStatusAdapter  extends RecyclerView.Adapter<ComplaintStatusAdapter.ViewHolder>{
     Context mContext;
-    private List<ComplaintStatusModel> searchList;
-    private List<ComplaintStatusModel> complaintStatusArrayList;
+    private List<ComplaintStatusModel.Datum> searchList;
+    private List<ComplaintStatusModel.Datum> complaintStatusArrayList;
     TextView noDataFound;
     private static ItemClickListener itemClickListener;
 
 
-    public ComplaintStatusAdapter(Context context, List<ComplaintStatusModel> listdata) {
+    public ComplaintStatusAdapter(Context context, List<ComplaintStatusModel.Datum> listdata) {
         this.complaintStatusArrayList = listdata;
         this.mContext = context;
         this.searchList = new ArrayList<>();
@@ -44,8 +44,8 @@ public class ComplaintStatusAdapter  extends RecyclerView.Adapter<ComplaintStatu
     @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        final ComplaintStatusModel response = complaintStatusArrayList.get(position);
-        holder.statusTxt.setText(response.getStatus());
+        final ComplaintStatusModel.Datum response = complaintStatusArrayList.get(position);
+        holder.statusTxt.setText(response.getDomvalueL());
 
         if(response.isSelected()){
             holder.compStatusCard.setCardBackgroundColor(mContext.getResources().getColor(R.color.light_blue));
@@ -90,6 +90,6 @@ public class ComplaintStatusAdapter  extends RecyclerView.Adapter<ComplaintStatu
     }
 
     public interface ItemClickListener {
-        void SetOnItemClickListener(ComplaintStatusModel response, int position);
+        void SetOnItemClickListener(ComplaintStatusModel.Datum response, int position);
     }
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_grey"
-    tools:context=".main.bootomTabs.profile.ProfileFragment">
+    tools:context=".main.bootomTabs.profile.fragment.ProfileFragment">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardlogo"
