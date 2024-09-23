@@ -39,6 +39,7 @@ public class SurfaceCameraActivity extends AppCompatActivity implements View.OnC
             complaintNo = "";
     Bitmap bitmap;
     File file;
+    GpsTracker gps;
 
     DecimalFormat decimalFormat;
     @Override
@@ -65,6 +66,8 @@ public class SurfaceCameraActivity extends AppCompatActivity implements View.OnC
 
 
     private void Init() {
+        gps = new GpsTracker(this);
+
         surfaceView = findViewById(R.id.surfaceView);
         captureBtn = findViewById(R.id.captureBtn);
         displayTxt = findViewById(R.id.displayTxt);
@@ -101,7 +104,7 @@ public class SurfaceCameraActivity extends AppCompatActivity implements View.OnC
     /*------------------------------------------------------------------------Retrieve lat long---------------------------------------------------------------------*/
 
     public void getGpsLocation() {
-        GpsTracker gps = new GpsTracker(this);
+
 
         if (gps.canGetLocation()) {
             if (!String.valueOf(gps.getLatitude()).isEmpty() && !String.valueOf(gps.getLongitude()).isEmpty()) {

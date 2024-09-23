@@ -364,22 +364,23 @@ public class Utility {
     }
 
     public static String getAddressFromLatLng(Context context, String latitude, String longitude) {
+
         String address = "";
+        if(isInternetOn(context)){
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            try {
+                List<Address> addresses = geocoder.getFromLocation(Double.parseDouble(latitude), Double.parseDouble(longitude), 1);
 
-        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-        try {
-            List<Address> addresses = geocoder.getFromLocation(Double.parseDouble(latitude), Double.parseDouble(longitude), 1);
+                if (!addresses.isEmpty()) {
 
-            if (!addresses.isEmpty()) {
+                    address =  addresses.get(0).getAddressLine(0) + "," + addresses.get(0).getAdminArea() + " " + addresses.get(0).getPostalCode() + "," + addresses.get(0).getCountryName();
 
-                address =  addresses.get(0).getAddressLine(0) + "," + addresses.get(0).getAdminArea() + " " + addresses.get(0).getPostalCode() + "," + addresses.get(0).getCountryName();
+                }
 
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
-
         return address;
     }
 
