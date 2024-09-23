@@ -136,7 +136,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
                 startEndTravel("1");
                 break;
             case R.id.endTravelBtn:
-                startEndTravel("3");
+                startEndTravel("2");
                 break;
             case R.id.startLocImg:
                 if (checkPermission()) {
@@ -214,7 +214,8 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
         TextInputEditText endLatitudeExt = layout.findViewById(R.id.endLatitudeExt);
         TextInputEditText endLongitudeExt = layout.findViewById(R.id.endLongitudeExt);
         TextInputEditText endAddressExt = layout.findViewById(R.id.endAddressExt);
-        EditText travelModeEdt = layout.findViewById(R.id.travelModeEdt);
+        TextInputLayout travelModeLayout = layout.findViewById(R.id.travelLayout);
+        TextInputEditText travelModeEdt = layout.findViewById(R.id.travelModeEdt);
         TextInputLayout distanceLayout = layout.findViewById(R.id.distanceLayout);
         TextInputEditText distanceEdt = layout.findViewById(R.id.distanceEdt);
 
@@ -224,7 +225,12 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
         TextView confirmBtn = layout.findViewById(R.id.confirmBtn);
         TextView cancelBtn = layout.findViewById(R.id.cancelBtn);
 
-        if (value.equals("3")) {
+        if (value.equals("1")) {
+            startLatitudeExt.setText(String.valueOf(gpsTracker.getLatitude()));
+            startLongitudeExt.setText(String.valueOf(gpsTracker.getLongitude()));
+            startAddressExt.setText(Utility.getAddressFromLatLng(mContext, String.valueOf(gpsTracker.getLatitude()), String.valueOf(gpsTracker.getLongitude())));
+        }
+        else if (value.equals("2")) {
             localConveyanceList = new ArrayList<>();
             localConveyanceList = databaseHelper.getAllLocalConveyanceData(true);
             LocalConveyanceModel localConveyance = localConveyanceList.get(localConveyanceList.size() - 1);
@@ -244,8 +250,6 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             travelModeEdt.setVisibility(View.GONE);
             distanceLayout.setVisibility(View.GONE);
 
-            Log.e("latitude2=>", String.valueOf(gpsTracker.getLatitude()));
-            Log.e("longitude2=>", String.valueOf(gpsTracker.getLongitude()));
             startLatitudeExt.setText(localConveyance.getStartLatitude());
             startLongitudeExt.setText(localConveyance.getStartLongitude());
             startAddressExt.setText(localConveyance.getStartAddress());
@@ -253,7 +257,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             endLongitudeExt.setText(String.valueOf(gpsTracker.getLongitude()));
             endAddressExt.setText(Utility.getAddressFromLatLng(mContext, String.valueOf(gpsTracker.getLatitude()), String.valueOf(gpsTracker.getLongitude())));
 
-        }else if(value.equals("2")){
+        }else if(value.equals("3")){
             localConveyanceList = new ArrayList<>();
             localConveyanceList = databaseHelper.getAllLocalConveyanceData(true);
             LocalConveyanceModel localConveyance = localConveyanceList.get(localConveyanceList.size() - 1);
@@ -265,9 +269,9 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             endtLatitudeLayout.setVisibility(View.VISIBLE);
             endLongitudeLayout.setVisibility(View.VISIBLE);
             endAddressLayout.setVisibility(View.VISIBLE);
-            travelModeEdt.setVisibility(View.VISIBLE);
+            travelModeLayout.setVisibility(View.VISIBLE);
             distanceLayout.setVisibility(View.VISIBLE);
-
+            startLocImg.setVisibility(View.GONE);
 
             startLatitudeExt.setText(localConveyance.getStartLatitude());
             startLongitudeExt.setText(localConveyance.getStartLongitude());
@@ -277,12 +281,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             endAddressExt.setText(localConveyance.getEndAddress());
             distanceEdt.setText(distance);
             endAddressExt.setText(localConveyance.getEndAddress());
-        }else {
-            Log.e("latitude=>", String.valueOf(gpsTracker.getLatitude()));
-            Log.e("longitude=>", String.valueOf(gpsTracker.getLongitude()));
-            startLatitudeExt.setText(String.valueOf(gpsTracker.getLatitude()));
-            startLongitudeExt.setText(String.valueOf(gpsTracker.getLongitude()));
-            startAddressExt.setText(Utility.getAddressFromLatLng(mContext, String.valueOf(gpsTracker.getLatitude()), String.valueOf(gpsTracker.getLongitude())));
+            travelModeEdt.requestFocus();
         }
 
         confirmBtn.setOnClickListener(v -> {
@@ -303,7 +302,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
                 databaseHelper.insertLocalConveyanceData(localConveyanceModel);
 
                 tripStarted();
-            } else if(value.equals("3")){
+            } else if(value.equals("2")){
                 localConveyanceList = new ArrayList<>();
                 localConveyanceList = databaseHelper.getAllLocalConveyanceData(true);
 
@@ -326,8 +325,6 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
 
                 tripEnded();
                 getAllData();
-            } else if (value.equals("2")) {
-
             }
             alertDialog.dismiss();
         });
@@ -451,7 +448,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
 
                     distance = String.valueOf(distanceCalculateModel.getRoutes().get(0).getLegs().get(0).getDistance().getText());
                     Log.e("distance2==>", distance);
-                    startEndTravel("2");
+                    startEndTravel("3");
                 }
 
             }

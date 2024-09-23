@@ -152,8 +152,6 @@
     <string name="enter_travel_mode">Enter Travel Mode</string>
     <string name="endAddress">End Address</string>
     <string name="distance">Distance</string>
-    <string name="in">IN</string>
-    <string name="out">Out</string>
     <string name="attendance_in_time">"Attendance In Time:- "</string>
     <string name="attendance_out_time">"Attendance Out Time:- "</string>
     <string name="selectOperationPerformed">Please Select Performed Operation</string>
