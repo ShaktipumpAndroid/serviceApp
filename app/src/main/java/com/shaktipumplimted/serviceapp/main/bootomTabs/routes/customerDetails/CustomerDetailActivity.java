@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,8 +14,11 @@ import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.shaktipumplimted.serviceapp.R;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.ComplaintDetailsActivity;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customerDetails.checkOut.CheckOutActivity;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customerDetails.visithistory.VisitHistoryActivity;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customerDetails.visithistory.model.VisitHistoryModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customersList.model.CustomerListModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customerDetails.sitesurvey.SiteSurveyActivity;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
 public class CustomerDetailActivity extends AppCompatActivity implements View.OnClickListener {
@@ -82,12 +86,19 @@ public class CustomerDetailActivity extends AppCompatActivity implements View.On
                 checkInPopup(getResources().getString(R.string.want_to_checkout));
                 break;
             case R.id.checkOutLinear:
-
+                Intent intent = new Intent(getApplicationContext(), CheckOutActivity.class);
+                intent.putExtra(Constant.customerDetails,customerListModel);
+                startActivity(intent);
                 break;
             case R.id.siteSurveyLinear:
+                Intent intent1 = new Intent(getApplicationContext(), SiteSurveyActivity.class);
+                intent1.putExtra(Constant.customerDetails,customerListModel);
+                startActivity(intent1);
 
                 break;
             case R.id.historyLinear:
+                Intent intent2 = new Intent(getApplicationContext(), VisitHistoryActivity.class);
+                startActivity(intent2);
 
                 break;
         }

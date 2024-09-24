@@ -35,8 +35,7 @@ public class SurfaceCameraActivity extends AppCompatActivity implements View.OnC
     ImageView captureBtn;
     TextView displayTxt;
 
-    String latitude, longitude,customerName = "",
-            complaintNo = "";
+    String latitude, longitude,customerName = "", complaintNo = "",frontCamera;
     Bitmap bitmap;
     File file;
     GpsTracker gps;
@@ -59,6 +58,9 @@ public class SurfaceCameraActivity extends AppCompatActivity implements View.OnC
            if(getIntent().getStringExtra(Constant.complaintNo)!=null) {
                complaintNo = getIntent().getStringExtra(Constant.complaintNo);
            }
+            if(getIntent().getStringExtra(Constant.frontCamera)!=null) {
+                frontCamera = getIntent().getStringExtra(Constant.frontCamera);
+            }
 
         }
         getGpsLocation();
@@ -149,7 +151,12 @@ public class SurfaceCameraActivity extends AppCompatActivity implements View.OnC
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         try {
             // open the camera
-            camera = Camera.open();
+            if(frontCamera.equals("0")){
+                camera = Camera.open(0);
+            }else {
+                camera = Camera.open();
+            }
+
         } catch (RuntimeException e) {
             // check for exceptions
             System.err.println(e);

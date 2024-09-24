@@ -1,4 +1,4 @@
-package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.activity;
+package com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customerDetails.checkOut;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -27,7 +27,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -43,6 +42,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.FileUtils;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
@@ -51,7 +51,7 @@ import com.shaktipumplimted.serviceapp.Utils.common.activity.SurfaceCameraActivi
 import com.shaktipumplimted.serviceapp.Utils.common.adapter.ImageSelectionAdapter;
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customersList.model.CustomerListModel;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
 import java.io.File;
@@ -61,83 +61,76 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class AddPendingReasonActivity extends AppCompatActivity implements View.OnClickListener, ImageSelectionAdapter.ImageSelectionListener, AdapterView.OnItemSelectedListener {
-
+public class CheckOutActivity extends AppCompatActivity implements ImageSelectionAdapter.ImageSelectionListener, View.OnClickListener, AdapterView.OnItemSelectedListener {
     private static final int REQUEST_CODE_PERMISSION = 101;
     private static final int PICK_FROM_FILE = 102;
 
     Toolbar toolbar;
-    Spinner pendingReasonSpinner;
-    EditText actionExt;
+    DatabaseHelper databaseHelper;
+    CustomerListModel customerListModel;
+    Spinner activitySpinner;
     TextView followUpDateTxt, submitBtn;
     RelativeLayout followUpDateBtn;
+    TextInputEditText remarkExt;
+    RecyclerView checkOutImages;
 
-    RecyclerView compImagesList;
     List<ImageModel> imageArrayList = new ArrayList<>();
     List<ImageModel> imageList = new ArrayList<>();
-
     AlertDialog alertDialog;
 
     ImageSelectionAdapter customAdapter;
 
     List<String> itemNameList = new ArrayList<>();
-    ComplaintListModel.Datum complaintListModel;
     int selectedIndex;
     boolean isUpdate = false;
+    String selectedFollowUpDate = "";
 
-    String selectedFollowUpDate = "",selectedPendingReason = "";
-    DatabaseHelper databaseHelper;
     public final static SimpleDateFormat dateFormat =
             new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
 
     public final static SimpleDateFormat sendDateFormat =
             new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_pending_reason);
+        setContentView(R.layout.activity_check_out);
 
         Init();
         listner();
         retrieveValue();
     }
 
-
-
     private void Init() {
-        databaseHelper = new DatabaseHelper(this);
-        pendingReasonSpinner = findViewById(R.id.pendingReasonSpinner);
-        actionExt = findViewById(R.id.actionExt);
+        databaseHelper = new DatabaseHelper(getApplicationContext());
+        toolbar = findViewById(R.id.toolbar);
+        activitySpinner = findViewById(R.id.activitySpinner);
         followUpDateTxt = findViewById(R.id.followUpDateTxt);
         followUpDateBtn = findViewById(R.id.followUpDateBtn);
-        compImagesList = findViewById(R.id.compImagesList);
+        remarkExt = findViewById(R.id.remarkExt);
+        checkOutImages = findViewById(R.id.checkOutImages);
         submitBtn = findViewById(R.id.submitBtn);
-        toolbar = findViewById(R.id.toolbar);
-
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(getResources().getString(R.string.addPendingReason));
+        getSupportActionBar().setTitle(getResources().getString(R.string.check_out));
         toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
         followUpDateTxt.setText(Utility.getCurrentDate());
 
-
     }
 
     private void listner() {
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
         followUpDateBtn.setOnClickListener(this);
         submitBtn.setOnClickListener(this);
-        pendingReasonSpinner.setOnItemSelectedListener(this);
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        activitySpinner.setOnItemSelectedListener(this);
     }
 
     private void retrieveValue() {
         if (getIntent().getExtras() != null) {
-            complaintListModel = (ComplaintListModel) getIntent().getSerializableExtra(Constant.complaintData);
-            SetAdapter();
+            customerListModel = (CustomerListModel) getIntent().getSerializableExtra(Constant.customerDetails);
+
         }
     }
 
@@ -156,7 +149,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
     private void ChooseDate() {
 
         Calendar calendar = Calendar.getInstance();
-        DatePickerDialog dialog = new DatePickerDialog(AddPendingReasonActivity.this, new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog dialog = new DatePickerDialog(CheckOutActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker arg0, int year, int month, int day_of_month) {
                 calendar.set(Calendar.YEAR, year);
@@ -173,14 +166,26 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
 
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if (view.getId() == R.id.activitySpinner) {
+
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
     /*------------------------------------------------------------------------ImageList---------------------------------------------------------------------*/
     private void SetAdapter() {
         imageArrayList = new ArrayList<>();
         itemNameList = new ArrayList<>();
-        itemNameList.add(getResources().getString(R.string.attechformphoto1));
-        itemNameList.add(getResources().getString(R.string.attechformphoto2));
-        itemNameList.add(getResources().getString(R.string.attechformphoto3));
-        itemNameList.add(getResources().getString(R.string.attechformphoto4));
+        itemNameList.add(getResources().getString(R.string.frontView));
+        itemNameList.add(getResources().getString(R.string.innerView));
+        itemNameList.add(getResources().getString(R.string.visitingCardPhoto));
+        itemNameList.add(getResources().getString(R.string.ownerPhoto));
 
 
         for (int i = 0; i < itemNameList.size(); i++) {
@@ -188,23 +193,21 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             imageModel.setName(itemNameList.get(i));
             imageModel.setImagePath("");
             imageModel.setImageSelected(false);
-            imageModel.setBillNo("");
+            imageModel.setBillNo(customerListModel.getCustomerName());
             imageModel.setPosition(i + 1);
-            imageModel.setSelectedCategory(selectedPendingReason);
             imageArrayList.add(imageModel);
         }
 
-        DatabaseHelper databaseHelper = new DatabaseHelper(this);
-
         //Create Table
-        imageList = databaseHelper.getAllImages(DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA, complaintListModel.getCmpno());
+        imageList = databaseHelper.getAllImages(DatabaseHelper.TABLE_CHECK_OUT_IMAGE_DATA, customerListModel.getCustomerName());
 
+        Log.e("imageList====>", String.valueOf(imageList.size()));
         if (itemNameList.size() > 0 && imageList != null && imageList.size() > 0) {
 
             for (int i = 0; i < imageList.size(); i++) {
                 for (int j = 0; j < itemNameList.size(); j++) {
                     if (imageList.get(i).getBillNo() != null &&
-                            imageList.get(i).getBillNo().trim().equals(complaintListModel.getCmpno())) {
+                            imageList.get(i).getBillNo().trim().equals(customerListModel.getCustomerName())) {
                         if (imageList.get(i).getName().equals(itemNameList.get(j))) {
                             ImageModel imageModel = new ImageModel();
                             imageModel.setName(imageList.get(i).getName());
@@ -212,7 +215,6 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
                             imageModel.setBillNo(imageList.get(i).getBillNo());
                             imageModel.setImageSelected(true);
                             imageModel.setPosition(imageList.get(i).getPosition());
-                            imageModel.setSelectedCategory(imageList.get(i).getSelectedCategory());
                             imageArrayList.set(j, imageModel);
                         }
                     }
@@ -220,9 +222,9 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             }
         }
 
-        customAdapter = new ImageSelectionAdapter(AddPendingReasonActivity.this, imageArrayList, false);
-        compImagesList.setHasFixedSize(true);
-        compImagesList.setAdapter(customAdapter);
+        customAdapter = new ImageSelectionAdapter(CheckOutActivity.this, imageArrayList, false);
+        checkOutImages.setHasFixedSize(true);
+        checkOutImages.setAdapter(customAdapter);
         customAdapter.ImageSelection(this);
 
     }
@@ -235,22 +237,19 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             isUpdate = true;
             selectImage("1");
         } else {
-            if(!selectedPendingReason.isEmpty()) {
-                isUpdate = false;
-                selectImage("0");
-            }else {
-                Utility.ShowToast(getResources().getString(R.string.selectPendingReasonFirst),getApplicationContext());
-            }
+            isUpdate = false;
+            selectImage("0");
+
         }
 
     }
 
     private void selectImage(String value) {
-        LayoutInflater inflater = (LayoutInflater) AddPendingReasonActivity.this.getSystemService(
+        LayoutInflater inflater = (LayoutInflater) CheckOutActivity.this.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.pick_img_layout, null);
         final AlertDialog.Builder builder =
-                new AlertDialog.Builder(AddPendingReasonActivity.this, R.style.MyDialogTheme);
+                new AlertDialog.Builder(CheckOutActivity.this, R.style.MyDialogTheme);
 
         builder.setView(layout);
         builder.setCancelable(true);
@@ -282,7 +281,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             if (value.equals("0")) {
                 galleryIntent();
             } else {
-                Intent i_display_image = new Intent(AddPendingReasonActivity.this, PhotoViewerActivity.class);
+                Intent i_display_image = new Intent(CheckOutActivity.this, PhotoViewerActivity.class);
                 i_display_image.putExtra(Constant.imagePath, imageArrayList.get(selectedIndex).getImagePath());
                 startActivity(i_display_image);
             }
@@ -309,8 +308,8 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
 
     private void cameraIntent() {
 
-        camraLauncher.launch(new Intent(AddPendingReasonActivity.this, SurfaceCameraActivity.class)
-                .putExtra(Constant.customerName, complaintListModel.getCstname()));
+        camraLauncher.launch(new Intent(CheckOutActivity.this, SurfaceCameraActivity.class)
+                .putExtra(Constant.customerName, customerListModel.getCustomerName()));
 
     }
 
@@ -341,7 +340,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             case PICK_FROM_FILE:
                 try {
                     Uri mImageCaptureUri = data.getData();
-                    String path = FileUtils.getPath(AddPendingReasonActivity.this, mImageCaptureUri); // From Gallery
+                    String path = FileUtils.getPath(CheckOutActivity.this, mImageCaptureUri); // From Gallery
                     if (path == null) {
                         path = mImageCaptureUri.getPath(); // From File Manager
                     }
@@ -354,12 +353,12 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
                         file = "";
                     }
                     if (TextUtils.isEmpty(file)) {
-                        Toast.makeText(AddPendingReasonActivity.this, "File not valid!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(CheckOutActivity.this, "File not valid!", Toast.LENGTH_LONG).show();
                     } else {
 
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
 
-                        File file1 = Utility.saveFile(bitmap, complaintListModel.getCstname(), "complaintImages");
+                        File file1 = Utility.saveFile(bitmap, customerListModel.getCustomerName(), "siteSurveyImages");
                         UpdateArrayList(file1.getPath());
 
                     }
@@ -378,7 +377,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
         imageModel.setName(imageArrayList.get(selectedIndex).getName());
         imageModel.setImagePath(path);
         imageModel.setImageSelected(true);
-        imageModel.setBillNo(complaintListModel.getCmpno());
+        imageModel.setBillNo(customerListModel.getCustomerName());
         imageModel.setLatitude("");
         imageModel.setLongitude("");
         imageModel.setSelectedCategory(imageArrayList.get(selectedIndex).getSelectedCategory());
@@ -386,9 +385,9 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
         imageArrayList.set(selectedIndex, imageModel);
 
         if (isUpdate) {
-            databaseHelper.updateImagesData(imageModel, true, DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA);
+            databaseHelper.updateImagesData(imageModel, true, DatabaseHelper.TABLE_CHECK_OUT_IMAGE_DATA);
         } else {
-            databaseHelper.insertImagesData(imageModel, true, DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA);
+            databaseHelper.insertImagesData(imageModel, true, DatabaseHelper.TABLE_CHECK_OUT_IMAGE_DATA);
         }
 
         customAdapter.notifyDataSetChanged();
@@ -480,15 +479,4 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
     }
 
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (view.getId() == R.id.pendingReasonSpinner) {
-            selectedPendingReason = parent.getSelectedItem().toString();
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
 }

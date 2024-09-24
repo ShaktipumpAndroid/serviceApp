@@ -186,6 +186,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:hint="@string/distance"
+                android:visibility="gone"
                 android:textColorHint="@color/colorPrimary">
 
                 <!--this is the actual edit text which takes the input-->
@@ -211,7 +212,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed-medium"
-                android:hint="@string/travel_mode"
+                android:hint="@string/enter_travel_mode"
+                android:visibility="gone"
                 android:textColorHint="@color/colorPrimary">
 
                 <!--this is the actual edit text which takes the input-->

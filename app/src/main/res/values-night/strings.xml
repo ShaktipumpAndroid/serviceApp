@@ -152,13 +152,17 @@
     <string name="enter_travel_mode">Enter Travel Mode</string>
     <string name="endAddress">End Address</string>
     <string name="distance">Distance</string>
-    <string name="in">IN</string>
-    <string name="out">Out</string>
     <string name="attendance_in_time">"Attendance In Time:- "</string>
     <string name="attendance_out_time">"Attendance Out Time:- "</string>
     <string name="selectOperationPerformed">Please Select Performed Operation</string>
     <string name="enterPurpouse">Enter purpose of visit</string>
     <string name="enterOutcomes">Enter outcome of visit</string>
     <string name="travel_mode">Travel mode</string>
+    <string name="frontView">Front View Photo</string>
+    <string name="innerView">Inner View Photo</string>
+    <string name="visitingCardPhoto">Visiting Card Photo</string>
+    <string name="ownerPhoto">Owner Photo</string>
+    <string name="enterremark">Please enter remark</string>
+    <string name="visitHistory">Visit History</string>
 
 </resources>

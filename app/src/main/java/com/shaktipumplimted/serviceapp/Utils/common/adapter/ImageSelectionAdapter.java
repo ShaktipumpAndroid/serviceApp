@@ -50,6 +50,13 @@ public class ImageSelectionAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
             ((ViewHolder) holder).title.setText(imageModel.getName());
             ((ViewHolder) holder).cardView.setOnClickListener(v -> docSelectionListener.ImageSelectionListener(imageModel,position));
+
+            if(imageModel.isImageSelected()){
+                ((ViewHolder) holder).image.setImageResource(R.mipmap.tick_icon);
+            }else {
+                ((ViewHolder) holder).image.setImageResource(R.mipmap. close_icon);
+            }
+
         }
     }
 
