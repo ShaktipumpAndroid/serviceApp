@@ -75,7 +75,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String KEY_COMPLAINT_STATUS_ID = "complaint_status_id";
     public static final String KEY_COMPLAINT_STATUS = "complaint_status";
-    public static final String KEY_IMAGE_CUSTOMER_NAME = "customer_name";
 
     public static final String KEY_STATUS_SELECTED = "status_selected";
 
@@ -201,6 +200,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_LOCAL_CONVEYANCE_DATA);
         db.execSQL(CREATE_TABLE_MARK_ATTENDANCE_DATA);
         db.execSQL(CREATE_TABLE_COMPLAINT_STATUS_DATA);
+        db.execSQL(CREATE_TABLE_COMPLAINT_DATA);
         db.execSQL(CREATE_TABLE_SITE_SURVEY_IMAGES);
         db.execSQL(CREATE_TABLE_CHECK_OUT_IMAGES);
 
@@ -212,6 +212,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCAL_CONVEYANCE_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MARK_ATTENDANCE_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_STATUS_DATA);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SITE_SURVEY_IMAGE_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHECK_OUT_IMAGE_DATA);
         onCreate(db);
