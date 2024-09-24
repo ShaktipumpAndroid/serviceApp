@@ -10,6 +10,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.LocalConveyanceModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.MarkAttendanceModel;
@@ -27,6 +28,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_LOCAL_CONVEYANCE_DATA = "tbl_local_conveyance_data";
 
     public static final String TABLE_MARK_ATTENDANCE_DATA = "tbl_mark_attendance_data";
+    public static final String TABLE_COMPLAINT_DATA = "tbl_complaint_data";
 
     /*------------------------------------------------KET IDS--------------------------------------------------------*/
 
@@ -72,9 +74,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_COMPLAINT_STATUS_ID = "complaint_status_id";
     public static final String KEY_COMPLAINT_STATUS = "complaint_status";
 
+    public static final String KEY_STATUS_SELECTED = "status_selected";
+
+    /*------------------------------------- Complaint Data Columns*/
+    public static final String KEY_COMPLAINT_NUMBER = "complaint_number";
+    public static final String KEY_CUST_ADDRESS = "customer_address";
+    public static final String KEY_CUST_MOB_NO = "customer_mobile_no";
+    public static final String KEY_CUST_NAME = "customer_name";
+    public static final String KEY_PERNR = "pernr";
+    public static final String KEY_ENAME = "ename";
+    public static final String KEY_STATUS = "status";
+    public static final String KEY_MATERIAL_CODE = "material_code";
+    public static final String KEY_MATERIAL_NAME = "material_name";
+    public static final String KEY_BILL_NO = "bill_no";
+    public static final String KEY_BILL_DATE = "bill_date";
+    public static final String KEY_FRWD_TO = "forward_to";
+    public static final String KEY_COMPLAINT_DATE = "complaint_date";
+    public static final String KEY_CMP_ACTION = "cmp_action";
+    public static final String KEY_CMP_PENDING_RE = "complaint_pending_reason";
+    public static final String KEY_CMP_LAT = "complaint_latitude";
+    public static final String KEY_CMP_LNG = "complaint_longitude";
+    public static final String KEY_CURRENT_STATUS = "current_status";
+
+
+
+
+
+
     /*-----------------------------------------------------Create Complaint Status Tables---------------------------------------------*/
     private static final String CREATE_TABLE_COMPLAINT_STATUS_DATA = "CREATE TABLE "
             + TABLE_COMPLAINT_STATUS_DATA + "(" + KEY_COMPLAINT_STATUS_ID + " TEXT,"
+            + KEY_STATUS_SELECTED + " TEXT,"
             + KEY_COMPLAINT_STATUS + " TEXT)";
 
 
@@ -113,6 +143,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_ATTENDANCE_STATUS + " TEXT,"
             + KEY_ATTENDANCE_IN_IMG + " TEXT)";
 
+    /*-----------------------------------------------------Create complaint data Table---------------------------------------------*/
+
+    private static final String CREATE_TABLE_COMPLAINT_DATA = "CREATE TABLE "
+            + TABLE_COMPLAINT_DATA + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + KEY_COMPLAINT_NUMBER + " TEXT,"
+            + KEY_CUST_ADDRESS + " TEXT,"
+            + KEY_CUST_MOB_NO + " TEXT,"
+            + KEY_CUST_NAME + " TEXT,"
+            + KEY_PERNR + " TEXT,"
+            + KEY_ENAME + " TEXT,"
+            + KEY_STATUS + " TEXT,"
+            + KEY_MATERIAL_CODE + " TEXT,"
+            + KEY_MATERIAL_NAME + " TEXT,"
+            + KEY_BILL_NO + " TEXT,"
+            + KEY_BILL_DATE + " TEXT,"
+            + KEY_FRWD_TO + " TEXT,"
+            + KEY_COMPLAINT_DATE + " TEXT,"
+            + KEY_CMP_ACTION + " TEXT,"
+            + KEY_CMP_PENDING_RE + " TEXT,"
+            + KEY_CMP_LAT + " TEXT,"
+            + KEY_CMP_LNG + " TEXT,"
+            + KEY_CURRENT_STATUS + " TEXT)";
+
 
 
     public DatabaseHelper(Context context) {
@@ -126,6 +179,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_LOCAL_CONVEYANCE_DATA);
         db.execSQL(CREATE_TABLE_MARK_ATTENDANCE_DATA);
         db.execSQL(CREATE_TABLE_COMPLAINT_STATUS_DATA);
+        db.execSQL(CREATE_TABLE_COMPLAINT_DATA);
 
     }
 
@@ -135,6 +189,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCAL_CONVEYANCE_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MARK_ATTENDANCE_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_STATUS_DATA);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_DATA);
         onCreate(db);
     }
 
@@ -339,12 +394,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*---------------------------------------------Mark Attendance Data--------------------------------------------------*/
-    public void insertComplaintStatusData(ComplaintStatusModel.Datum complaintStatusModel) {
+    public void insertComplaintStatusData(ComplaintStatusModel.Datum complaintStatusModel, boolean bool) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_COMPLAINT_STATUS_ID, complaintStatusModel.getValpos());
         contentValues.put(KEY_COMPLAINT_STATUS, complaintStatusModel.getDomvalueL());
-
+        contentValues.put(KEY_STATUS_SELECTED, String.valueOf(bool));
         database.insert(TABLE_COMPLAINT_STATUS_DATA, null, contentValues);
         database.close();
     }
@@ -367,6 +422,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     mcursor.moveToNext();
                     complaintStatusModel = new ComplaintStatusModel.Datum();
                     complaintStatusModel.setValpos(mcursor.getString(mcursor.getColumnIndex(KEY_COMPLAINT_STATUS_ID)));
+                    complaintStatusModel.setSelected(Boolean.parseBoolean(mcursor.getString(mcursor.getColumnIndex(KEY_STATUS_SELECTED))));
                     complaintStatusModel.setDomvalueL(mcursor.getString(mcursor.getColumnIndex(KEY_COMPLAINT_STATUS)));
 
                     complaintStatusList.add(complaintStatusModel);
@@ -377,6 +433,91 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return  complaintStatusList;
     }
+
+
+
+
+    /*---------------------------------------------Complaint Data--------------------------------------------------*/
+
+
+    public void insertComplaintDetailsData(ComplaintListModel.Datum complaintListModel) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_COMPLAINT_NUMBER, complaintListModel.getCmpno());
+        contentValues.put(KEY_CUST_ADDRESS, complaintListModel.getCaddress());
+        contentValues.put(KEY_CUST_MOB_NO, complaintListModel.getMblno());
+        contentValues.put(KEY_CUST_NAME, complaintListModel.getCstname());
+        contentValues.put(KEY_PERNR, complaintListModel.getPernr());
+        contentValues.put(KEY_ENAME, complaintListModel.getEname());
+        contentValues.put(KEY_STATUS, complaintListModel.getStatus());
+        contentValues.put(KEY_MATERIAL_CODE, complaintListModel.getMatnr());
+        contentValues.put(KEY_MATERIAL_NAME, complaintListModel.getMaktx());
+        contentValues.put(KEY_BILL_NO, complaintListModel.getVbeln());
+        contentValues.put(KEY_BILL_DATE, complaintListModel.getFkdat());
+        contentValues.put(KEY_FRWD_TO, complaintListModel.getFwrdTo());
+        contentValues.put(KEY_COMPLAINT_DATE, complaintListModel.getFdate());
+        contentValues.put(KEY_CMP_ACTION, complaintListModel.getAction());
+        contentValues.put(KEY_CMP_PENDING_RE, complaintListModel.getCmpPenRe());
+        contentValues.put(KEY_CMP_LAT, complaintListModel.getLat());
+        contentValues.put(KEY_CMP_LNG, complaintListModel.getLng());
+        contentValues.put(KEY_CURRENT_STATUS, complaintListModel.getCurrentStatus());
+
+
+        database.insert(TABLE_COMPLAINT_DATA, null, contentValues);
+        database.close();
+    }
+
+    @SuppressLint("Range")
+    public ArrayList<ComplaintListModel.Datum> getAllComplaintDetailData(String status) {
+        String selectQuery;
+        ArrayList<ComplaintListModel.Datum> complaintModelList = new ArrayList<ComplaintListModel.Datum>();
+        SQLiteDatabase database = this.getWritableDatabase();
+        if (doesTableExist(database, TABLE_COMPLAINT_DATA)) {
+
+            if(status.isEmpty()){
+                selectQuery = "SELECT * FROM " + TABLE_COMPLAINT_DATA;
+            }else{
+                selectQuery = "SELECT * FROM " + TABLE_COMPLAINT_DATA +  " WHERE " + KEY_STATUS + " == '" + status + "'";
+            }
+
+
+            Cursor mcursor = database.rawQuery(selectQuery, null);
+
+            complaintModelList.clear();
+            ComplaintListModel.Datum complaintModel;
+            if (mcursor.getCount() > 0) {
+                for (int i = 0; i < mcursor.getCount(); i++) {
+                    mcursor.moveToNext();
+                    complaintModel = new ComplaintListModel.Datum();
+                    complaintModel.setCmpno(mcursor.getString(mcursor.getColumnIndex(KEY_COMPLAINT_NUMBER)));
+                    complaintModel.setCaddress(mcursor.getString(mcursor.getColumnIndex(KEY_CUST_ADDRESS)));
+                    complaintModel.setMblno(mcursor.getString(mcursor.getColumnIndex(KEY_CUST_MOB_NO)));
+                    complaintModel.setCstname(mcursor.getString(mcursor.getColumnIndex(KEY_CUST_NAME)));
+                    complaintModel.setPernr(mcursor.getString(mcursor.getColumnIndex(KEY_PERNR)));
+                    complaintModel.setEname(mcursor.getString(mcursor.getColumnIndex(KEY_ENAME)));
+                    complaintModel.setStatus(mcursor.getString(mcursor.getColumnIndex(KEY_STATUS)));
+                    complaintModel.setMatnr(mcursor.getString(mcursor.getColumnIndex(KEY_MATERIAL_CODE)));
+                    complaintModel.setMaktx(mcursor.getString(mcursor.getColumnIndex(KEY_MATERIAL_NAME)));
+                    complaintModel.setVbeln(mcursor.getString(mcursor.getColumnIndex(KEY_BILL_NO)));
+                    complaintModel.setFkdat(mcursor.getString(mcursor.getColumnIndex(KEY_BILL_DATE)));
+                    complaintModel.setFwrdTo(mcursor.getString(mcursor.getColumnIndex(KEY_FRWD_TO)));
+                    complaintModel.setFdate(mcursor.getString(mcursor.getColumnIndex(KEY_COMPLAINT_DATE)));
+                    complaintModel.setAction(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_ACTION)));
+                    complaintModel.setCmpPenRe(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_PENDING_RE)));
+                    complaintModel.setLat(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_LAT)));
+                    complaintModel.setLng(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_LNG)));
+                    complaintModel.setCurrentStatus(mcursor.getString(mcursor.getColumnIndex(KEY_CURRENT_STATUS)));
+
+
+                    complaintModelList.add(complaintModel);
+                }
+            }
+            mcursor.close();
+            database.close();
+        }
+        return  complaintModelList;
+    }
+
 
 
     /*------------------------------------------Delete Database-----------------------------------------------------*/
@@ -402,6 +543,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean isRecordExist(String tablename, String field, String fieldvalue) {
         SQLiteDatabase db = this.getReadableDatabase();
         String Query = "SELECT * FROM " + tablename + " WHERE " + field + " = '" + fieldvalue + "'";
+        Cursor cursor = db.rawQuery(Query, null);
+        if (cursor.getCount() <= 0) {
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
+    }
+
+    public boolean isDataAvailabe(String tablename ) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String Query = "SELECT * FROM " + tablename ;
         Cursor cursor = db.rawQuery(Query, null);
         if (cursor.getCount() <= 0) {
             cursor.close();

@@ -45,7 +45,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
     Context mContext;
     RecyclerView compStatusList, compList;
     List<ComplaintStatusModel.Datum> complaintStatusArrayList;
-    List<ComplaintListModel> complaintArrayList;
+    List<ComplaintListModel.Datum> complaintArrayList;
 
     ComplaintStatusAdapter complaintStatusAdapter;
     ComplaintListAdapter complaintListAdapter;
@@ -54,9 +54,10 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
     SearchView searchUser;
     TextView noDataFound;
     SwipeRefreshLayout pullToRefresh;
-    int selectedPosition = 0, prevPosition = 0;
+    int selectedPosition = 4, prevPosition =4;
     APIInterface apiInterface;
     DatabaseHelper databaseHelper;
+
 
 
     @Override
@@ -78,13 +79,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
     }
 
 
-    private void setStatusAdapter() {
-        complaintStatusArrayList = databaseHelper.getAllComplaintStatusData();
-        complaintStatusAdapter = new ComplaintStatusAdapter(mContext, complaintStatusArrayList);
-        compStatusList.setHasFixedSize(true);
-        complaintStatusAdapter.ItemClick(ComplaintListFragment.this);
-        compStatusList.setAdapter(complaintStatusAdapter);
-    }
+
 
     private void Init(View view) {
         mContext = getActivity();
@@ -105,13 +100,18 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
 
     private void listner() {
         pullToRefresh.setOnRefreshListener(() -> {
-                getLists();
+            pullToRefresh.setRefreshing(true);
+            getStatusList();
         });
     }
 
     private void getLists() {
         if(Utility.isInternetOn(mContext)){
-            getStatusList();
+            if(!databaseHelper.isDataAvailabe(DatabaseHelper.TABLE_COMPLAINT_DATA)){
+                getStatusList();
+            }else{
+                setStatusAdapter();
+            }
         }else {
             setStatusAdapter();
             Utility.ShowToast(getResources().getString(R.string.checkInternetConnection), mContext);
@@ -171,93 +171,9 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
 
     }
 
-    @Override
-    public void SetOnItemClickListener(ComplaintStatusModel.Datum response, int position) {
 
 
-        selectedPosition = position;
 
-        ComplaintStatusModel.Datum complaintStatusModel = new ComplaintStatusModel.Datum();
-        complaintStatusModel.setValpos(response.getValpos());
-        complaintStatusModel.setDomvalueL(response.getDomvalueL());
-        complaintStatusModel.setSelected(!response.isSelected());
-        complaintStatusArrayList.set(position, complaintStatusModel);
-        complaintStatusAdapter.notifyItemChanged(position);
-
-        if (prevPosition != position) {
-            if (prevPosition != -1) {
-                ComplaintStatusModel.Datum complaintStatusModel1 = new ComplaintStatusModel.Datum();
-                complaintStatusModel1.setValpos(complaintStatusArrayList.get(prevPosition).getValpos());
-                complaintStatusModel1.setDomvalueL(complaintStatusArrayList.get(prevPosition).getDomvalueL());
-                complaintStatusModel1.setSelected(false);
-
-                complaintStatusArrayList.set(prevPosition, complaintStatusModel1);
-                complaintStatusAdapter.notifyItemChanged(prevPosition);
-            }
-
-            prevPosition = position;
-
-        }
-
-    }
-
-    @Override
-    public void SetOnItemClickListener(ComplaintListModel response, int position) {
-        Intent intent = new Intent(mContext, ComplaintDetailsActivity.class);
-        intent.putExtra(Constant.complaintData,response);
-        startActivity(intent);
-    }
-
-    private void getcomplaintList() {
-        complaintArrayList = new ArrayList<>();
-
-        complaintArrayList.add(new ComplaintListModel("GB0124","balkrishanan","9963894729",
-                "thoppust thiruvallur thiruvallur tamil nadu india","28.08.2024","REPLY"));
-        complaintArrayList.add(new ComplaintListModel("GC6639","eldos thundathil","7994641221",
-                "paravur paravur ernakulam kerala india","29.08.2024","REPLY"));
-        complaintArrayList.add(new ComplaintListModel("GC8260","shanker nayak ji","9448124708",
-                "bijapur bijapur bijapur karnataka india","29.08.2024","CLOSURE"));
-        complaintArrayList.add(new ComplaintListModel("GE6620","sahdev nikam","9223317893",
-                "dyaderi bijapur bijapur karnataka india","05.09.2024","REPLY"));
-        complaintArrayList.add(new ComplaintListModel("GI6961","virendar","9963894729",
-                "vilage /yadgir yadgir yadgir karnataka india","09.08.2024","REPLY"));
-
-        complaintListAdapter = new ComplaintListAdapter(mContext, complaintArrayList, noDataFound);
-        compList.setHasFixedSize(true);
-        complaintListAdapter.ItemClick(ComplaintListFragment.this);
-        compList.setAdapter(complaintListAdapter);
-        setStatusAdapter();
-
-        /*complaintStatusArrayList = new ArrayList<>();
-
-        Utility.showProgressDialogue(getActivity());
-        Call<ComplaintListModel> call3 = apiInterface.getComplaintList(Utility.getSharedPreferences(getActivity(), Constant.accessToken));
-        call3.enqueue(new Callback<ComplaintListModel>() {
-            @Override
-            public void onResponse(@NonNull Call<ComplaintListModel> call, @NonNull Response<ComplaintListModel> response) {
-                Log.e("url===>", String.valueOf(call.request().url()));
-                Utility.hideProgressDialogue();
-                if (response.isSuccessful()) {
-                    ComplaintListModel complaintStatusModel = response.body();
-
-                    *//*if (complaintStatusModel.getStatus().equals(Constant.TRUE)) {
-
-                    }else if (complaintStatusModel.getStatus().equals(Constant.FAILED)){
-                        Utility.logout(getActivity());
-                    }*//*
-
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ComplaintListModel> call, @NonNull Throwable t) {
-                call.cancel();
-                Utility.hideProgressDialogue();
-                Log.e("Error====>", t.getMessage().toString().trim());
-
-            }
-        });*/
-    }
 
     private void getStatusList() {
         complaintStatusArrayList = new ArrayList<>();
@@ -272,13 +188,21 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                     ComplaintStatusModel complaintStatusModel = response.body();
 
                     if (complaintStatusModel.getStatus().equals(Constant.TRUE)) {
+
                         if (complaintStatusModel.getData().size() > 0) {
+
                             for (int i = 0; i < complaintStatusModel.getData().size(); i++) {
                                 if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_STATUS_DATA, DatabaseHelper.KEY_COMPLAINT_STATUS_ID, complaintStatusModel.getData().get(i).getValpos())) {
-                                    databaseHelper.insertComplaintStatusData(complaintStatusModel.getData().get(i));
+                                    databaseHelper.insertComplaintStatusData(complaintStatusModel.getData().get(i),false);
                                 }
                             }
-
+                            ComplaintStatusModel.Datum complaintListModel1 = new ComplaintStatusModel.Datum();
+                            complaintListModel1.setValpos("0000");
+                            complaintListModel1.setDomvalueL("All");
+                            complaintListModel1.setSelected(true);
+                            if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_STATUS_DATA, DatabaseHelper.KEY_COMPLAINT_STATUS_ID, "0000")) {
+                                databaseHelper.insertComplaintStatusData(complaintListModel1,true);
+                            }
                             getcomplaintList();
                         }
                     }else if (complaintStatusModel.getStatus().equals(Constant.FAILED)){
@@ -297,5 +221,120 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
             }
         });
     }
+
+    private void getcomplaintList() {
+        complaintArrayList = new ArrayList<>();
+
+
+
+        complaintStatusArrayList = new ArrayList<>();
+
+        Utility.showProgressDialogue(getActivity());
+        Call<ComplaintListModel> call3 = apiInterface.getComplaintList(Utility.getSharedPreferences(getActivity(), Constant.accessToken));
+        call3.enqueue(new Callback<ComplaintListModel>() {
+            @Override
+            public void onResponse(@NonNull Call<ComplaintListModel> call, @NonNull Response<ComplaintListModel> response) {
+                Log.e("url===>", String.valueOf(call.request().url()));
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    ComplaintListModel complaintListModel = response.body();
+                    if (complaintListModel.getStatus().equals(Constant.TRUE)) {
+                        Log.e("response==>",complaintListModel.getData().toString());
+
+                        for(int i=0;i<complaintListModel.getData().size();i++){
+                            if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_DATA, DatabaseHelper.KEY_COMPLAINT_NUMBER, complaintListModel.getData().get(i).getCmpno())) {
+                                databaseHelper.insertComplaintDetailsData(complaintListModel.getData().get(i));
+                            }
+                        }
+                        setStatusAdapter();
+                        pullToRefresh.setRefreshing(false);
+                    }else if (complaintListModel.getStatus().equals(Constant.FAILED)){
+                        Utility.logout(getActivity());
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ComplaintListModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+
+            }
+        });
+    }
+
+    private void setStatusAdapter() {
+
+        complaintStatusArrayList = databaseHelper.getAllComplaintStatusData();
+        Log.e("complaintStatus===>",complaintStatusArrayList.toString());
+        complaintStatusAdapter = new ComplaintStatusAdapter(mContext, complaintStatusArrayList,selectedPosition);
+        compStatusList.setHasFixedSize(true);
+        complaintStatusAdapter.ItemClick(ComplaintListFragment.this);
+        compStatusList.setAdapter(complaintStatusAdapter);
+        setComplaintAdapter("");
+    }
+    private void setComplaintAdapter(String status) {
+        complaintArrayList = databaseHelper.getAllComplaintDetailData(status);
+        if(complaintArrayList.size()>0) {
+            noDataFound.setVisibility(View.GONE);
+            compList.setVisibility(View.VISIBLE);
+            complaintListAdapter = new ComplaintListAdapter(mContext, complaintArrayList, noDataFound);
+            compList.setHasFixedSize(true);
+            complaintListAdapter.ItemClick(ComplaintListFragment.this);
+            compList.setAdapter(complaintListAdapter);
+        }else {
+            noDataFound.setVisibility(View.VISIBLE);
+            compList.setVisibility(View.GONE);
+        }
+    }
+
+
+    @Override
+    public void SetOnItemClickListener(ComplaintStatusModel.Datum response, int position) {
+
+
+        selectedPosition = position;
+        ComplaintStatusModel.Datum complaintStatusModel = new ComplaintStatusModel.Datum();
+        complaintStatusModel.setValpos(response.getValpos());
+        complaintStatusModel.setDomvalueL(response.getDomvalueL());
+        complaintStatusModel.setSelected(!response.isSelected());
+        complaintStatusArrayList.set(position, complaintStatusModel);
+        complaintStatusAdapter.notifyItemChanged(position);
+
+
+        if (prevPosition != position) {
+            if (prevPosition != -1) {
+                ComplaintStatusModel.Datum complaintStatusModel1 = new ComplaintStatusModel.Datum();
+                complaintStatusModel1.setValpos(complaintStatusArrayList.get(prevPosition).getValpos());
+                complaintStatusModel1.setDomvalueL(complaintStatusArrayList.get(prevPosition).getDomvalueL());
+                complaintStatusModel1.setSelected(false);
+
+                complaintStatusArrayList.set(prevPosition, complaintStatusModel1);
+                complaintStatusAdapter.notifyItemChanged(prevPosition);
+            }
+
+            prevPosition = position;
+
+
+        }
+        if(!response.getDomvalueL().equals("All")){
+            setComplaintAdapter(response.getDomvalueL());
+        }else{
+            setComplaintAdapter("");
+        }
+
+    }
+
+    @Override
+    public void SetOnItemClickListener(ComplaintListModel.Datum response, int position) {
+        Intent intent = new Intent(mContext, ComplaintDetailsActivity.class);
+        intent.putExtra(Constant.complaintData,response);
+        startActivity(intent);
+    }
+
+
+
 
 }

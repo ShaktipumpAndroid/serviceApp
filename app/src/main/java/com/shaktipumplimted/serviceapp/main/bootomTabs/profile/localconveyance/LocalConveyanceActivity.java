@@ -222,7 +222,12 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
         imgIcon = layout.findViewById(R.id.imgIcon);
         startLocImg = layout.findViewById(R.id.startLocImg);
         TextView confirmBtn = layout.findViewById(R.id.confirmBtn);
-        TextView cancelBtn = layout.findViewById(R.id.cancelBtn);
+        TextView cancelBtn = null;
+        try {
+            cancelBtn = layout.findViewById(R.id.cancelBtn);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         if (value.equals("3")) {
             localConveyanceList = new ArrayList<>();

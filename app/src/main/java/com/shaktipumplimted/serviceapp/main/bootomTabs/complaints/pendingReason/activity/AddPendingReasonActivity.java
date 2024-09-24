@@ -81,7 +81,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
     ImageSelectionAdapter customAdapter;
 
     List<String> itemNameList = new ArrayList<>();
-    ComplaintListModel complaintListModel;
+    ComplaintListModel.Datum complaintListModel;
     int selectedIndex;
     boolean isUpdate = false;
 
@@ -136,7 +136,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
 
     private void retrieveValue() {
         if (getIntent().getExtras() != null) {
-            complaintListModel = (ComplaintListModel) getIntent().getSerializableExtra(Constant.complaintData);
+            complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
             SetAdapter();
         }
     }
@@ -197,14 +197,14 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
         DatabaseHelper databaseHelper = new DatabaseHelper(this);
 
         //Create Table
-        imageList = databaseHelper.getAllImages(DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA, complaintListModel.getCompNo());
+        imageList = databaseHelper.getAllImages(DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA, complaintListModel.getCmpno());
 
         if (itemNameList.size() > 0 && imageList != null && imageList.size() > 0) {
 
             for (int i = 0; i < imageList.size(); i++) {
                 for (int j = 0; j < itemNameList.size(); j++) {
                     if (imageList.get(i).getBillNo() != null &&
-                            imageList.get(i).getBillNo().trim().equals(complaintListModel.getCompNo())) {
+                            imageList.get(i).getBillNo().trim().equals(complaintListModel.getCmpno())) {
                         if (imageList.get(i).getName().equals(itemNameList.get(j))) {
                             ImageModel imageModel = new ImageModel();
                             imageModel.setName(imageList.get(i).getName());
@@ -310,7 +310,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
     private void cameraIntent() {
 
         camraLauncher.launch(new Intent(AddPendingReasonActivity.this, SurfaceCameraActivity.class)
-                .putExtra(Constant.customerName, complaintListModel.getCustomerName()));
+                .putExtra(Constant.customerName, complaintListModel.getCstname()));
 
     }
 
@@ -359,7 +359,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
 
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
 
-                        File file1 = Utility.saveFile(bitmap, complaintListModel.getCustomerName(), "complaintImages");
+                        File file1 = Utility.saveFile(bitmap, complaintListModel.getCstname(), "complaintImages");
                         UpdateArrayList(file1.getPath());
 
                     }
@@ -378,7 +378,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
         imageModel.setName(imageArrayList.get(selectedIndex).getName());
         imageModel.setImagePath(path);
         imageModel.setImageSelected(true);
-        imageModel.setBillNo(complaintListModel.getCompNo());
+        imageModel.setBillNo(complaintListModel.getCmpno());
         imageModel.setLatitude("");
         imageModel.setLongitude("");
         imageModel.setSelectedCategory(imageArrayList.get(selectedIndex).getSelectedCategory());

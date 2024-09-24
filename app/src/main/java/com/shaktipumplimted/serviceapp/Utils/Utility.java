@@ -418,11 +418,11 @@ public class Utility {
         databaseHelper.deleteData(DatabaseHelper.TABLE_LOCAL_CONVEYANCE_DATA);
         databaseHelper.deleteData(DatabaseHelper.TABLE_MARK_ATTENDANCE_DATA);
         databaseHelper.deleteData(DatabaseHelper.TABLE_COMPLAINT_STATUS_DATA);
+        databaseHelper.deleteData(DatabaseHelper.TABLE_COMPLAINT_DATA);
         Intent intent = new Intent(context, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
-
 
     }
 }
