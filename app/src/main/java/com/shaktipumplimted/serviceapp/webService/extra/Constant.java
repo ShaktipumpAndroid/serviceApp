@@ -42,4 +42,6 @@ public class Constant {
 
     public static String localConveyanceJourneyStart = "localConveyanceJourneyStart";
 
+    public static String frontCamera = "frontCamera";
+
 }

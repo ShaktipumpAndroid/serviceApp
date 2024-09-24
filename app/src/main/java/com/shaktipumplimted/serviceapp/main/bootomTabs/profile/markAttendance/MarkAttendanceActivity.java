@@ -143,6 +143,7 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
     private void cameraIntent() {
 
         camraLauncher.launch(new Intent(MarkAttendanceActivity.this, SurfaceCameraActivity.class)
+                        .putExtra(Constant.frontCamera,"0")
                 .putExtra(Constant.customerName, Utility.getSharedPreferences(getApplicationContext(), Constant.userName)));
 
     }
