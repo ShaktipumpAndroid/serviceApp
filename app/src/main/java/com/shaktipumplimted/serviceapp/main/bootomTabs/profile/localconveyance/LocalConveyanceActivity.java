@@ -223,12 +223,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
         imgIcon = layout.findViewById(R.id.imgIcon);
         startLocImg = layout.findViewById(R.id.startLocImg);
         TextView confirmBtn = layout.findViewById(R.id.confirmBtn);
-        TextView cancelBtn = null;
-        try {
-            cancelBtn = layout.findViewById(R.id.cancelBtn);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        TextView cancelBtn  = layout.findViewById(R.id.cancelBtn);
 
         if (value.equals("1")) {
             startLatitudeExt.setText(String.valueOf(gpsTracker.getLatitude()));

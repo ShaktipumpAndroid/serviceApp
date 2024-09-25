@@ -32,6 +32,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.shaktipumplimted.serviceapp.BuildConfig;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.login.LoginActivity;
@@ -424,5 +425,15 @@ public class Utility {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
 
+    }
+
+    public boolean isOnRoleApp(){
+        boolean isOnRoleApp = false;
+        if(BuildConfig.IS_ONROLE){
+            isOnRoleApp = true;
+        }else {
+            isOnRoleApp = false;
+        }
+        return isOnRoleApp;
     }
 }

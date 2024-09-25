@@ -21,11 +21,13 @@ android {
             //flavor configurations here
             applicationIdSuffix = ".onRole"
             dimension = "default"
+            buildConfigField ("boolean", "IS_ONROLE", "true")
         }
         create("offRole") {
             //flavor configurations here
             applicationIdSuffix = ".offRole"
             dimension = "default"
+            buildConfigField ("boolean", "IS_ONROLE", "false")
         }
     }
     buildTypes {
@@ -37,7 +39,9 @@ android {
             )
         }
     }
-
+    buildFeatures {
+        buildConfig = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8

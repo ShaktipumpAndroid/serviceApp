@@ -109,6 +109,8 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
             billNoTxt.setText(complaintListModel.getVbeln());
             billDateTxt.setText(complaintListModel.getFkdat());
 
+
+
         }
     }
 
