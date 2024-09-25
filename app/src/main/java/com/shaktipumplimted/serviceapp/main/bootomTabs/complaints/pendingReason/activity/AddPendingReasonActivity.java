@@ -135,8 +135,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
     }
 
     private void retrieveValue() {
-        if (getIntent().getExtras() != null) {
-            complaintListModel = (ComplaintListModel) getIntent().getSerializableExtra(Constant.complaintData);
+        if (getIntent().getExtras() != null) {complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
             SetAdapter();
         }
     }
