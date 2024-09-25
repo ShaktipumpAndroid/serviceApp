@@ -12,10 +12,22 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    flavorDimensions += "default"
+    productFlavors {
+        create("onRole") {
+            //flavor configurations here
+            applicationIdSuffix = ".onRole"
+            dimension = "default"
+        }
+        create("offRole") {
+            //flavor configurations here
+            applicationIdSuffix = ".offRole"
+            dimension = "default"
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -25,10 +37,12 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
 }
 
 dependencies {
