@@ -49,6 +49,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:orientation="horizontal"
+                        app:reverseLayout="true"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
                     <androidx.recyclerview.widget.RecyclerView

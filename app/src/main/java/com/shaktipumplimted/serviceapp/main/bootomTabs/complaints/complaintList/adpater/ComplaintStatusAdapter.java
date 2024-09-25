@@ -2,6 +2,7 @@ package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +22,14 @@ public class ComplaintStatusAdapter  extends RecyclerView.Adapter<ComplaintStatu
     Context mContext;
     private List<ComplaintStatusModel.Datum> searchList;
     private List<ComplaintStatusModel.Datum> complaintStatusArrayList;
-    TextView noDataFound;
+    int selectedPosition;
     private static ItemClickListener itemClickListener;
 
 
-    public ComplaintStatusAdapter(Context context, List<ComplaintStatusModel.Datum> listdata) {
+    public ComplaintStatusAdapter(Context context, List<ComplaintStatusModel.Datum> listdata, int selectedPosition) {
         this.complaintStatusArrayList = listdata;
         this.mContext = context;
+        this.selectedPosition = selectedPosition;
         this.searchList = new ArrayList<>();
         this.searchList.addAll(listdata);
     }
@@ -47,6 +49,11 @@ public class ComplaintStatusAdapter  extends RecyclerView.Adapter<ComplaintStatu
         final ComplaintStatusModel.Datum response = complaintStatusArrayList.get(position);
         holder.statusTxt.setText(response.getDomvalueL());
 
+        Log.e("status==>",selectedPosition+"=====>"+String.valueOf(position));
+
+
+
+
         if(response.isSelected()){
             holder.compStatusCard.setCardBackgroundColor(mContext.getResources().getColor(R.color.light_blue));
             holder.statusTxt.setTextColor(mContext.getResources().getColor(R.color.white));
@@ -54,6 +61,7 @@ public class ComplaintStatusAdapter  extends RecyclerView.Adapter<ComplaintStatu
             holder.compStatusCard.setCardBackgroundColor(mContext.getResources().getColor(R.color.light_grey));
             holder.statusTxt.setTextColor(mContext.getResources().getColor(R.color.grayish));
         }
+
 
         holder.compStatusCard.setOnClickListener(new View.OnClickListener() {
             @Override

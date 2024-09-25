@@ -22,13 +22,13 @@ import java.util.List;
 
 public class ComplaintListAdapter extends RecyclerView.Adapter<ComplaintListAdapter.ViewHolder>implements Filterable {
     Context mContext;
-    private List<ComplaintListModel> searchList;
-    private List<ComplaintListModel> complaintArraylist;
+    private List<ComplaintListModel.Datum> searchList;
+    private List<ComplaintListModel.Datum> complaintArraylist;
     TextView noDataFound;
     private static ItemClickListener itemClickListener;
 
 
-    public ComplaintListAdapter(Context context, List<ComplaintListModel> listdata,TextView noDataFound) {
+    public ComplaintListAdapter(Context context, List<ComplaintListModel.Datum> listdata,TextView noDataFound) {
         this.mContext = context;
         this.complaintArraylist = listdata;
         this.noDataFound = noDataFound;
@@ -48,14 +48,18 @@ public class ComplaintListAdapter extends RecyclerView.Adapter<ComplaintListAdap
     @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        final ComplaintListModel response = complaintArraylist.get(position);
+        final ComplaintListModel.Datum response = complaintArraylist.get(position);
 
-        holder.complaintNo.setText(response.getCompNo());
-        holder.customerNameTxt.setText(response.getCustomerName());
-        holder.mobileNoTxt.setText(response.getCustomerMobile());
-        holder.addressTxt.setText(response.getCustomerAddress());
-        holder.pendingDays.setText(mContext.getResources().getString(R.string.pending_days)+ Utility.differenceBetweenDays(response.getComDate()));
-        holder.complaintStatusTxt.setText(response.getComplaintStatus());
+        holder.complaintNo.setText(response.getCmpno());
+        holder.customerNameTxt.setText(response.getCstname());
+        holder.mobileNoTxt.setText(response.getMblno());
+        holder.addressTxt.setText(response.getCaddress());
+        if(!response.getFdate().equals("00.00.0000")){
+            holder.pendingDays.setText(mContext.getResources().getString(R.string.pending_days)+ Utility.differenceBetweenDays(response.getFdate()));
+        }else{
+            holder.pendingDays.setText(mContext.getResources().getString(R.string.pending_days)+"1");
+        }
+        holder.complaintStatusTxt.setText(response.getStatus());
 
         holder.complaintItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +100,7 @@ public class ComplaintListAdapter extends RecyclerView.Adapter<ComplaintListAdap
     }
 
     public interface ItemClickListener {
-        void SetOnItemClickListener(ComplaintListModel response, int position);
+        void SetOnItemClickListener(ComplaintListModel.Datum response, int position);
     }
 
     @Override
@@ -108,13 +112,13 @@ public class ComplaintListAdapter extends RecyclerView.Adapter<ComplaintListAdap
                 if (charString.isEmpty()) {
                     complaintArraylist = searchList;
                 } else {
-                    List<ComplaintListModel> filteredList = new ArrayList<>();
-                    for (ComplaintListModel row : searchList) {
+                    List<ComplaintListModel.Datum> filteredList = new ArrayList<>();
+                    for (ComplaintListModel.Datum row : searchList) {
 
                         // name match condition. this might differ depending on your requirement
                         // here we are looking for name or phone number match
-                        if (row.getCompNo().toLowerCase().contains(charString.toLowerCase()) || row.getCustomerName().toLowerCase().contains(charString.toLowerCase())
-                                || row.getCustomerMobile().toLowerCase().contains(charString.toLowerCase())) {
+                        if (row.getCmpno().toLowerCase().contains(charString.toLowerCase()) || row.getCstname().toLowerCase().contains(charString.toLowerCase())
+                                || row.getMblno().toLowerCase().contains(charString.toLowerCase()) || row.getStatus().toLowerCase().contains(charString.toLowerCase())) {
                             filteredList.add(row);
                         }
                     }
@@ -129,7 +133,7 @@ public class ComplaintListAdapter extends RecyclerView.Adapter<ComplaintListAdap
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                complaintArraylist = (ArrayList<ComplaintListModel>) filterResults.values;
+                complaintArraylist = (ArrayList<ComplaintListModel.Datum>) filterResults.values;
                 if (complaintArraylist.size() > 0) {
                     noDataFound.setVisibility(View.GONE);
                 } else {

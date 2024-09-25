@@ -122,6 +122,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             messageTxt.setText(message);
 
             okBtn.setOnClickListener(v -> {
+                alertDialog.dismiss();
                 Utility.logout(mContext);
             });
 

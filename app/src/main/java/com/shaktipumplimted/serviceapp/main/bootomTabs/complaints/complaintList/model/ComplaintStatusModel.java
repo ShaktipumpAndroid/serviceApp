@@ -63,5 +63,22 @@ public class ComplaintStatusModel {
         public void setSelected(boolean selected) {
             isSelected = selected;
         }
+
+        @Override
+        public String toString() {
+            return "Datum{" +
+                    "valpos='" + valpos + '\'' +
+                    ", domvalueL='" + domvalueL + '\'' +
+                    ", isSelected=" + isSelected +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "ComplaintStatusModel{" +
+                "status='" + status + '\'' +
+                ", data=" + data +
+                '}';
     }
 }

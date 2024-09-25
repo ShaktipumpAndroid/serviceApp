@@ -82,7 +82,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
 
     GmsBarcodeScannerOptions options;
     GmsBarcodeScanner scanner;
-    ComplaintListModel complaintListModel;
+    ComplaintListModel.Datum complaintListModel;
     DatabaseHelper databaseHelper;
    int scannerCode;
 
@@ -99,11 +99,16 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
 
     private void retriveValue() {
         if(getIntent().getExtras()!=null){
-            complaintListModel = (ComplaintListModel) getIntent().getSerializableExtra(Constant.complaintData);
-            complaintNo.setText(complaintListModel.getCompNo());
-            customerName.setText(complaintListModel.getCustomerName());
-            customerMobileNo.setText(complaintListModel.getCustomerMobile());
-            customerAddress.setText(complaintListModel.getCustomerAddress());
+            complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
+            complaintNo.setText(complaintListModel.getCmpno());
+            customerName.setText(complaintListModel.getCstname());
+            customerMobileNo.setText(complaintListModel.getMblno());
+            customerAddress.setText(complaintListModel.getCaddress());
+            materialCodeTxt.setText(complaintListModel.getMatnr());
+            materialNameTxt.setText(complaintListModel.getMaktx());
+            billNoTxt.setText(complaintListModel.getVbeln());
+            billDateTxt.setText(complaintListModel.getFkdat());
+
         }
     }
 
@@ -173,7 +178,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
 
     private void retrieveValue() {
         if (getIntent().getExtras() != null) {
-            complaintListModel = (ComplaintListModel) getIntent().getSerializableExtra(Constant.complaintData);
+            complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
         }
     }
 
