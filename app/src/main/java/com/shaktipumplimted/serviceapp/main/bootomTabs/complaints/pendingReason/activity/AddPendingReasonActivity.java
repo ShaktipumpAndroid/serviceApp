@@ -30,6 +30,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,9 +51,13 @@ import com.shaktipumplimted.serviceapp.Utils.common.activity.PhotoViewerActivity
 import com.shaktipumplimted.serviceapp.Utils.common.activity.SurfaceCameraActivity;
 import com.shaktipumplimted.serviceapp.Utils.common.adapter.ImageSelectionAdapter;
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
+import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonModel;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
+import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
+import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -60,6 +65,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AddPendingReasonActivity extends AppCompatActivity implements View.OnClickListener, ImageSelectionAdapter.ImageSelectionListener, AdapterView.OnItemSelectedListener {
 
@@ -81,6 +90,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
     ImageSelectionAdapter customAdapter;
 
     List<String> itemNameList = new ArrayList<>();
+    List<SpinnerDataModel> pendingReasonList  = new ArrayList<>();
     ComplaintListModel.Datum complaintListModel;
     int selectedIndex;
     boolean isUpdate = false;
@@ -93,7 +103,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
     public final static SimpleDateFormat sendDateFormat =
             new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
 
-
+    APIInterface apiInterface;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +116,9 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
 
 
 
+
     private void Init() {
+        apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
         databaseHelper = new DatabaseHelper(this);
         pendingReasonSpinner = findViewById(R.id.pendingReasonSpinner);
         actionExt = findViewById(R.id.actionExt);
@@ -125,6 +137,15 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
         followUpDateTxt.setText(Utility.getCurrentDate());
 
 
+        if(Utility.isInternetOn(getApplicationContext())){
+            if(databaseHelper.isDataAvailabe(DatabaseHelper.TABLE_PENDING_REASON_DATA)){
+                setAdapter();
+            }else {
+                getPendingReasonList();
+            }
+        }else {
+            setAdapter();
+        }
     }
 
     private void listner() {
@@ -488,6 +509,56 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+
+    private void getPendingReasonList() {
+        pendingReasonList = new ArrayList<>();
+
+        Utility.showProgressDialogue(this);
+        Call<PendingReasonModel> call3 = apiInterface.getPendingReasonList(Utility.getSharedPreferences(this, Constant.accessToken));
+        call3.enqueue(new Callback<PendingReasonModel>() {
+            @Override
+            public void onResponse(@NonNull Call<PendingReasonModel> call, @NonNull Response<PendingReasonModel> response) {
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    PendingReasonModel pendingReasonModel = response.body();
+                  //  if (pendingReasonModel.getStatus().equals(Constant.TRUE)) {
+
+                        if(pendingReasonModel.getPendingReason().size()>0) {
+                            for (int i = 0; i < pendingReasonModel.getPendingReason().size(); i++) {
+                                if(!databaseHelper.isRecordExist(DatabaseHelper.TABLE_PENDING_REASON_DATA,DatabaseHelper.KEY_ID,pendingReasonModel.getPendingReason().get(i).getCmpPenRe())){
+                                    SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
+                                    spinnerDataModel.setId(pendingReasonModel.getPendingReason().get(i).getCmpPenRe());
+                                    spinnerDataModel.setName(pendingReasonModel.getPendingReason().get(i).getName());
+                                    databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_PENDING_REASON_DATA);
+                                }
+                            }
+                            setAdapter();
+                        }
+                    /*} else if (pendingReasonModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }*/
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<PendingReasonModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+
+            }
+        });
+    }
+
+    private void setAdapter() {
+        pendingReasonList.add(new SpinnerDataModel("00", getResources().getString(R.string.selectPendingReason)));
+        pendingReasonList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_PENDING_REASON_DATA));
+        SpinnerAdapter spinnerAdapter = new com.shaktipumplimted.serviceapp.Utils.common.adapter.SpinnerAdapter(AddPendingReasonActivity.this, pendingReasonList);
+        pendingReasonSpinner.setAdapter(spinnerAdapter);
 
     }
 }

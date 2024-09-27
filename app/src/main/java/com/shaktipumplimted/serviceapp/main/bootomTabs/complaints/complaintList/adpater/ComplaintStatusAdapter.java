@@ -49,11 +49,6 @@ public class ComplaintStatusAdapter  extends RecyclerView.Adapter<ComplaintStatu
         final ComplaintStatusModel.Datum response = complaintStatusArrayList.get(position);
         holder.statusTxt.setText(response.getDomvalueL());
 
-        Log.e("status==>",selectedPosition+"=====>"+String.valueOf(position));
-
-
-
-
         if(response.isSelected()){
             holder.compStatusCard.setCardBackgroundColor(mContext.getResources().getColor(R.color.light_blue));
             holder.statusTxt.setTextColor(mContext.getResources().getColor(R.color.white));

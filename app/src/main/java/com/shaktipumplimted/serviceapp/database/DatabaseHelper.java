@@ -10,6 +10,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
+import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.LocalConveyanceModel;
@@ -32,10 +33,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_MARK_ATTENDANCE_DATA = "tbl_mark_attendance_data";
     public static final String TABLE_COMPLAINT_DATA = "tbl_complaint_data";
 
+    public static final String TABLE_PENDING_REASON_DATA = "tbl_pending_reason_data";
+
     /*------------------------------------------------KET IDS--------------------------------------------------------*/
 
 
     public static final String KEY_ID = "key_id";
+    public static final String KEY_NAME = "key_name";
     public static final String KEY_IMAGE_NAME = "image_name";
     public static final String KEY_IMAGE_PATH = "image_path";
     public static final String KEY_IMAGE_SELECTED = "image_selected";
@@ -140,6 +144,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_IMAGE_LONGITUDE + " TEXT,"
             + KEY_IMAGE_POSITION + " TEXT)";
 
+
+    /*-----------------------------------------------------Create Spinners Tables---------------------------------------------*/
+    private static final String CREATE_TABLE_PENDING_REASON_DATA = "CREATE TABLE "
+            + TABLE_PENDING_REASON_DATA + "(" + KEY_ID + " TEXT,"
+            + KEY_NAME + " TEXT)";
+
     /*-----------------------------------------------------Local Conveyance Tables---------------------------------------------*/
     private static final String CREATE_TABLE_LOCAL_CONVEYANCE_DATA = "CREATE TABLE "
             + TABLE_LOCAL_CONVEYANCE_DATA + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
@@ -203,6 +213,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_COMPLAINT_DATA);
         db.execSQL(CREATE_TABLE_SITE_SURVEY_IMAGES);
         db.execSQL(CREATE_TABLE_CHECK_OUT_IMAGES);
+        db.execSQL(CREATE_TABLE_PENDING_REASON_DATA);
 
     }
 
@@ -215,8 +226,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SITE_SURVEY_IMAGE_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHECK_OUT_IMAGE_DATA);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PENDING_REASON_DATA);
         onCreate(db);
     }
+
+
 
 
 
@@ -542,6 +556,56 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return  complaintModelList;
     }
+
+
+    /*------------------------------------------------Spinners Database----------------------------------------------*/
+
+    public void insertSpinnerData(SpinnerDataModel spinnerDataModel, String TableName) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_ID, spinnerDataModel.getId());
+        contentValues.put(KEY_NAME, spinnerDataModel.getName());
+
+        database.insert(TableName, null, contentValues);
+        database.close();
+    }
+
+    public void updateSpinnerData(SpinnerDataModel spinnerDataModel,String TableName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_ID, spinnerDataModel.getId());
+        contentValues.put(KEY_NAME, spinnerDataModel.getName());
+
+        // update Row
+        String where = KEY_ID + "='" + spinnerDataModel.getId() + "'";
+        db.update(TableName, contentValues, where, null);
+        db.close();
+    }
+    public ArrayList<SpinnerDataModel> getSpinnerData(String TableName) {
+        ArrayList<SpinnerDataModel> spinnerArrayList = new ArrayList<SpinnerDataModel>();
+        SQLiteDatabase database = this.getWritableDatabase();
+        if (doesTableExist(database, TableName)) {
+            String selectQuery = "SELECT  *  FROM " + TableName ;
+            Cursor mcursor = database.rawQuery(selectQuery, null);
+
+            spinnerArrayList.clear();
+            SpinnerDataModel spinnerDataModel;
+            if (mcursor.getCount() > 0) {
+                for (int i = 0; i < mcursor.getCount(); i++) {
+                    mcursor.moveToNext();
+                    spinnerDataModel = new SpinnerDataModel();
+                    spinnerDataModel.setId(mcursor.getString(0));
+                    spinnerDataModel.setName(mcursor.getString(1));
+
+                    spinnerArrayList.add(spinnerDataModel);
+                }
+            }
+            mcursor.close();
+            database.close();
+        }
+        return  spinnerArrayList;
+    }
+
 
 
 

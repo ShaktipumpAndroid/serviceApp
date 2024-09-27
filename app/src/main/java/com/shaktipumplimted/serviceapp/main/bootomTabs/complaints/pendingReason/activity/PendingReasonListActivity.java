@@ -33,7 +33,7 @@ public class PendingReasonListActivity extends AppCompatActivity {
     FloatingActionButton addPendingReasonBtn;
     SwipeRefreshLayout pullToRefresh;
 
-    ComplaintListModel complaintListModel;
+    ComplaintListModel.Datum  complaintListModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +69,7 @@ public class PendingReasonListActivity extends AppCompatActivity {
 
     private void retrieveValue() {
         if(getIntent().getExtras()!=null){
-            complaintListModel = (ComplaintListModel) getIntent().getSerializableExtra(Constant.complaintData);
+            complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
         }
     }
 

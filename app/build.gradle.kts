@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.component.features.ManifestPlaceholdersCreationConfig
+
 plugins {
     id("com.android.application")
 }
@@ -22,13 +24,16 @@ android {
             applicationIdSuffix = ".onRole"
             dimension = "default"
             buildConfigField ("boolean", "IS_ONROLE", "true")
+            resValue ("string", "app_name", "Service App")
+
         }
         create("offRole") {
             //flavor configurations here
             applicationIdSuffix = ".offRole"
             dimension = "default"
             buildConfigField ("boolean", "IS_ONROLE", "false")
-        }
+            resValue ("string", "app_name", "Contractual Service App")
+         }
     }
     buildTypes {
         release {

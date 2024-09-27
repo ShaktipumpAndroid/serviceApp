@@ -239,8 +239,6 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                 if (response.isSuccessful()) {
                     ComplaintListModel complaintListModel = response.body();
                     if (complaintListModel.getStatus().equals(Constant.TRUE)) {
-                        Log.e("response==>",complaintListModel.getData().toString());
-
                         for(int i=0;i<complaintListModel.getData().size();i++){
                             if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_DATA, DatabaseHelper.KEY_COMPLAINT_NUMBER, complaintListModel.getData().get(i).getCmpno())) {
                                 databaseHelper.insertComplaintDetailsData(complaintListModel.getData().get(i));
