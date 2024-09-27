@@ -71,7 +71,7 @@
             android:name=".Utils.common.activity.PhotoViewerActivity"
             android:exported="false" />
         <activity
-            android:name=".main.bootomTabs.complaints.complaintDetails.ComplaintDetailsActivity"
+            android:name=".main.bootomTabs.complaints.complaintDetails.activity.ComplaintDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".main.MainActivity"

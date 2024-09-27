@@ -1,50 +1,29 @@
-package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails;
+package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.activity;
 
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.Manifest.permission.CAMERA;
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.READ_MEDIA_IMAGES;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.os.Build.VERSION.SDK_INT;
-
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.mlkit.vision.barcode.common.Barcode;
@@ -52,25 +31,27 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScanner;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.R;
-import com.shaktipumplimted.serviceapp.Utils.FileUtils;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
-import com.shaktipumplimted.serviceapp.Utils.common.activity.PhotoViewerActivity;
-import com.shaktipumplimted.serviceapp.Utils.common.activity.SurfaceCameraActivity;
-import com.shaktipumplimted.serviceapp.Utils.common.adapter.ImageSelectionAdapter;
-import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.model.ComplaintDropdownModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.activity.ComplaintForwardActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.photoList.activity.ComplaintPhotoListActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.activity.PendingReasonListActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
+import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
+import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComplaintDetailsActivity extends AppCompatActivity implements  View.OnClickListener {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class ComplaintDetailsActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     Toolbar toolbar;
     TextInputEditText complaintNo, customerName, customerMobileNo, customerAddress, materialCodeTxt, materialNameTxt,
@@ -84,7 +65,12 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
     GmsBarcodeScanner scanner;
     ComplaintListModel.Datum complaintListModel;
     DatabaseHelper databaseHelper;
-   int scannerCode;
+   int scannerCode,index_cmp_category;
+    APIInterface apiInterface;
+    List<SpinnerDataModel> complaintCategoryList  = new ArrayList<>();
+    List<SpinnerDataModel> complaintDefectList  = new ArrayList<>();
+    List<SpinnerDataModel> complaintRelatedToList  = new ArrayList<>();
+    List<SpinnerDataModel> complaintClosureList  = new ArrayList<>();
 
 
     @Override
@@ -108,13 +94,113 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
             materialNameTxt.setText(complaintListModel.getMaktx());
             billNoTxt.setText(complaintListModel.getVbeln());
             billDateTxt.setText(complaintListModel.getFkdat());
+        }
 
-
-
+        if(Utility.isInternetOn(getApplicationContext())){
+            if(databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CATEGORY) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_DEFECT)
+                    && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_RELATED)){
+                setDropdown();
+            }else {
+                getDropdownsList();
+            }
+        }else {
+            setDropdown();
         }
     }
 
+    private void getDropdownsList() {
+        complaintCategoryList = new ArrayList<>();
+        complaintDefectList = new ArrayList<>();
+        complaintRelatedToList = new ArrayList<>();
+        complaintClosureList = new ArrayList<>();
+
+        Utility.showProgressDialogue(this);
+        Call<ComplaintDropdownModel> call3 = apiInterface.getComplaintDropdowns(Utility.getSharedPreferences(this, Constant.accessToken));
+        call3.enqueue(new Callback<ComplaintDropdownModel>() {
+            @Override
+            public void onResponse(@NonNull Call<ComplaintDropdownModel> call, @NonNull Response<ComplaintDropdownModel> response) {
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    ComplaintDropdownModel complaintDropdownModel = response.body();
+                      if (complaintDropdownModel.getStatus().equals(Constant.TRUE)) {
+
+                    if(complaintDropdownModel.getData().getComplainCategory().size()>0) {
+
+                        for (int i = 0; i < complaintDropdownModel.getData().getComplainCategory().size(); i++) {
+                            if(!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_CATEGORY,DatabaseHelper.KEY_ID,complaintDropdownModel.getData().getComplainCategory().get(i).getCatId())){
+                                SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
+                                spinnerDataModel.setId(complaintDropdownModel.getData().getComplainCategory().get(i).getCatId());
+                                spinnerDataModel.setName(complaintDropdownModel.getData().getComplainCategory().get(i).getCategory());
+                                databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_COMPLAINT_CATEGORY);
+                            }
+                        }
+
+                    }
+                    if(complaintDropdownModel.getData().getComplainDefect().size()>0) {
+
+                        for (int i = 0; i < complaintDropdownModel.getData().getComplainDefect().size(); i++) {
+                            if(!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_DEFECT,DatabaseHelper.KEY_ID,complaintDropdownModel.getData().getComplainDefect().get(i).getCatId())){
+                                SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
+                                spinnerDataModel.setId(complaintDropdownModel.getData().getComplainDefect().get(i).getCatId());
+                                spinnerDataModel.setName(complaintDropdownModel.getData().getComplainDefect().get(i).getDefect());
+                                databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_COMPLAINT_DEFECT);
+                            }
+                        }
+
+                    }
+                    if(complaintDropdownModel.getData().getComplainRelatedTo().size()>0) {
+
+                        for (int i = 0; i < complaintDropdownModel.getData().getComplainRelatedTo().size(); i++) {
+                            if(!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_RELATED,DatabaseHelper.KEY_ID,complaintDropdownModel.getData().getComplainRelatedTo().get(i).getCatId())){
+                                SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
+                                spinnerDataModel.setId(complaintDropdownModel.getData().getComplainRelatedTo().get(i).getCatId());
+                                spinnerDataModel.setName(complaintDropdownModel.getData().getComplainRelatedTo().get(i).getCmplnRelatedTo());
+                                databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_COMPLAINT_RELATED);
+                            }
+                        }
+
+                    }
+
+                    setDropdown();
+                    } else if (complaintDropdownModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ComplaintDropdownModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+
+            }
+        });
+    }
+
+    private void setDropdown() {
+        complaintCategoryList.add(new SpinnerDataModel("00", getResources().getString(R.string.select_cmp_cat)));
+        complaintCategoryList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_COMPLAINT_CATEGORY));
+
+        complaintDefectList.add(new SpinnerDataModel("00", getResources().getString(R.string.select_defect_cat)));
+        complaintDefectList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_COMPLAINT_DEFECT));
+
+        complaintRelatedToList.add(new SpinnerDataModel("00", getResources().getString(R.string.select_related_to)));
+        complaintRelatedToList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_COMPLAINT_RELATED));
+        setSpinnerAdapter(complaintCategoryList,categorySpinner);
+        setSpinnerAdapter(complaintDefectList,defectTypeSpinner);
+        setSpinnerAdapter(complaintRelatedToList,complaintRelatedToSpinner);
+    }
+
+    private void setSpinnerAdapter(List<SpinnerDataModel> spinnerList, Spinner spinner) {
+        SpinnerAdapter spinnerAdapter = new com.shaktipumplimted.serviceapp.Utils.common.adapter.SpinnerAdapter(ComplaintDetailsActivity.this, spinnerList);
+        spinner.setAdapter(spinnerAdapter);
+    }
+
+
     private void Init() {
+        apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
         databaseHelper = new DatabaseHelper(this);
         toolbar = findViewById(R.id.toolbar);
         complaintNo = findViewById(R.id.complaintNo);
@@ -182,6 +268,8 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
         if (getIntent().getExtras() != null) {
             complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
         }
+
+        categorySpinner.setOnItemSelectedListener(this);
     }
 
     /*--------------------------------------------On Click Listner-------------------------------------------------------*/
@@ -216,11 +304,17 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
                 break;
 
             case R.id.closeComplaintBtn:
-
+                closureValidation();
                 break;
         }
 
     }
+
+    private void closureValidation() {
+
+    }
+
+
 
 
     /*--------------------------------------------Scanner Code-------------------------------------------------------*/
@@ -333,5 +427,18 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
 
         }
         return (super.onOptionsItemSelected(item));
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if(view.getId()==R.id.categorySpinner){
+
+        }
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

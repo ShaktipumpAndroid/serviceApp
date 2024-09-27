@@ -34,6 +34,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_MARK_ATTENDANCE_DATA = "tbl_mark_attendance_data";
     public static final String TABLE_COMPLAINT_DATA = "tbl_complaint_data";
     public static final String TABLE_PENDING_REASON_DATA = "tbl_pending_reason_data";
+    public static final String TABLE_COMPLAINT_CATEGORY = "tbl_complain_category";
+    public static final String TABLE_COMPLAINT_DEFECT = "tbl_complain_defect";
+    public static final String TABLE_COMPLAINT_RELATED = "tbl_complain_related_to";
+    public static final String TABLE_COMPLAINT_CLOSURE = "tbl_complain_closer";
 
     public static final String TABLE_COMPLAINT_FORWARD_PERSON_DATA = "tbl_complaint_forward_data";
 
@@ -161,6 +165,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + TABLE_PENDING_REASON_DATA + "(" + KEY_ID + " TEXT,"
             + KEY_NAME + " TEXT)";
 
+
+
+
+    private static final String CREATE_TABLE_COMPLAINT_CATEGORY = "CREATE TABLE "
+            + TABLE_COMPLAINT_CATEGORY + "(" + KEY_ID + " TEXT,"
+            + KEY_NAME + " TEXT)";
+
+
+    private static final String CREATE_TABLE_COMPLAINT_DEFECT = "CREATE TABLE "
+            + TABLE_COMPLAINT_DEFECT + "(" + KEY_ID + " TEXT,"
+            + KEY_NAME + " TEXT)";
+
+    private static final String CREATE_TABLE_COMPLAINT_RELATED = "CREATE TABLE "
+            + TABLE_COMPLAINT_RELATED + "(" + KEY_ID + " TEXT,"
+            + KEY_NAME + " TEXT)";
+
+    private static final String CREATE_TABLE_COMPLAINT_CLOSURE = "CREATE TABLE "
+            + TABLE_COMPLAINT_CLOSURE + "(" + KEY_ID + " TEXT,"
+            + KEY_NAME + " TEXT)";
+
+
+
     /*-----------------------------------------------------Local Conveyance Tables---------------------------------------------*/
     private static final String CREATE_TABLE_LOCAL_CONVEYANCE_DATA = "CREATE TABLE "
             + TABLE_LOCAL_CONVEYANCE_DATA + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
@@ -225,6 +251,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_SITE_SURVEY_IMAGES);
         db.execSQL(CREATE_TABLE_CHECK_OUT_IMAGES);
         db.execSQL(CREATE_TABLE_PENDING_REASON_DATA);
+        db.execSQL(CREATE_TABLE_COMPLAINT_CATEGORY);
+        db.execSQL(CREATE_TABLE_COMPLAINT_DEFECT);
+        db.execSQL(CREATE_TABLE_COMPLAINT_RELATED);
+        db.execSQL(CREATE_TABLE_COMPLAINT_CLOSURE);
         db.execSQL(CREATE_TABLE_COMPLAINT_FORWARD_PERSON_DATA);
 
     }
@@ -240,6 +270,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHECK_OUT_IMAGE_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PENDING_REASON_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_FORWARD_PERSON_DATA);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_CATEGORY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_DEFECT);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_RELATED);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_CLOSURE);
         onCreate(db);
     }
 

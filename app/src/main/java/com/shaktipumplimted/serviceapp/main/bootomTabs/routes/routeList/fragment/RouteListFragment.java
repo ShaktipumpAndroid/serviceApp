@@ -21,15 +21,9 @@ import android.widget.TextView;
 
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.ComplaintDetailsActivity;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.adpater.ComplaintListAdapter;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.adpater.ComplaintStatusAdapter;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customersList.CustomerListActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.routeList.adapter.RouteListAdapter;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.routeList.model.RouteListModel;
-import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
 import java.util.ArrayList;
 import java.util.List;

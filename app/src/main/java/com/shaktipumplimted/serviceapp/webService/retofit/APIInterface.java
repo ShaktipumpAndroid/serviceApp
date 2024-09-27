@@ -1,6 +1,7 @@
 package com.shaktipumplimted.serviceapp.webService.retofit;
 
 import com.shaktipumplimted.serviceapp.login.model.LoginRespModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.model.ComplaintDropdownModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.model.CompForwardListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
@@ -43,6 +44,9 @@ public interface APIInterface {
 
     @GET(APIS.COMPLAINT_FORWARD_PERSON_LIST_API)
     Call<CompForwardListModel> complaintForwardPersonList(@Query("token") String token, @Query("forward_to") String forward_to, @Query("cmpno") String cmpno);
+
+    @GET(APIS.COMPLAINT_DROPDOWNS)
+    Call<ComplaintDropdownModel> getComplaintDropdowns(@Query("token") String token);
 
   }
 

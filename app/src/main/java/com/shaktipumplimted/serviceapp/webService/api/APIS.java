@@ -19,6 +19,7 @@ public class APIS {
 
 
     public static final String PENDING_REASONS_API = "compliant_pending_reason_list.htm";
+    public static final String COMPLAINT_DROPDOWNS = "get_complaint_category_defect_relatedto_closer.htm";
 
 
 

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,9 +32,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     EditText userNameExt, passwordExt;
     TextView loginBtn;
-    RelativeLayout loginRl;
+    RelativeLayout loginRl, login_type_layout;
     APIInterface apiInterface;
     String fcmToken = "";
+    Spinner login_type_spinner;
 
 
     @Override
@@ -54,7 +56,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         passwordExt = findViewById(R.id.passwordExt);
         loginBtn = findViewById(R.id.loginBtn);
         loginRl = findViewById(R.id.loginRl);
-
+        login_type_spinner = findViewById(R.id.login_type_spinner);
+        login_type_layout = findViewById(R.id.login_type_layout);
+        if(Utility.isOnRoleApp()){
+            login_type_layout.setVisibility(View.GONE);
+        }
     }
 
     @Override
