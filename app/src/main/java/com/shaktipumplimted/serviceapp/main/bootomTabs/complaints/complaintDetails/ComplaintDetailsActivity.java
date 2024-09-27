@@ -211,6 +211,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
 
             case R.id.forwardComplaintBtn:
                 Intent intent1 = new Intent(this, ComplaintForwardActivity.class);
+                intent1.putExtra(Constant.complaintData,complaintListModel);
                 startActivity(intent1);
                 break;
 

@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
 import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.model.CompForwardListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.LocalConveyanceModel;
@@ -32,8 +33,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_MARK_ATTENDANCE_DATA = "tbl_mark_attendance_data";
     public static final String TABLE_COMPLAINT_DATA = "tbl_complaint_data";
-
     public static final String TABLE_PENDING_REASON_DATA = "tbl_pending_reason_data";
+
+    public static final String TABLE_COMPLAINT_FORWARD_PERSON_DATA = "tbl_complaint_forward_data";
 
     /*------------------------------------------------KET IDS--------------------------------------------------------*/
 
@@ -102,7 +104,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_CMP_LNG = "complaint_longitude";
     public static final String KEY_CURRENT_STATUS = "current_status";
 
+    public static final String KEY_PERSON_CODE = "person_code";
+    public static final String KEY_PERSON_NAME = "person_name";
 
+
+
+    /*-----------------------------------------------------Create Forward Persons Tables---------------------------------------------*/
+    private static final String CREATE_TABLE_COMPLAINT_FORWARD_PERSON_DATA = "CREATE TABLE "
+            + TABLE_COMPLAINT_FORWARD_PERSON_DATA + "(" + KEY_PERSON_CODE + " TEXT,"
+            + KEY_PERSON_NAME + " TEXT,"
+            + KEY_STATUS_SELECTED + " TEXT)";
 
 
 
@@ -214,6 +225,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_SITE_SURVEY_IMAGES);
         db.execSQL(CREATE_TABLE_CHECK_OUT_IMAGES);
         db.execSQL(CREATE_TABLE_PENDING_REASON_DATA);
+        db.execSQL(CREATE_TABLE_COMPLAINT_FORWARD_PERSON_DATA);
 
     }
 
@@ -227,6 +239,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SITE_SURVEY_IMAGE_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHECK_OUT_IMAGE_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PENDING_REASON_DATA);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_FORWARD_PERSON_DATA);
         onCreate(db);
     }
 
@@ -607,6 +620,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+    /*------------------------------------------------Complaint Forward Person Database----------------------------------------------*/
+
+    public void insertComplaintForwardPersonData(CompForwardListModel.Response compForwardListModel) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_PERSON_CODE, compForwardListModel.getPartnerCode());
+        contentValues.put(KEY_PERSON_NAME, compForwardListModel.getPartnerName());
+        contentValues.put(KEY_STATUS_SELECTED, compForwardListModel.getIsSelected());
+
+        database.insert(TABLE_COMPLAINT_FORWARD_PERSON_DATA, null, contentValues);
+        database.close();
+    }
+
+    public ArrayList<CompForwardListModel.Response> getComplaintForwardPersonList(String Status) {
+        ArrayList<CompForwardListModel.Response> spinnerArrayList = new ArrayList<CompForwardListModel.Response>();
+        SQLiteDatabase database = this.getWritableDatabase();
+        if (doesTableExist(database, TABLE_COMPLAINT_FORWARD_PERSON_DATA)) {
+            String selectQuery = "SELECT  *  FROM " + TABLE_COMPLAINT_FORWARD_PERSON_DATA +  " WHERE " + KEY_STATUS_SELECTED + " == '" + Status + "'";
+            Cursor mcursor = database.rawQuery(selectQuery, null);
+
+            spinnerArrayList.clear();
+            CompForwardListModel.Response compForwardListModel;
+            if (mcursor.getCount() > 0) {
+                for (int i = 0; i < mcursor.getCount(); i++) {
+                    mcursor.moveToNext();
+                    compForwardListModel = new CompForwardListModel.Response();
+                    compForwardListModel.setPartnerCode(mcursor.getString(0));
+                    compForwardListModel.setPartnerName(mcursor.getString(1));
+                    compForwardListModel.setIsSelected(mcursor.getString(2));
+
+                    spinnerArrayList.add(compForwardListModel);
+                }
+            }
+            mcursor.close();
+            database.close();
+        }
+        return  spinnerArrayList;
+    }
+
+
 
 
     /*------------------------------------------Delete Database-----------------------------------------------------*/
@@ -641,7 +694,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean isDataAvailabe(String tablename ) {
+    public boolean isDataAvailable(String tablename ) {
         SQLiteDatabase db = this.getReadableDatabase();
         String Query = "SELECT * FROM " + tablename ;
         Cursor cursor = db.rawQuery(Query, null);
@@ -652,6 +705,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return true;
     }
+
 
     public static boolean doesTableExist(SQLiteDatabase db, String tableName) {
         Cursor cursor = db.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '" + tableName + "'", null);

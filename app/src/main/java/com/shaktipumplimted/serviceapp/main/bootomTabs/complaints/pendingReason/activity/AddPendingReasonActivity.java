@@ -138,7 +138,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
 
 
         if(Utility.isInternetOn(getApplicationContext())){
-            if(databaseHelper.isDataAvailabe(DatabaseHelper.TABLE_PENDING_REASON_DATA)){
+            if(databaseHelper.isDataAvailable(DatabaseHelper.TABLE_PENDING_REASON_DATA)){
                 setAdapter();
             }else {
                 getPendingReasonList();

@@ -1,35 +1,89 @@
 package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
 public class CompForwardListModel {
-    String code,name,isSelectedId;
+    @SerializedName("status")
+    @Expose
+    private String status;
+    @SerializedName("message")
+    @Expose
+    private String message;
+    @SerializedName("response")
+    @Expose
+    private List<Response> response;
 
-    public CompForwardListModel(String code, String name,String isSelectedId) {
-        this.code = code;
-        this.name = name;
-        this.isSelectedId = isSelectedId;
+    public String getStatus() {
+        return status;
     }
 
-    public String getCode() {
-        return code;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public String getMessage() {
+        return message;
     }
 
-    public String getName() {
-        return name;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public List<Response> getResponse() {
+        return response;
     }
 
-    public String getIsSelectedId() {
-        return isSelectedId;
+    public void setResponse(List<Response> response) {
+        this.response = response;
     }
 
-    public void setIsSelectedId(String isSelectedId) {
-        this.isSelectedId = isSelectedId;
+    public static class Response {
+
+        @SerializedName("partner_code")
+        @Expose
+        private String partnerCode;
+        @SerializedName("partner_name")
+        @Expose
+        private String partnerName;
+        @SerializedName("abkrs")
+        @Expose
+        private String abkrs;
+
+        String isSelected;
+
+        public String getPartnerCode() {
+            return partnerCode;
+        }
+
+        public void setPartnerCode(String partnerCode) {
+            this.partnerCode = partnerCode;
+        }
+
+        public String getPartnerName() {
+            return partnerName;
+        }
+
+        public void setPartnerName(String partnerName) {
+            this.partnerName = partnerName;
+        }
+
+        public String getAbkrs() {
+            return abkrs;
+        }
+
+        public void setAbkrs(String abkrs) {
+            this.abkrs = abkrs;
+        }
+
+        public String getIsSelected() {
+            return isSelected;
+        }
+
+        public void setIsSelected(String isSelected) {
+            this.isSelected = isSelected;
+        }
     }
 }

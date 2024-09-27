@@ -2,6 +2,7 @@ package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForw
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +22,13 @@ import java.util.List;
 
 public class ComplaintForwardAdapter extends RecyclerView.Adapter<ComplaintForwardAdapter.ViewHolder>implements Filterable {
     Context mContext;
-    private List<CompForwardListModel> searchList;
-    private List<CompForwardListModel> CompForwardPersonList;
+    private List<CompForwardListModel.Response> searchList;
+    private List<CompForwardListModel.Response> CompForwardPersonList;
     TextView noDataFound;
     private static ItemClickListener itemClickListener;
 
 
-    public ComplaintForwardAdapter(Context context, List<CompForwardListModel> listdata,TextView noDataFound) {
+    public ComplaintForwardAdapter(Context context, List<CompForwardListModel.Response> listdata, TextView noDataFound) {
         this.mContext = context;
         this.CompForwardPersonList = listdata;
         this.noDataFound = noDataFound;
@@ -47,20 +48,20 @@ public class ComplaintForwardAdapter extends RecyclerView.Adapter<ComplaintForwa
     @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        final CompForwardListModel response = CompForwardPersonList.get(position);
+        final CompForwardListModel.Response response = CompForwardPersonList.get(position);
 
-        if(response.getIsSelectedId().equals("1")){
+        if(response.getIsSelected().equals("01")){
             holder.codeTitleTxt.setText(mContext.getResources().getString(R.string.service_center_code));
-            holder.codeTitleTxt.setText(mContext.getResources().getString(R.string.service_center_name));
-        }else if(response.getIsSelectedId().equals("2")){
-            holder.codeTitleTxt.setText(mContext.getResources().getString(R.string.freelancer_code));
-            holder.codeTitleTxt.setText(mContext.getResources().getString(R.string.freelancer_name));
-        }else if(response.getIsSelectedId().equals("3")){
+            holder.NameTitleTxt.setText(mContext.getResources().getString(R.string.service_center_name));
+        }else if(response.getIsSelected().equals("02")){
             holder.codeTitleTxt.setText(mContext.getResources().getString(R.string.solar_installer_partner_code));
-            holder.codeTitleTxt.setText(mContext.getResources().getString(R.string.solar_installer_partner_name));
+            holder.NameTitleTxt.setText(mContext.getResources().getString(R.string.solar_installer_partner_name));
+        }else if(response.getIsSelected().equals("03")){
+            holder.codeTitleTxt.setText(mContext.getResources().getString(R.string.freelancer_code));
+            holder.NameTitleTxt.setText(mContext.getResources().getString(R.string.freelancer_name));
         }
-        holder.codeTxt.setText(response.getCode());
-        holder.nameTxt.setText(response.getName());
+        holder.codeTxt.setText(response.getPartnerCode());
+        holder.nameTxt.setText(response.getPartnerName());
 
         holder.compForwardItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,7 +101,7 @@ public class ComplaintForwardAdapter extends RecyclerView.Adapter<ComplaintForwa
     }
 
     public interface ItemClickListener {
-        void SetOnItemClickListener(CompForwardListModel response, int position);
+        void SetOnItemClickListener(CompForwardListModel.Response response, int position);
     }
 
     @Override
@@ -112,12 +113,12 @@ public class ComplaintForwardAdapter extends RecyclerView.Adapter<ComplaintForwa
                 if (charString.isEmpty()) {
                     CompForwardPersonList = searchList;
                 } else {
-                    List<CompForwardListModel> filteredList = new ArrayList<>();
-                    for (CompForwardListModel row : searchList) {
+                    List<CompForwardListModel.Response> filteredList = new ArrayList<>();
+                    for (CompForwardListModel.Response row : searchList) {
 
                         // name match condition. this might differ depending on your requirement
                         // here we are looking for name or phone number match
-                        if (row.getCode().toLowerCase().contains(charString.toLowerCase()) || row.getName().toLowerCase().contains(charString.toLowerCase())) {
+                        if (row.getPartnerCode().toLowerCase().contains(charString.toLowerCase()) || row.getPartnerName().toLowerCase().contains(charString.toLowerCase())) {
                             filteredList.add(row);
                         }
                     }
@@ -132,7 +133,7 @@ public class ComplaintForwardAdapter extends RecyclerView.Adapter<ComplaintForwa
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                CompForwardPersonList = (ArrayList<CompForwardListModel>) filterResults.values;
+                CompForwardPersonList = (ArrayList<CompForwardListModel.Response>) filterResults.values;
                 if (CompForwardPersonList.size() > 0) {
                     noDataFound.setVisibility(View.GONE);
                 } else {
