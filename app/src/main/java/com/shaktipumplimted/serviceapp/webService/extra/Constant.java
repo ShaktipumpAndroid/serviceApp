@@ -17,6 +17,9 @@ public class Constant {
 
     public static String OnRoll = "ONROLL";
     public static String employee = "Employee";
+    public static String service_center = "Service Center";
+    public static String freelancer = "Freelancer";
+    public static String srv_cntr_t = "Service center technician";
 
 
 

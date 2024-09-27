@@ -164,5 +164,22 @@
     <string name="ownerPhoto">Owner Photo</string>
     <string name="enterremark">Please enter remark</string>
     <string name="visitHistory">Visit History</string>
+    <string name="srv_cntr_t">Service center technician</string>
+    <string name="select_login_type">Select login type</string>
+    <string name="pls_select_category">Please select category</string>
+    <string name="enter_customer_pay">Enter customer pay amount</string>
+    <string name="enter_company_pay">Enter company pay amount</string>
+    <string name="enter_foc_amt">Enter Foc amount</string>
+    <string name="enter_return_company">Enter return by company</string>
+    <string name="select_cmp_cat">Select complaint category</string>
 
+
+    <string-array name="login_type_array">
+        <item>@string/select_login_type</item>
+        <item>@string/employee</item>
+        <item>@string/freelancer</item>
+        <item>@string/service_center</item>
+        <item>@string/srv_cntr_t</item>
+
+    </string-array>
 </resources>

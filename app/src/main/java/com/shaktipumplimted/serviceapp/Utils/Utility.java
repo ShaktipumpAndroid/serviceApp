@@ -427,7 +427,7 @@ public class Utility {
 
     }
 
-    public boolean isOnRoleApp(){
+    public static boolean isOnRoleApp(){
         boolean isOnRoleApp = false;
         if(BuildConfig.IS_ONROLE){
             isOnRoleApp = true;
