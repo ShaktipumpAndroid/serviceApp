@@ -107,7 +107,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
 
     private void getLists() {
         if(Utility.isInternetOn(mContext)){
-            if(!databaseHelper.isDataAvailabe(DatabaseHelper.TABLE_COMPLAINT_DATA)){
+            if(!databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_DATA)){
                 getStatusList();
             }else{
                 setStatusAdapter();

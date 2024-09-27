@@ -14,6 +14,7 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -21,11 +22,21 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.shaktipumplimted.serviceapp.R;
+import com.shaktipumplimted.serviceapp.Utils.Utility;
+import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.adapter.ComplaintForwardAdapter;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.model.CompForwardListModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
+import com.shaktipumplimted.serviceapp.webService.extra.Constant;
+import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
+import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ComplaintForwardActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, ComplaintForwardAdapter.ItemClickListener {
 
@@ -36,9 +47,14 @@ public class ComplaintForwardActivity extends AppCompatActivity implements Compo
     TextView noDataFound;
     RelativeLayout searchRelative;
     SearchView searchUser;
-    List<CompForwardListModel> compForwardPersonList;
+    List<CompForwardListModel.Response> compForwardPersonList;
 
     ComplaintForwardAdapter complaintForwardAdapter;
+
+    APIInterface apiInterface;
+    DatabaseHelper databaseHelper;
+    ComplaintListModel.Datum complaintListModel;
+    String isSelected = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +63,19 @@ public class ComplaintForwardActivity extends AppCompatActivity implements Compo
 
         Init();
         listner();
+        retrieveValue();
+    }
+
+    private void retrieveValue() {
+        if (getIntent().getExtras() != null) {
+            complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
+        }
     }
 
 
-
     private void Init() {
+        apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
+        databaseHelper = new DatabaseHelper(getApplicationContext());
         toolbar = findViewById(R.id.toolbar);
         serviceCenterRadio = findViewById(R.id.serviceCenterRadio);
         freelancerRadio = findViewById(R.id.freelancerRadio);
@@ -133,52 +157,49 @@ public class ComplaintForwardActivity extends AppCompatActivity implements Compo
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-        if(buttonView.getId()==R.id.serviceCenterRadio){
-            if(isChecked) {
-                getList("1");
+        if (buttonView.getId() == R.id.serviceCenterRadio) {
+            if (isChecked) {
+                isSelected = "01";
+                getList();
             }
-        } else if(buttonView.getId()==R.id.freelancerRadio){
-            if(isChecked) {
-                getList("2");
+        } else if (buttonView.getId() == R.id.solarInstPartnerRadio) {
+            if (isChecked) {
+                isSelected = "02";
+                getList();
             }
-        } else if(buttonView.getId()==R.id.solarInstPartnerRadio){
-            if(isChecked) {
-                getList("3");
+        } else if (buttonView.getId() == R.id.freelancerRadio) {
+            if (isChecked) {
+                isSelected = "03";
+                getList();
             }
         }
     }
 
-    private void getList(String isSelectedId) {
-
-        Log.e("isSelectedId====>",isSelectedId);
-        compForwardPersonList = new ArrayList<>();
-        compForwardPersonList.add(new CompForwardListModel("1700486","Shree Patidar Rewinding works",isSelectedId));
-        compForwardPersonList.add(new CompForwardListModel("1700223","Seema Electricals - Badnagar",isSelectedId));
-        compForwardPersonList.add(new CompForwardListModel("1700153","Pushpa Enterprises -Badnager",isSelectedId));
-        compForwardPersonList.add(new CompForwardListModel("1700003","New Patidar & Patidar",isSelectedId));
-
-
-        if(compForwardPersonList.size()>0){
-            complaintForwardAdapter = new ComplaintForwardAdapter(this,compForwardPersonList,noDataFound);
-            recyclerview.setHasFixedSize(true);
-            complaintForwardAdapter.ItemClick(this);
-            recyclerview.setAdapter(complaintForwardAdapter);
-            noDataFound.setVisibility(View.GONE);
-            recyclerview.setVisibility(View.VISIBLE);
-        }else {
-            noDataFound.setVisibility(View.VISIBLE);
-            recyclerview.setVisibility(View.GONE);
+    private void getList() {
+        if (Utility.isInternetOn(getApplicationContext())) {
+            if(databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_FORWARD_PERSON_DATA)){
+                if(databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_FORWARD_PERSON_DATA,DatabaseHelper.KEY_STATUS_SELECTED,isSelected)) {
+                    setAdapter();
+                }else {
+                    getPersonsList();
+                }
+            }else {
+                getPersonsList();
+            }
+        } else {
+            setAdapter();
+            Utility.ShowToast(getResources().getString(R.string.checkInternetConnection), getApplicationContext());
         }
-
     }
+
 
     @Override
-    public void SetOnItemClickListener(CompForwardListModel response, int position) {
+    public void SetOnItemClickListener(CompForwardListModel.Response response, int position) {
 
-        complaintForward(response,getResources().getString(R.string.want_to_forward_person));
+        complaintForward(response, getResources().getString(R.string.want_to_forward_person));
     }
 
-    private void complaintForward(CompForwardListModel response, String message) {
+    private void complaintForward(CompForwardListModel.Response response, String message) {
         LayoutInflater inflater = (LayoutInflater) ComplaintForwardActivity.this
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.alert_popup,
@@ -203,5 +224,68 @@ public class ComplaintForwardActivity extends AppCompatActivity implements Compo
 
         cancelBtn.setOnClickListener(v -> alertDialog.dismiss());
 
+    }
+
+
+    private void getPersonsList() {
+        compForwardPersonList = new ArrayList<>();
+
+        Utility.showProgressDialogue(this);
+        Call<CompForwardListModel> call3 = apiInterface.complaintForwardPersonList(Utility.getSharedPreferences(this, Constant.accessToken), isSelected, complaintListModel.getCmpno());
+        call3.enqueue(new Callback<CompForwardListModel>() {
+            @Override
+            public void onResponse(@NonNull Call<CompForwardListModel> call, @NonNull Response<CompForwardListModel> response) {
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    CompForwardListModel compForwardListModel = response.body();
+                    if (compForwardListModel.getStatus().equals(Constant.TRUE)) {
+
+                        if (compForwardListModel.getResponse().size() > 0) {
+                            for (int i = 0; i < compForwardListModel.getResponse().size(); i++) {
+                                if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_FORWARD_PERSON_DATA, DatabaseHelper.KEY_PERSON_CODE, compForwardListModel.getResponse().get(i).getPartnerCode())) {
+                                    CompForwardListModel.Response compForwardModel = new CompForwardListModel.Response();
+                                    compForwardModel.setPartnerCode(compForwardListModel.getResponse().get(i).getPartnerCode());
+                                    compForwardModel.setPartnerName(compForwardListModel.getResponse().get(i).getPartnerName());
+                                    compForwardModel.setIsSelected(isSelected);
+                                    databaseHelper.insertComplaintForwardPersonData(compForwardModel);
+                                }
+                            }
+                        }
+                        setAdapter();
+
+                    } else if (compForwardListModel.getStatus().equals(Constant.FALSE)) {
+
+                        noDataFound.setVisibility(View.VISIBLE);
+                        recyclerview.setVisibility(View.GONE);
+                    } else if (compForwardListModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CompForwardListModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+
+            }
+        });
+    }
+
+    private void setAdapter() {
+        compForwardPersonList = databaseHelper.getComplaintForwardPersonList(isSelected);
+        if (!compForwardPersonList.isEmpty()) {
+            complaintForwardAdapter = new ComplaintForwardAdapter(this, compForwardPersonList, noDataFound);
+            recyclerview.setHasFixedSize(true);
+            complaintForwardAdapter.ItemClick(this);
+            recyclerview.setAdapter(complaintForwardAdapter);
+            noDataFound.setVisibility(View.GONE);
+            recyclerview.setVisibility(View.VISIBLE);
+        } else {
+            noDataFound.setVisibility(View.VISIBLE);
+            recyclerview.setVisibility(View.GONE);
+        }
     }
 }

@@ -15,7 +15,7 @@ public class APIS {
 
     public static final String CUSTOMER_COMPLAINT = "get_customer_complain.htm";
 
-    public static final String COMPLAINT_FORWARD_API = "complaint_frwdto_personapi.htm";
+    public static final String COMPLAINT_FORWARD_PERSON_LIST_API = "complaint_frwdto_personapi.htm";
 
 
     public static final String PENDING_REASONS_API = "compliant_pending_reason_list.htm";
