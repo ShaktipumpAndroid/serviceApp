@@ -20,6 +20,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
@@ -42,7 +43,7 @@ public class ComplaintForwardActivity extends AppCompatActivity implements Compo
 
     Toolbar toolbar;
     RadioButton serviceCenterRadio, freelancerRadio, solarInstPartnerRadio;
-
+    SwipeRefreshLayout pullToRefresh;
     RecyclerView recyclerview;
     TextView noDataFound;
     RelativeLayout searchRelative;
@@ -84,6 +85,7 @@ public class ComplaintForwardActivity extends AppCompatActivity implements Compo
         noDataFound = findViewById(R.id.noDataFound);
         searchUser = findViewById(R.id.searchUser);
         searchRelative = findViewById(R.id.searchRelative);
+        pullToRefresh = findViewById(R.id.pullToRefresh);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -98,7 +100,19 @@ public class ComplaintForwardActivity extends AppCompatActivity implements Compo
         freelancerRadio.setOnCheckedChangeListener(this);
         solarInstPartnerRadio.setOnCheckedChangeListener(this);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
-
+        pullToRefresh.setOnRefreshListener(() -> {
+            if (Utility.isInternetOn(getApplicationContext())) {
+                if (!isSelected.isEmpty()) {
+                    pullToRefresh.setRefreshing(true);
+                    getPersonsList();
+                } else {
+                    pullToRefresh.setRefreshing(false);
+                }
+            } else {
+                Utility.ShowToast(getResources().getString(R.string.checkInternetConnection), getApplicationContext());
+                pullToRefresh.setRefreshing(false);
+            }
+        });
     }
 
     private void searchViewMethod() {
@@ -254,11 +268,12 @@ public class ComplaintForwardActivity extends AppCompatActivity implements Compo
                         setAdapter();
 
                     } else if (compForwardListModel.getStatus().equals(Constant.FALSE)) {
-
+                        pullToRefresh.setRefreshing(false);
                         noDataFound.setVisibility(View.VISIBLE);
                         recyclerview.setVisibility(View.GONE);
                     } else if (compForwardListModel.getStatus().equals(Constant.FAILED)) {
                         Utility.logout(getApplicationContext());
+
                     }
                 }
 
@@ -275,6 +290,7 @@ public class ComplaintForwardActivity extends AppCompatActivity implements Compo
     }
 
     private void setAdapter() {
+        pullToRefresh.setRefreshing(false);
         compForwardPersonList = databaseHelper.getComplaintForwardPersonList(isSelected);
         if (!compForwardPersonList.isEmpty()) {
             complaintForwardAdapter = new ComplaintForwardAdapter(this, compForwardPersonList, noDataFound);
