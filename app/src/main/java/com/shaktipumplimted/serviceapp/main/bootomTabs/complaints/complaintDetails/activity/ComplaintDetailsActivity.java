@@ -51,7 +51,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ComplaintDetailsActivity extends AppCompatActivity implements  View.OnClickListener {
+public class ComplaintDetailsActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     Toolbar toolbar;
     TextInputEditText complaintNo, customerName, customerMobileNo, customerAddress, materialCodeTxt, materialNameTxt,
@@ -122,6 +122,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
                 Utility.hideProgressDialogue();
                 if (response.isSuccessful()) {
                     ComplaintDropdownModel complaintDropdownModel = response.body();
+                      if (complaintDropdownModel.getStatus().equals(Constant.TRUE)) {
 
                     if(complaintDropdownModel.getData().getComplainCategory().size()>0) {
 
@@ -159,7 +160,11 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
                         }
 
                     }
+
                     setDropdown();
+                    } else if (complaintDropdownModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
                 }
 
             }
@@ -264,17 +269,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
             complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
         }
 
-        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                index_cmp_category = parent.getSelectedItemPosition();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        categorySpinner.setOnItemSelectedListener(this);
     }
 
     /*--------------------------------------------On Click Listner-------------------------------------------------------*/
@@ -319,72 +314,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
 
     }
 
-//    public boolean submitForm() {
-//        boolean value;
-//        if (category() && cust_Payment() && company_Payment() && foc_amt() && return_company() && freelancer_pay() &&
-//                closure_reason1() && defect_type1() && cmpln_relt_to1() && payment2() &&
-//                closure_reason2() && defect_type2() && cmpln_relt_to2() && payment3() && closure_reason3() && defect_type3() &&
-//                cmpln_relt_to3() && validateComment() && validateDate()) {
-//
-//
-//            value = true;
-//        } else {
-//            value = false;
-//        }
-//        return value;
-//
-//    }
 
-    private boolean cust_Payment() {
-        if(customerPayExt.getText().toString().isEmpty()){
-            Utility.ShowToast(getResources().getString(R.string.enter_customer_pay), ComplaintDetailsActivity.this);
-            return false;
-        }else{
-            return true;
-        }
-    }
-    private boolean return_company() {
-        if(returnByCompanyExt.getText().toString().isEmpty()){
-            Utility.ShowToast(getResources().getString(R.string.enter_return_company), ComplaintDetailsActivity.this);
-            return false;
-        }else{
-            return true;
-        }
-    }
-    private boolean freelancer_pay() {
-        if(payToFreelancerExt.getText().toString().isEmpty()){
-            Utility.ShowToast(getResources().getString(R.string.enter_return_company), ComplaintDetailsActivity.this);
-            return false;
-        }else{
-            return true;
-        }
-    }
-
-    private boolean company_Payment() {
-        if(companyPayExt.getText().toString().isEmpty()){
-            Utility.ShowToast(getResources().getString(R.string.enter_company_pay), ComplaintDetailsActivity.this);
-            return false;
-        }else{
-            return true;
-        }
-    }
-
-    private boolean category() {
-        if(index_cmp_category == 0){
-            Utility.ShowToast(getResources().getString(R.string.pls_select_category), ComplaintDetailsActivity.this);
-            return false;
-        }else{
-            return true;
-        }
-    }
-    private boolean foc_amt() {
-        if(focAmountExt.getText().toString().isEmpty()){
-            Utility.ShowToast(getResources().getString(R.string.enter_foc_amt), ComplaintDetailsActivity.this);
-            return false;
-        }else{
-            return true;
-        }
-    }
 
 
     /*--------------------------------------------Scanner Code-------------------------------------------------------*/
@@ -497,5 +427,18 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
 
         }
         return (super.onOptionsItemSelected(item));
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if(view.getId()==R.id.categorySpinner){
+
+        }
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
