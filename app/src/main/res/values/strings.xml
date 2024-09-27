@@ -178,6 +178,8 @@
     <string name="enter_foc_amt">Enter Foc amount</string>
     <string name="enter_return_company">Enter return by company</string>
     <string name="select_cmp_cat">Select complaint category</string>
+    <string name="select_defect_cat">Select defect category</string>
+    <string name="select_related_to">Select related to</string>
 
     <string-array name="login_type_array">
         <item>@string/select_login_type</item>

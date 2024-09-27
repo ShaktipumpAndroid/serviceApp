@@ -37,8 +37,6 @@ import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.model.ComplaintDropdownModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.activity.ComplaintForwardActivity;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.activity.AddPendingReasonActivity;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.photoList.activity.ComplaintPhotoListActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.activity.PendingReasonListActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
@@ -99,13 +97,14 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
         }
 
         if(Utility.isInternetOn(getApplicationContext())){
-            if(databaseHelper.isDataAvailabe(DatabaseHelper.TABLE_PENDING_REASON_DATA)){
-                setCategoryAdapter();
+            if(databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CATEGORY) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_DEFECT)
+                    && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_RELATED)){
+                setDropdown();
             }else {
                 getDropdownsList();
             }
         }else {
-            setCategoryAdapter();
+            setDropdown();
         }
     }
 
@@ -160,7 +159,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
                         }
 
                     }
-
+                    setDropdown();
                 }
 
             }
@@ -175,11 +174,23 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements  View
         });
     }
 
-    private void setCategoryAdapter() {
+    private void setDropdown() {
         complaintCategoryList.add(new SpinnerDataModel("00", getResources().getString(R.string.select_cmp_cat)));
         complaintCategoryList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_COMPLAINT_CATEGORY));
-        SpinnerAdapter spinnerAdapter = new com.shaktipumplimted.serviceapp.Utils.common.adapter.SpinnerAdapter(ComplaintDetailsActivity.this, complaintCategoryList);
-        categorySpinner.setAdapter(spinnerAdapter);
+
+        complaintDefectList.add(new SpinnerDataModel("00", getResources().getString(R.string.select_defect_cat)));
+        complaintDefectList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_COMPLAINT_DEFECT));
+
+        complaintRelatedToList.add(new SpinnerDataModel("00", getResources().getString(R.string.select_related_to)));
+        complaintRelatedToList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_COMPLAINT_RELATED));
+        setSpinnerAdapter(complaintCategoryList,categorySpinner);
+        setSpinnerAdapter(complaintDefectList,defectTypeSpinner);
+        setSpinnerAdapter(complaintRelatedToList,complaintRelatedToSpinner);
+    }
+
+    private void setSpinnerAdapter(List<SpinnerDataModel> spinnerList, Spinner spinner) {
+        SpinnerAdapter spinnerAdapter = new com.shaktipumplimted.serviceapp.Utils.common.adapter.SpinnerAdapter(ComplaintDetailsActivity.this, spinnerList);
+        spinner.setAdapter(spinnerAdapter);
     }
 
 

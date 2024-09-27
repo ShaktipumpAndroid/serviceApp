@@ -252,6 +252,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CHECK_OUT_IMAGES);
         db.execSQL(CREATE_TABLE_PENDING_REASON_DATA);
         db.execSQL(CREATE_TABLE_COMPLAINT_CATEGORY);
+        db.execSQL(CREATE_TABLE_COMPLAINT_DEFECT);
+        db.execSQL(CREATE_TABLE_COMPLAINT_RELATED);
+        db.execSQL(CREATE_TABLE_COMPLAINT_CLOSURE);
         db.execSQL(CREATE_TABLE_COMPLAINT_FORWARD_PERSON_DATA);
 
     }
@@ -268,6 +271,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PENDING_REASON_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_FORWARD_PERSON_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_CATEGORY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_DEFECT);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_RELATED);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_CLOSURE);
         onCreate(db);
     }
 
