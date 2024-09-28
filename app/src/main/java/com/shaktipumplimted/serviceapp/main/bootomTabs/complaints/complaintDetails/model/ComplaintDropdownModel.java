@@ -42,14 +42,6 @@ public class ComplaintDropdownModel {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return "ComplaintDropdownModel{" +
-                "status='" + status + '\'' +
-                ", data=" + data +
-                '}';
-    }
-
     public class Data {
 
         @SerializedName("complain_category")
@@ -117,209 +109,171 @@ public class ComplaintDropdownModel {
             return this;
         }
 
-        @Override
-        public String toString() {
-            return "Data{" +
-                    "complainCategory=" + complainCategory +
-                    ", complainDefect=" + complainDefect +
-                    ", complainRelatedTo=" + complainRelatedTo +
-                    ", complainCloser=" + complainCloser +
-                    '}';
+    }
+    public class ComplainRelatedTo {
+
+        @SerializedName("cmpln_related_to")
+        @Expose
+        private String cmplnRelatedTo;
+        @SerializedName("cat_id")
+        @Expose
+        private String catId;
+
+        public String getCmplnRelatedTo() {
+            return cmplnRelatedTo;
         }
 
-        public class ComplainCategory {
-
-            @SerializedName("category")
-            @Expose
-            private String category;
-            @SerializedName("cat_id")
-            @Expose
-            private String catId;
-
-            public String getCategory() {
-                return category;
-            }
-
-            public void setCategory(String category) {
-                this.category = category;
-            }
-
-            public ComplainCategory withCategory(String category) {
-                this.category = category;
-                return this;
-            }
-
-            public String getCatId() {
-                return catId;
-            }
-
-            public void setCatId(String catId) {
-                this.catId = catId;
-            }
-
-            public ComplainCategory withCatId(String catId) {
-                this.catId = catId;
-                return this;
-            }
-
-            @Override
-            public String toString() {
-                return "ComplainCategory{" +
-                        "category='" + category + '\'' +
-                        ", catId='" + catId + '\'' +
-                        '}';
-            }
+        public void setCmplnRelatedTo(String cmplnRelatedTo) {
+            this.cmplnRelatedTo = cmplnRelatedTo;
         }
 
-        public class ComplainCloser {
-
-            @SerializedName("mandt")
-            @Expose
-            private String mandt;
-            @SerializedName("extwg")
-            @Expose
-            private String extwg;
-            @SerializedName("reason")
-            @Expose
-            private String reason;
-
-            public String getMandt() {
-                return mandt;
-            }
-
-            public void setMandt(String mandt) {
-                this.mandt = mandt;
-            }
-
-            public ComplainCloser withMandt(String mandt) {
-                this.mandt = mandt;
-                return this;
-            }
-
-            public String getExtwg() {
-                return extwg;
-            }
-
-            public void setExtwg(String extwg) {
-                this.extwg = extwg;
-            }
-
-            public ComplainCloser withExtwg(String extwg) {
-                this.extwg = extwg;
-                return this;
-            }
-
-            public String getReason() {
-                return reason;
-            }
-
-            public void setReason(String reason) {
-                this.reason = reason;
-            }
-
-            public ComplainCloser withReason(String reason) {
-                this.reason = reason;
-                return this;
-            }
-
-            @Override
-            public String toString() {
-                return "ComplainCloser{" +
-                        "mandt='" + mandt + '\'' +
-                        ", extwg='" + extwg + '\'' +
-                        ", reason='" + reason + '\'' +
-                        '}';
-            }
+        public ComplainRelatedTo withCmplnRelatedTo(String cmplnRelatedTo) {
+            this.cmplnRelatedTo = cmplnRelatedTo;
+            return this;
         }
 
-        public class ComplainDefect {
-
-            @SerializedName("defect")
-            @Expose
-            private String defect;
-            @SerializedName("cat_id")
-            @Expose
-            private String catId;
-
-            public String getDefect() {
-                return defect;
-            }
-
-            public void setDefect(String defect) {
-                this.defect = defect;
-            }
-
-            public ComplainDefect withDefect(String defect) {
-                this.defect = defect;
-                return this;
-            }
-
-            public String getCatId() {
-                return catId;
-            }
-
-            public void setCatId(String catId) {
-                this.catId = catId;
-            }
-
-            public ComplainDefect withCatId(String catId) {
-                this.catId = catId;
-                return this;
-            }
-
-            @Override
-            public String toString() {
-                return "ComplainDefect{" +
-                        "defect='" + defect + '\'' +
-                        ", catId='" + catId + '\'' +
-                        '}';
-            }
+        public String getCatId() {
+            return catId;
         }
 
-        public class ComplainRelatedTo {
-
-            @SerializedName("cmpln_related_to")
-            @Expose
-            private String cmplnRelatedTo;
-            @SerializedName("cat_id")
-            @Expose
-            private String catId;
-
-            public String getCmplnRelatedTo() {
-                return cmplnRelatedTo;
-            }
-
-            public void setCmplnRelatedTo(String cmplnRelatedTo) {
-                this.cmplnRelatedTo = cmplnRelatedTo;
-            }
-
-            public ComplainRelatedTo withCmplnRelatedTo(String cmplnRelatedTo) {
-                this.cmplnRelatedTo = cmplnRelatedTo;
-                return this;
-            }
-
-            public String getCatId() {
-                return catId;
-            }
-
-            public void setCatId(String catId) {
-                this.catId = catId;
-            }
-
-            public ComplainRelatedTo withCatId(String catId) {
-                this.catId = catId;
-                return this;
-            }
-
-            @Override
-            public String toString() {
-                return "ComplainRelatedTo{" +
-                        "cmplnRelatedTo='" + cmplnRelatedTo + '\'' +
-                        ", catId='" + catId + '\'' +
-                        '}';
-            }
+        public void setCatId(String catId) {
+            this.catId = catId;
         }
+
+        public ComplainRelatedTo withCatId(String catId) {
+            this.catId = catId;
+            return this;
+        }
+
     }
 
+    public class ComplainDefect {
+
+        @SerializedName("defect")
+        @Expose
+        private String defect;
+        @SerializedName("cat_id")
+        @Expose
+        private String catId;
+
+        public String getDefect() {
+            return defect;
+        }
+
+        public void setDefect(String defect) {
+            this.defect = defect;
+        }
+
+        public ComplainDefect withDefect(String defect) {
+            this.defect = defect;
+            return this;
+        }
+
+        public String getCatId() {
+            return catId;
+        }
+
+        public void setCatId(String catId) {
+            this.catId = catId;
+        }
+
+        public ComplainDefect withCatId(String catId) {
+            this.catId = catId;
+            return this;
+        }
+
+    }
+
+    public class ComplainCloser {
+
+        @SerializedName("mandt")
+        @Expose
+        private String mandt;
+        @SerializedName("extwg")
+        @Expose
+        private String extwg;
+        @SerializedName("reason")
+        @Expose
+        private String reason;
+
+        public String getMandt() {
+            return mandt;
+        }
+
+        public void setMandt(String mandt) {
+            this.mandt = mandt;
+        }
+
+        public ComplainCloser withMandt(String mandt) {
+            this.mandt = mandt;
+            return this;
+        }
+
+        public String getExtwg() {
+            return extwg;
+        }
+
+        public void setExtwg(String extwg) {
+            this.extwg = extwg;
+        }
+
+        public ComplainCloser withExtwg(String extwg) {
+            this.extwg = extwg;
+            return this;
+        }
+
+        public String getReason() {
+            return reason;
+        }
+
+        public void setReason(String reason) {
+            this.reason = reason;
+        }
+
+        public ComplainCloser withReason(String reason) {
+            this.reason = reason;
+            return this;
+        }
+
+    }
+
+    public class ComplainCategory {
+
+        @SerializedName("category")
+        @Expose
+        private String category;
+        @SerializedName("cat_id")
+        @Expose
+        private String catId;
+
+        public String getCategory() {
+            return category;
+        }
+
+        public void setCategory(String category) {
+            this.category = category;
+        }
+
+        public ComplainCategory withCategory(String category) {
+            this.category = category;
+            return this;
+        }
+
+        public String getCatId() {
+            return catId;
+        }
+
+        public void setCatId(String catId) {
+            this.catId = catId;
+        }
+
+        public ComplainCategory withCatId(String catId) {
+            this.catId = catId;
+            return this;
+        }
+
+    }
 }
+
+
 

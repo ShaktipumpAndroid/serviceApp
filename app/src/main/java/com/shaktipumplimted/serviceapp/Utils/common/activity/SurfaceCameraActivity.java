@@ -35,7 +35,7 @@ public class SurfaceCameraActivity extends AppCompatActivity implements View.OnC
     ImageView captureBtn;
     TextView displayTxt;
 
-    String latitude, longitude,customerName = "", complaintNo = "",frontCamera;
+    String latitude, longitude,customerName = "", complaintNo = "",frontCamera, Address = "";
     Bitmap bitmap;
     File file;
     GpsTracker gps;
@@ -225,7 +225,7 @@ public class SurfaceCameraActivity extends AppCompatActivity implements View.OnC
 
 
         if (Utility.isInternetOn(getApplicationContext())) {
-            String Address = Utility.getAddressFromLatLng(SurfaceCameraActivity.this,latitude,longitude);
+            Address = Utility.getAddressFromLatLng(SurfaceCameraActivity.this,latitude,longitude);
 
             if (complaintNo != null && !complaintNo.isEmpty()) {
                 displayTxt.setText(Address + "\n" + "Date: " + Utility.getCurrentDate() + "\n" + "Time: " + Utility.getCurrentTime()
@@ -262,6 +262,7 @@ public class SurfaceCameraActivity extends AppCompatActivity implements View.OnC
             intent.putExtra(Constant.file, file);
             intent.putExtra(Constant.latitude, String.valueOf(latitude));
             intent.putExtra(Constant.longitude, String.valueOf(longitude));
+            intent.putExtra(Constant.address, Address);
             setResult(RESULT_OK, intent);
             finish();
         } else {

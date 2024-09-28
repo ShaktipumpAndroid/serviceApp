@@ -174,9 +174,11 @@
     <string name="select_cmp_cat">Select complaint category</string>
     <string name="select_defect_cat">Select defect category</string>
     <string name="select_related_to">Select related to</string>
+    <string name="something_went_wrong">Something went wrong</string>
     <string name="select_all_images">Please select all images</string>
     <string name="pendingReasonAdded">Pending Reason Added successfully</string>
     <string name="somethingWentWrong">SomethingWentWrong</string>
+    <string name="select_closure">Select closure reason</string>
 
 
     <string-array name="login_type_array">

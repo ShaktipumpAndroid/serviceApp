@@ -5,6 +5,7 @@ public class Constant {
 
     /*--------------------------------------------API Status Manage-------------------------------------------------------*/
     public static String TRUE = "true";
+
     public static String FALSE = "false";
     public static String FAILED = "failed";
 /*--------------------------------------------User Details-------------------------------------------------------*/
@@ -30,6 +31,7 @@ public class Constant {
     public static final String REPLY = "REPLY";
 
     public static final String addPendingImage = "addPendingImage";
+    public static final String markAttendance = "markAttendance";
     /*------------------------------------Other Objects---------------------------------------*/
     public static String imagePath = "image";
 
@@ -47,5 +49,7 @@ public class Constant {
     public static String localConveyanceJourneyStart = "localConveyanceJourneyStart";
 
     public static String frontCamera = "frontCamera";
+
+    public static String address = "address";
 
 }
