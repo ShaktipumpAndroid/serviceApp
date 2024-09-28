@@ -452,6 +452,16 @@ public class Utility {
         databaseHelper.deleteData(DatabaseHelper.TABLE_MARK_ATTENDANCE_DATA);
         databaseHelper.deleteData(DatabaseHelper.TABLE_COMPLAINT_STATUS_DATA);
         databaseHelper.deleteData(DatabaseHelper.TABLE_COMPLAINT_DATA);
+        databaseHelper.deleteData(DatabaseHelper.TABLE_CHECK_OUT_IMAGE_DATA);
+        databaseHelper.deleteData(DatabaseHelper.TABLE_SITE_SURVEY_IMAGE_DATA);
+        databaseHelper.deleteData(DatabaseHelper.TABLE_PENDING_REASON_DATA);
+        databaseHelper.deleteData(DatabaseHelper.TABLE_COMPLAINT_CATEGORY);
+        databaseHelper.deleteData(DatabaseHelper.TABLE_COMPLAINT_DEFECT);
+        databaseHelper.deleteData(DatabaseHelper.TABLE_COMPLAINT_RELATED);
+        databaseHelper.deleteData(DatabaseHelper.TABLE_COMPLAINT_CLOSURE);
+        databaseHelper.deleteData(DatabaseHelper.TABLE_PENDING_REASON_IMAGE_DATA);
+        databaseHelper.deleteData(DatabaseHelper.TABLE_COMPLAINT_FORWARD_PERSON_DATA);
+
         Intent intent = new Intent(context, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -99,7 +99,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
         if (Utility.isInternetOn(getApplicationContext())) {
             if (databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CATEGORY) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_DEFECT)
-                    && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_RELATED)) {
+                    && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_RELATED) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CLOSURE)) {
                 setDropdown();
             } else {
                 getDropdownsList();
@@ -123,6 +123,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                 Utility.hideProgressDialogue();
                 if (response.isSuccessful()) {
                     ComplaintDropdownModel complaintDropdownModel = response.body();
+
                     if (complaintDropdownModel.getStatus().equals(Constant.TRUE)) {
 
                         if (complaintDropdownModel.getData().getComplainCategory().size() > 0) {
@@ -174,7 +175,6 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                             }
 
                         }
-
                         setDropdown();
                     } else if (complaintDropdownModel.getStatus().equals(Constant.FALSE)) {
                         Utility.hideProgressDialogue();

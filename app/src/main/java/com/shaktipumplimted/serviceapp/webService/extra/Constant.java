@@ -5,6 +5,7 @@ public class Constant {
 
     /*--------------------------------------------API Status Manage-------------------------------------------------------*/
     public static String TRUE = "true";
+
     public static String FALSE = "false";
     public static String FAILED = "failed";
 /*--------------------------------------------User Details-------------------------------------------------------*/
