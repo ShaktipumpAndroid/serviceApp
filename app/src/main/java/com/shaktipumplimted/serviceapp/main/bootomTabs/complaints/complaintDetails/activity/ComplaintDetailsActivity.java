@@ -65,12 +65,12 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     GmsBarcodeScanner scanner;
     ComplaintListModel.Datum complaintListModel;
     DatabaseHelper databaseHelper;
-   int scannerCode,index_cmp_category;
+    int scannerCode, index_cmp_category;
     APIInterface apiInterface;
-    List<SpinnerDataModel> complaintCategoryList  = new ArrayList<>();
-    List<SpinnerDataModel> complaintDefectList  = new ArrayList<>();
-    List<SpinnerDataModel> complaintRelatedToList  = new ArrayList<>();
-    List<SpinnerDataModel> complaintClosureList  = new ArrayList<>();
+    List<SpinnerDataModel> complaintCategoryList = new ArrayList<>();
+    List<SpinnerDataModel> complaintDefectList = new ArrayList<>();
+    List<SpinnerDataModel> complaintRelatedToList = new ArrayList<>();
+    List<SpinnerDataModel> complaintClosureList = new ArrayList<>();
 
 
     @Override
@@ -84,7 +84,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     }
 
     private void retriveValue() {
-        if(getIntent().getExtras()!=null){
+        if (getIntent().getExtras() != null) {
             complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
             complaintNo.setText(complaintListModel.getCmpno());
             customerName.setText(complaintListModel.getCstname());
@@ -96,14 +96,14 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
             billDateTxt.setText(complaintListModel.getFkdat());
         }
 
-        if(Utility.isInternetOn(getApplicationContext())){
-            if(databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CATEGORY) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_DEFECT)
-                    && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_RELATED)){
+        if (Utility.isInternetOn(getApplicationContext())) {
+            if (databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CATEGORY) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_DEFECT)
+                    && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_RELATED)) {
                 setDropdown();
-            }else {
+            } else {
                 getDropdownsList();
             }
-        }else {
+        } else {
             setDropdown();
         }
     }
@@ -122,51 +122,53 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                 Utility.hideProgressDialogue();
                 if (response.isSuccessful()) {
                     ComplaintDropdownModel complaintDropdownModel = response.body();
-                      if (complaintDropdownModel.getStatus().equals(Constant.TRUE)) {
+                    if (complaintDropdownModel.getStatus().equals(Constant.TRUE)) {
 
-                    if(complaintDropdownModel.getData().getComplainCategory().size()>0) {
+                        if (complaintDropdownModel.getData().getComplainCategory().size() > 0) {
 
-                        for (int i = 0; i < complaintDropdownModel.getData().getComplainCategory().size(); i++) {
-                            if(!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_CATEGORY,DatabaseHelper.KEY_ID,complaintDropdownModel.getData().getComplainCategory().get(i).getCatId())){
-                                SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
-                                spinnerDataModel.setId(complaintDropdownModel.getData().getComplainCategory().get(i).getCatId());
-                                spinnerDataModel.setName(complaintDropdownModel.getData().getComplainCategory().get(i).getCategory());
-                                databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_COMPLAINT_CATEGORY);
+                            for (int i = 0; i < complaintDropdownModel.getData().getComplainCategory().size(); i++) {
+                                if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_CATEGORY, DatabaseHelper.KEY_ID, complaintDropdownModel.getData().getComplainCategory().get(i).getCatId())) {
+                                    SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
+                                    spinnerDataModel.setId(complaintDropdownModel.getData().getComplainCategory().get(i).getCatId());
+                                    spinnerDataModel.setName(complaintDropdownModel.getData().getComplainCategory().get(i).getCategory());
+                                    databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_COMPLAINT_CATEGORY);
+                                }
                             }
+
+                        }
+                        if (complaintDropdownModel.getData().getComplainDefect().size() > 0) {
+
+                            for (int i = 0; i < complaintDropdownModel.getData().getComplainDefect().size(); i++) {
+                                if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_DEFECT, DatabaseHelper.KEY_ID, complaintDropdownModel.getData().getComplainDefect().get(i).getCatId())) {
+                                    SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
+                                    spinnerDataModel.setId(complaintDropdownModel.getData().getComplainDefect().get(i).getCatId());
+                                    spinnerDataModel.setName(complaintDropdownModel.getData().getComplainDefect().get(i).getDefect());
+                                    databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_COMPLAINT_DEFECT);
+                                }
+                            }
+
+                        }
+                        if (complaintDropdownModel.getData().getComplainRelatedTo().size() > 0) {
+
+                            for (int i = 0; i < complaintDropdownModel.getData().getComplainRelatedTo().size(); i++) {
+                                if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_RELATED, DatabaseHelper.KEY_ID, complaintDropdownModel.getData().getComplainRelatedTo().get(i).getCatId())) {
+                                    SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
+                                    spinnerDataModel.setId(complaintDropdownModel.getData().getComplainRelatedTo().get(i).getCatId());
+                                    spinnerDataModel.setName(complaintDropdownModel.getData().getComplainRelatedTo().get(i).getCmplnRelatedTo());
+                                    databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_COMPLAINT_RELATED);
+                                }
+                            }
+
                         }
 
-                    }
-                    if(complaintDropdownModel.getData().getComplainDefect().size()>0) {
-
-                        for (int i = 0; i < complaintDropdownModel.getData().getComplainDefect().size(); i++) {
-                            if(!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_DEFECT,DatabaseHelper.KEY_ID,complaintDropdownModel.getData().getComplainDefect().get(i).getCatId())){
-                                SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
-                                spinnerDataModel.setId(complaintDropdownModel.getData().getComplainDefect().get(i).getCatId());
-                                spinnerDataModel.setName(complaintDropdownModel.getData().getComplainDefect().get(i).getDefect());
-                                databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_COMPLAINT_DEFECT);
-                            }
-                        }
-
-                    }
-                    if(complaintDropdownModel.getData().getComplainRelatedTo().size()>0) {
-
-                        for (int i = 0; i < complaintDropdownModel.getData().getComplainRelatedTo().size(); i++) {
-                            if(!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_RELATED,DatabaseHelper.KEY_ID,complaintDropdownModel.getData().getComplainRelatedTo().get(i).getCatId())){
-                                SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
-                                spinnerDataModel.setId(complaintDropdownModel.getData().getComplainRelatedTo().get(i).getCatId());
-                                spinnerDataModel.setName(complaintDropdownModel.getData().getComplainRelatedTo().get(i).getCmplnRelatedTo());
-                                databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_COMPLAINT_RELATED);
-                            }
-                        }
-
-                    }
-
-                    setDropdown();
+                        setDropdown();
+                    } else if (complaintDropdownModel.getStatus().equals(Constant.FALSE)) {
+                        Utility.hideProgressDialogue();
+                        Utility.ShowToast(getResources().getString(R.string.something_went_wrong), ComplaintDetailsActivity.this);
                     } else if (complaintDropdownModel.getStatus().equals(Constant.FAILED)) {
                         Utility.logout(getApplicationContext());
                     }
                 }
-
             }
 
             @Override
@@ -188,9 +190,9 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
         complaintRelatedToList.add(new SpinnerDataModel("00", getResources().getString(R.string.select_related_to)));
         complaintRelatedToList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_COMPLAINT_RELATED));
-        setSpinnerAdapter(complaintCategoryList,categorySpinner);
-        setSpinnerAdapter(complaintDefectList,defectTypeSpinner);
-        setSpinnerAdapter(complaintRelatedToList,complaintRelatedToSpinner);
+        setSpinnerAdapter(complaintCategoryList, categorySpinner);
+        setSpinnerAdapter(complaintDefectList, defectTypeSpinner);
+        setSpinnerAdapter(complaintRelatedToList, complaintRelatedToSpinner);
     }
 
     private void setSpinnerAdapter(List<SpinnerDataModel> spinnerList, Spinner spinner) {
@@ -289,7 +291,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
             case R.id.pendingReasonBtn:
                 Intent intent = new Intent(this, PendingReasonListActivity.class);
-                intent.putExtra(Constant.complaintData,complaintListModel);
+                intent.putExtra(Constant.complaintData, complaintListModel);
                 startActivity(intent);
                 break;
 
@@ -299,7 +301,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
             case R.id.forwardComplaintBtn:
                 Intent intent1 = new Intent(this, ComplaintForwardActivity.class);
-                intent1.putExtra(Constant.complaintData,complaintListModel);
+                intent1.putExtra(Constant.complaintData, complaintListModel);
                 startActivity(intent1);
                 break;
 
@@ -408,10 +410,10 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.complaint_menu, menu);
-        for(int i = 0; i < menu.size(); i++) {
+        for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
             SpannableString spanString = new SpannableString(menu.getItem(i).getTitle().toString());
-            spanString.setSpan(new ForegroundColorSpan(Color.WHITE), 0,     spanString.length(), 0); //fix the color to white
+            spanString.setSpan(new ForegroundColorSpan(Color.WHITE), 0, spanString.length(), 0); //fix the color to white
             item.setTitle(spanString);
         }
         return true;
@@ -431,7 +433,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if(view.getId()==R.id.categorySpinner){
+        if (view.getId() == R.id.categorySpinner) {
 
         }
 
