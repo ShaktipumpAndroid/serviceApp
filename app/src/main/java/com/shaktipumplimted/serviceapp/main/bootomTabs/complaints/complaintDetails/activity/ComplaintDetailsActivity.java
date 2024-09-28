@@ -65,12 +65,13 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     GmsBarcodeScanner scanner;
     ComplaintListModel.Datum complaintListModel;
     DatabaseHelper databaseHelper;
-    int scannerCode, index_cmp_category;
+   int scannerCode;
     APIInterface apiInterface;
-    List<SpinnerDataModel> complaintCategoryList = new ArrayList<>();
-    List<SpinnerDataModel> complaintDefectList = new ArrayList<>();
-    List<SpinnerDataModel> complaintRelatedToList = new ArrayList<>();
-    List<SpinnerDataModel> complaintClosureList = new ArrayList<>();
+    List<SpinnerDataModel> complaintCategoryList  = new ArrayList<>();
+    List<SpinnerDataModel> complaintDefectList  = new ArrayList<>();
+    List<SpinnerDataModel> complaintRelatedToList  = new ArrayList<>();
+    List<SpinnerDataModel> complaintClosureList  = new ArrayList<>();
+    String selectedCategory = "",selectedDefect = "",selectedComplaintRelated = "",selectedClosureReason = "";
 
 
     @Override
@@ -282,14 +283,17 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         forwardComplaintBtn.setOnClickListener(this);
         closeComplaintBtn.setOnClickListener(this);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
+
+        categorySpinner.setOnItemSelectedListener(this);
+        closureReasonSpinner.setOnItemSelectedListener(this);
+        defectTypeSpinner.setOnItemSelectedListener(this);
+        closureReasonSpinner.setOnItemSelectedListener(this);
     }
 
     private void retrieveValue() {
         if (getIntent().getExtras() != null) {
             complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
         }
-
-        categorySpinner.setOnItemSelectedListener(this);
     }
 
     /*--------------------------------------------On Click Listner-------------------------------------------------------*/
@@ -308,25 +312,53 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                 break;
 
             case R.id.pendingReasonBtn:
-                Intent intent = new Intent(this, PendingReasonListActivity.class);
-                intent.putExtra(Constant.complaintData, complaintListModel);
-                startActivity(intent);
+                    Intent intent = new Intent(this, PendingReasonListActivity.class);
+                    intent.putExtra(Constant.complaintData, complaintListModel);
+                    startActivity(intent);
                 break;
 
             case R.id.forwardForApprovalBtn:
-                ForwardForApproval(getResources().getString(R.string.want_to_forward_approval));
+                    ForwardForApproval(getResources().getString(R.string.want_to_forward_approval));
                 break;
 
             case R.id.forwardComplaintBtn:
-                Intent intent1 = new Intent(this, ComplaintForwardActivity.class);
-                intent1.putExtra(Constant.complaintData, complaintListModel);
-                startActivity(intent1);
+                    Intent intent1 = new Intent(this, ComplaintForwardActivity.class);
+                    intent1.putExtra(Constant.complaintData, complaintListModel);
+                    startActivity(intent1);
                 break;
 
             case R.id.closeComplaintBtn:
                 closureValidation();
                 break;
         }
+
+    }
+
+    /*--------------------------------------------onItemSelected-------------------------------------------------------*/
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if (parent.getId() == R.id.categorySpinner) {
+            selectedCategory = complaintCategoryList.get(position).getId();
+
+        }
+        if (parent.getId() == R.id.defectTypeSpinner) {
+            selectedDefect = complaintDefectList.get(position).getId();
+
+        }
+        if (parent.getId() == R.id.complaintRelatedToSpinner) {
+            selectedComplaintRelated = complaintRelatedToList.get(position).getId();
+
+        }
+        if (parent.getId() == R.id.closureReasonSpinner) {
+            selectedClosureReason = complaintClosureList.get(position).getId();
+
+        }
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
 
     }
 
@@ -418,10 +450,21 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
         messageTxt.setText(message);
 
-        okBtn.setOnClickListener(v -> alertDialog.dismiss());
+        okBtn.setOnClickListener(v -> {alertDialog.dismiss();
+            if(Utility.isInternetOn(getApplicationContext())){
+                 complaintForward();
+            }else {
+                Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
+            }
+
+        });
 
         cancelBtn.setOnClickListener(v -> alertDialog.dismiss());
 
+    }
+
+    private void complaintForward() {
+       // if()
     }
     /*--------------------------------------------OnCreate Menu Options-------------------------------------------------------*/
 
@@ -449,16 +492,5 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         return (super.onOptionsItemSelected(item));
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (view.getId() == R.id.categorySpinner) {
 
-        }
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
 }

@@ -19,12 +19,12 @@ import java.util.List;
 
 public class PendingReasonAdapter extends RecyclerView.Adapter<PendingReasonAdapter.ViewHolder>{
     Context mContext;
-    private List<PendingReasonListModel> searchList;
-    private List<PendingReasonListModel> PendingReasonList;
+    private List<PendingReasonListModel.Data.ComplainAction> searchList;
+    private List<PendingReasonListModel.Data.ComplainAction> PendingReasonList;
     private static ItemClickListener itemClickListener;
 
 
-    public PendingReasonAdapter(Context context, List<PendingReasonListModel> listdata) {
+    public PendingReasonAdapter(Context context, List<PendingReasonListModel.Data.ComplainAction> listdata) {
         this.mContext = context;
         this.PendingReasonList = listdata;
         this.searchList = new ArrayList<>();
@@ -43,12 +43,12 @@ public class PendingReasonAdapter extends RecyclerView.Adapter<PendingReasonAdap
     @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        final PendingReasonListModel response = PendingReasonList.get(position);
+        final PendingReasonListModel.Data.ComplainAction response = PendingReasonList.get(position);
 
-        holder.dateTxt.setText(response.getDate());
-        holder.followUpDateTxt.setText(response.getFollowupDate());
-        holder.employeeTxt.setText(response.getEmployee());
-        holder.remarkTxt.setText(response.getRemark());
+        holder.dateTxt.setText(response.getAedtm());
+        holder.followUpDateTxt.setText(response.getFdate());
+        holder.employeeTxt.setText(response.getEname());
+        holder.remarkTxt.setText(response.getAction());
     }
 
 
@@ -79,7 +79,7 @@ public class PendingReasonAdapter extends RecyclerView.Adapter<PendingReasonAdap
     }
 
     public interface ItemClickListener {
-        void SetOnItemClickListener(PendingReasonListModel response, int position);
+        void SetOnItemClickListener(PendingReasonListModel.Data.ComplainAction response, int position);
     }
 
 }

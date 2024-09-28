@@ -14,6 +14,7 @@ import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.model.CompForwardListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.LocalConveyanceModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.MarkAttendanceModel;
 
@@ -246,8 +247,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_CMP_LNG + " TEXT,"
             + KEY_CURRENT_STATUS + " TEXT)";
 
-
-
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -288,7 +287,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_RELATED);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_CLOSURE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PENDING_REASON_IMAGE_DATA);
-        onCreate(db);
+          onCreate(db);
     }
 
 
@@ -706,9 +705,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return  spinnerArrayList;
     }
-
-
-
 
     /*------------------------------------------Delete Database-----------------------------------------------------*/
     public void deleteData(String tableName) {
