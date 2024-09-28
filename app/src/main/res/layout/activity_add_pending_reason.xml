@@ -100,7 +100,7 @@
                    android:layout_height="match_parent"
                    android:fontFamily="sans-serif-condensed-medium"
                    android:gravity="center|start"
-                   android:text="@string/followUpDate"
+                   android:hint="@string/followUpDate"
                    android:layout_marginStart="@dimen/_10sdp"
                    android:textColor="@color/black"
                    android:layout_toStartOf="@+id/calender_icon"

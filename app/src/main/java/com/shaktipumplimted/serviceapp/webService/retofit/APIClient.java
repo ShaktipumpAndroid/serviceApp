@@ -7,9 +7,11 @@ import com.google.gson.GsonBuilder;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.webService.api.APIS;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -28,7 +30,7 @@ public class APIClient {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(20, TimeUnit.SECONDS)
                 .writeTimeout(20, TimeUnit.SECONDS)
-                .addInterceptor(loggingInterceptor)
+                .addInterceptor(loggingInterceptor);
                 /*.addInterceptor(chain -> {
                     Request request=chain.request().newBuilder()
                             .addHeader("Authorization", "Bearer " + Utility.getSharedPreferences(mContext, Constant.accessToken))

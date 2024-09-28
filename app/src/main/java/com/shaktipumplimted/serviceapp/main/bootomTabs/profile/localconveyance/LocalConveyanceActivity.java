@@ -167,6 +167,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
     private void cameraIntent() {
 
         camraLauncher.launch(new Intent(LocalConveyanceActivity.this, SurfaceCameraActivity.class)
+                .putExtra(Constant.frontCamera,"1")
                 .putExtra(Constant.customerName, Utility.getSharedPreferences(getApplicationContext(), Constant.userName)));
 
     }

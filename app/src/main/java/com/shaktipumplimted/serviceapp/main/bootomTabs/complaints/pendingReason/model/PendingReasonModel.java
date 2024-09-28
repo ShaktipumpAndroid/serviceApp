@@ -10,7 +10,7 @@ public class PendingReasonModel {
     @SerializedName("status")
     @Expose
     private String status;
-    @SerializedName("pending_reason")
+    @SerializedName("data")
     @Expose
     private List<PendingReason> pendingReason;
 

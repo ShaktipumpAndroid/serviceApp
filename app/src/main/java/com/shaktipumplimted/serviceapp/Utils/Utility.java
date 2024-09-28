@@ -22,6 +22,7 @@ import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -82,9 +84,15 @@ public class Utility {
     }
 
     public static void showProgressDialogue(Activity context) {
-        progressDialog = new CustomProgressDialog(context);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressDialog = new CustomProgressDialog(context);
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+            }
+        });
+
 
     }
 
@@ -299,6 +307,20 @@ public class Utility {
         return outputDate;
     }
 
+    public static String ChangeTimeFormat(String inputFormat, String outputFormat, String inputDate) {
+        Date parsed = null;
+        String outputDate = "";
+        SimpleDateFormat df_input = new SimpleDateFormat(inputFormat, Locale.getDefault());
+        SimpleDateFormat df_output = new SimpleDateFormat(outputFormat, Locale.ENGLISH);
+        try {
+            parsed = df_input.parse(inputDate);
+            outputDate = df_output.format(parsed);
+        } catch (ParseException e) {
+
+        }
+        return outputDate;
+    }
+
     public static boolean isAlphaNumeric(String str)
     {
         // Regex to check string is alphanumeric or not.
@@ -363,6 +385,16 @@ public class Utility {
         SimpleDateFormat  simpleDateFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
         return simpleDateFormat.format(new Date()).trim();
     }
+    public static String getFormattedDate(String inputFormat,String outputFormat,String date) {
+
+        return ChangeDateFormat(inputFormat,outputFormat,date);
+    }
+
+    public static String getFormattedTime(String inputFormat,String outputFormat,String time) {
+
+        return ChangeTimeFormat(inputFormat,outputFormat,getCurrentTime());
+    }
+
 
     public static String getAddressFromLatLng(Context context, String latitude, String longitude) {
 
@@ -435,5 +467,21 @@ public class Utility {
             isOnRoleApp = false;
         }
         return isOnRoleApp;
+    }
+
+    public static String getBase64FromPath(Context context,String Imagepath) {
+        String imageString=" ";
+        try {
+            Bitmap bitmap = BitmapFactory.decodeFile(Imagepath);
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+            byte[] imageBytes = byteArrayOutputStream.toByteArray();
+            imageString = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return imageString;
+
     }
 }

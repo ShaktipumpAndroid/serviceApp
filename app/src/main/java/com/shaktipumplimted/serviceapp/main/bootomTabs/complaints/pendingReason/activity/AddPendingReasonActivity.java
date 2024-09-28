@@ -44,12 +44,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.FileUtils;
+import com.shaktipumplimted.serviceapp.Utils.GpsTracker;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.Utils.common.activity.PhotoViewerActivity;
 import com.shaktipumplimted.serviceapp.Utils.common.activity.SurfaceCameraActivity;
 import com.shaktipumplimted.serviceapp.Utils.common.adapter.ImageSelectionAdapter;
+import com.shaktipumplimted.serviceapp.Utils.common.model.CommonRespModel;
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
 import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
@@ -58,6 +61,11 @@ import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
+import com.shaktipumplimted.serviceapp.webService.uploadImages.UploadImageAPIS;
+import com.shaktipumplimted.serviceapp.webService.uploadImages.interfaces.ActionListenerCallback;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -90,12 +98,12 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
     ImageSelectionAdapter customAdapter;
 
     List<String> itemNameList = new ArrayList<>();
-    List<SpinnerDataModel> pendingReasonList  = new ArrayList<>();
+    List<SpinnerDataModel> pendingReasonList = new ArrayList<>();
     ComplaintListModel.Datum complaintListModel;
     int selectedIndex;
-    boolean isUpdate = false;
+    boolean isUpdate = false, isSelectedAllImages = false;
 
-    String selectedFollowUpDate = "",selectedPendingReason = "";
+    String selectedFollowUpDate = "", selectedPendingReason = "";
     DatabaseHelper databaseHelper;
     public final static SimpleDateFormat dateFormat =
             new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
@@ -104,6 +112,10 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
 
     APIInterface apiInterface;
+    GpsTracker gpsTracker;
+
+    UploadImageAPIS uploadImageAPIS;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +132,8 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
     private void Init() {
         apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
         databaseHelper = new DatabaseHelper(this);
+        uploadImageAPIS = new UploadImageAPIS(getApplicationContext());
+        gpsTracker = new GpsTracker(getApplicationContext());
         pendingReasonSpinner = findViewById(R.id.pendingReasonSpinner);
         actionExt = findViewById(R.id.actionExt);
         followUpDateTxt = findViewById(R.id.followUpDateTxt);
@@ -168,6 +182,31 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
                 ChooseDate();
                 break;
             case R.id.submitBtn:
+                if (selectedPendingReason.isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.selectPendingReason), getApplicationContext());
+                } else if (actionExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.EnterAction), getApplicationContext());
+                } else if (followUpDateTxt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.followUpDate), getApplicationContext());
+                } else {
+                    for (int i = 0; i < imageArrayList.size(); i++) {
+                        if (!imageArrayList.get(i).isImageSelected()) {
+                            isSelectedAllImages = false;
+                            Utility.ShowToast(getResources().getString(R.string.select_all_images), getApplicationContext());
+                            break;
+                        } else {
+                            isSelectedAllImages = true;
+                        }
+                    }
+                    if (isSelectedAllImages) {
+                        if (Utility.isInternetOn(getApplicationContext())) {
+                            addPendingReason();
+                        } else {
+                            Utility.ShowToast(getResources().getString(R.string.checkInternetConnection), getApplicationContext());
+                        }
+                    }
+                }
+
 
                 break;
         }
@@ -208,16 +247,14 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             imageModel.setName(itemNameList.get(i));
             imageModel.setImagePath("");
             imageModel.setImageSelected(false);
-            imageModel.setBillNo("");
+            imageModel.setBillNo(complaintListModel.getCmpno());
             imageModel.setPosition(i + 1);
             imageModel.setSelectedCategory(selectedPendingReason);
             imageArrayList.add(imageModel);
         }
 
-        DatabaseHelper databaseHelper = new DatabaseHelper(this);
-
         //Create Table
-        imageList = databaseHelper.getAllImages(DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA, complaintListModel.getCmpno());
+        imageList = databaseHelper.getAllImages(DatabaseHelper.TABLE_PENDING_REASON_IMAGE_DATA, complaintListModel.getCmpno());
 
         if (itemNameList.size() > 0 && imageList != null && imageList.size() > 0) {
 
@@ -330,6 +367,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
     private void cameraIntent() {
 
         camraLauncher.launch(new Intent(AddPendingReasonActivity.this, SurfaceCameraActivity.class)
+                .putExtra(Constant.frontCamera, "1")
                 .putExtra(Constant.customerName, complaintListModel.getCstname()));
 
     }
@@ -406,9 +444,9 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
         imageArrayList.set(selectedIndex, imageModel);
 
         if (isUpdate) {
-            databaseHelper.updateImagesData(imageModel, true, DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA);
+            databaseHelper.updateImagesData(imageModel, true, DatabaseHelper.TABLE_PENDING_REASON_IMAGE_DATA);
         } else {
-            databaseHelper.insertImagesData(imageModel, true, DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA);
+            databaseHelper.insertImagesData(imageModel, true, DatabaseHelper.TABLE_PENDING_REASON_IMAGE_DATA);
         }
 
         customAdapter.notifyDataSetChanged();
@@ -502,8 +540,10 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (view.getId() == R.id.pendingReasonSpinner) {
-            selectedPendingReason = parent.getSelectedItem().toString();
+        if (parent.getId() == R.id.pendingReasonSpinner) {
+            if (!parent.getSelectedItem().toString().equals(getResources().getString(R.string.selectPendingReason))) {
+                selectedPendingReason = pendingReasonList.get(position).getId();
+            }
         }
     }
 
@@ -524,11 +564,11 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
                 Utility.hideProgressDialogue();
                 if (response.isSuccessful()) {
                     PendingReasonModel pendingReasonModel = response.body();
-                  //  if (pendingReasonModel.getStatus().equals(Constant.TRUE)) {
+                    if (pendingReasonModel.getStatus().equals(Constant.TRUE)) {
 
-                        if(pendingReasonModel.getPendingReason().size()>0) {
+                        if (pendingReasonModel.getPendingReason().size() > 0) {
                             for (int i = 0; i < pendingReasonModel.getPendingReason().size(); i++) {
-                                if(!databaseHelper.isRecordExist(DatabaseHelper.TABLE_PENDING_REASON_DATA,DatabaseHelper.KEY_ID,pendingReasonModel.getPendingReason().get(i).getCmpPenRe())){
+                                if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_PENDING_REASON_DATA, DatabaseHelper.KEY_ID, pendingReasonModel.getPendingReason().get(i).getCmpPenRe())) {
                                     SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
                                     spinnerDataModel.setId(pendingReasonModel.getPendingReason().get(i).getCmpPenRe());
                                     spinnerDataModel.setName(pendingReasonModel.getPendingReason().get(i).getName());
@@ -537,9 +577,9 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
                             }
                             setAdapter();
                         }
-                    /*} else if (pendingReasonModel.getStatus().equals(Constant.FAILED)) {
+                    } else if (pendingReasonModel.getStatus().equals(Constant.FAILED)) {
                         Utility.logout(getApplicationContext());
-                    }*/
+                    }
                 }
 
             }
@@ -560,5 +600,54 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
         SpinnerAdapter spinnerAdapter = new com.shaktipumplimted.serviceapp.Utils.common.adapter.SpinnerAdapter(AddPendingReasonActivity.this, pendingReasonList);
         pendingReasonSpinner.setAdapter(spinnerAdapter);
 
+    }
+
+
+    public void addPendingReason() {
+        Utility.showProgressDialogue(this);
+        try {
+            JSONArray jsonArray = new JSONArray();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmpno", complaintListModel.getCmpno());
+            jsonObject.put("follow_up_date", selectedFollowUpDate);
+            jsonObject.put("reason", actionExt.getText().toString().trim());
+            jsonObject.put("CMP_PEN_RE", selectedPendingReason);
+            jsonObject.put("latitude", gpsTracker.getLatitude());
+            jsonObject.put("longitude", gpsTracker.getLongitude());
+            jsonObject.put("cr_date", Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd", Utility.getCurrentDate()));
+            jsonObject.put("cr_time", Utility.getFormattedTime("h:mm a", "hhmmss", Utility.getCurrentTime()));
+            jsonObject.put("cmpln_status", Constant.REPLY);
+
+            for (int i = 0; i < imageArrayList.size(); i++) {
+                if (imageArrayList.get(i).isImageSelected()) {
+                    jsonObject.put("photo" + imageArrayList.get(i).getPosition(), Utility.getBase64FromPath(getApplicationContext(), imageArrayList.get(i).getImagePath()));
+                }
+            }
+            jsonArray.put(jsonObject);
+            uploadImageAPIS.setActionListener(jsonArray, Constant.addPendingImage, new ActionListenerCallback() {
+                @Override
+                public void onActionSuccess(String result) {
+                    Utility.hideProgressDialogue();
+                    CommonRespModel commonRespModel = new Gson().fromJson(result, CommonRespModel.class);
+                    if (commonRespModel.getStatus().equals(Constant.TRUE)) {
+                        databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_PENDING_REASON_IMAGE_DATA, DatabaseHelper.KEY_IMAGE_BILL_NO, complaintListModel.getCmpno());
+                        onBackPressed();
+                        Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
+                    } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
+                        Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
+                    } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
+
+                }
+
+                @Override
+                public void onActionFailure(String failureMessage) {
+                    Utility.hideProgressDialogue();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

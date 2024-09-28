@@ -309,6 +309,7 @@ public class CheckOutActivity extends AppCompatActivity implements ImageSelectio
     private void cameraIntent() {
 
         camraLauncher.launch(new Intent(CheckOutActivity.this, SurfaceCameraActivity.class)
+                .putExtra(Constant.frontCamera,"1")
                 .putExtra(Constant.customerName, customerListModel.getCustomerName()));
 
     }

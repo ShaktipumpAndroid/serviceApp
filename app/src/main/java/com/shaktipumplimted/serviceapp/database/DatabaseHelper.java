@@ -27,6 +27,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_COMPLAINT_STATUS_DATA = "tbl_complaint_status_data";
     public static final String TABLE_COMPLAINT_IMAGE_DATA = "tbl_complaint_image_data";
+    public static final String TABLE_PENDING_REASON_IMAGE_DATA = "tbl_pending_reason_image_data";
     public static final String TABLE_SITE_SURVEY_IMAGE_DATA = "tbl_site_survey_image_data";
     public static final String TABLE_CHECK_OUT_IMAGE_DATA = "tbl_checkout_image_data";
     public static final String TABLE_LOCAL_CONVEYANCE_DATA = "tbl_local_conveyance_data";
@@ -139,6 +140,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_IMAGE_LATITUDE + " TEXT,"
             + KEY_IMAGE_LONGITUDE + " TEXT,"
             + KEY_IMAGE_POSITION + " TEXT)";
+
+    private static final String CREATE_TABLE_PENDING_REASON_IMAGES = "CREATE TABLE "
+            + TABLE_PENDING_REASON_IMAGE_DATA + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + KEY_IMAGE_NAME + " TEXT,"
+            + KEY_IMAGE_PATH + " TEXT,"
+            + KEY_IMAGE_SELECTED + " BOOLEAN,"
+            + KEY_IMAGE_BILL_NO + " TEXT,"
+            + KEY_IMAGE_LATITUDE + " TEXT,"
+            + KEY_IMAGE_LONGITUDE + " TEXT,"
+            + KEY_IMAGE_POSITION + " TEXT)";
+
 
     private static final String CREATE_TABLE_SITE_SURVEY_IMAGES = "CREATE TABLE "
             + TABLE_SITE_SURVEY_IMAGE_DATA + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
@@ -256,6 +268,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_COMPLAINT_RELATED);
         db.execSQL(CREATE_TABLE_COMPLAINT_CLOSURE);
         db.execSQL(CREATE_TABLE_COMPLAINT_FORWARD_PERSON_DATA);
+        db.execSQL(CREATE_TABLE_PENDING_REASON_IMAGES);
 
     }
 
@@ -274,6 +287,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_DEFECT);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_RELATED);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_CLOSURE);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PENDING_REASON_IMAGE_DATA);
         onCreate(db);
     }
 
