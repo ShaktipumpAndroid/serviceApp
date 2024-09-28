@@ -165,14 +165,11 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
                     if (result.getData() != null && result.getData().getExtras() != null) {
 
                         Bundle bundle = result.getData().getExtras();
-                        Log.e("bundle====>", bundle.get(Constant.file).toString());
                         imagePath = bundle.get(Constant.file).toString();
                         latitude = bundle.get(Constant.latitude).toString();
                         longitude = bundle.get(Constant.latitude).toString();
                         address = bundle.get(Constant.address).toString();
-                        Log.e("lat==>",latitude);
-                        Log.e("lng==>",longitude);
-                        Log.e("address==>",address);
+
                         saveInLocalDatabase();
                     }
                 }
@@ -196,7 +193,11 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
         }
 
         databaseHelper.insertMarkAttendanceData(markAttendanceModel);
-        SaveAttendance();
+        if(Utility.isInternetOn(getApplicationContext())) {
+            SaveAttendance();
+        }else{
+            Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
+        }
     }
 
     private void SaveAttendance() {
@@ -209,9 +210,6 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
         date = Utility.getFormattedDate("dd.MM.yyyy","yyyyMMdd",Utility.getCurrentDate());
         time = Utility.getFormattedTime("h:mm a","hhmmss",Utility.getCurrentTime());
 
-        Log.e("markattnd==>",attendancelist.toString());
-        Log.e("date==>",attendancelist.get(attendancelist.size()-1).getAttendanceDate());
-        Log.e("time==>",attendancelist.get(attendancelist.size()-1).getAttendanceTime());
         Utility.showProgressDialogue(this);
         try {
             JSONArray jsonArray = new JSONArray();
@@ -219,7 +217,13 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
             jsonObject.put("date", attendancelist.get(attendancelist.size()-1).getAttendanceDate());
             jsonObject.put("time", attendancelist.get(attendancelist.size()-1).getAttendanceTime());
             jsonObject.put("lat_long", latitude+","+longitude);
-            jsonObject.put("address", address);
+
+            if(!address.isEmpty()){
+                jsonObject.put("address", address);
+            }else {
+                jsonObject.put("address", Utility.getAddressFromLatLng(getApplicationContext(),latitude,longitude));
+            }
+
             jsonObject.put("timestatus", timestatus);
             jsonObject.put("image", Utility.getBase64FromPath(getApplicationContext(), imagePath));
 
