@@ -52,6 +52,11 @@ public class UploadImageAPIS {
                new syncData(jsonArray,APIS.BASEURL+APIS.ADD_PENDING_REASON+"?token="
                         + Utility.getSharedPreferences(mContext,Constant.accessToken),"inprocess_complaint",callBack).execute();
                 break;
+            case Constant.markAttendance:
+                //Log.e("jsonArray==>", String.valueOf(jsonArray));
+                new syncData(jsonArray,APIS.BASEURL+APIS.MARK_ATTENDANCE+"?token="
+                        + Utility.getSharedPreferences(mContext,Constant.accessToken),"data",callBack).execute();
+                break;
         }
 
     }

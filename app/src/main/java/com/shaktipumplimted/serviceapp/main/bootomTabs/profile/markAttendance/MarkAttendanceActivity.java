@@ -28,15 +28,22 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.Utils.common.activity.SurfaceCameraActivity;
+import com.shaktipumplimted.serviceapp.Utils.common.model.CommonRespModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.LocalConveyanceActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.MarkAttendanceModel;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
+import com.shaktipumplimted.serviceapp.webService.uploadImages.UploadImageAPIS;
+import com.shaktipumplimted.serviceapp.webService.uploadImages.interfaces.ActionListenerCallback;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +57,10 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
     APIInterface apiInterface;
     DatabaseHelper databaseHelper;
     String markAttendanceStatus ="",imagePath = "";
-    List <MarkAttendanceModel>markAttendanceList;
+    List <MarkAttendanceModel> markAttendanceList, attendancelist;
     RecyclerView  attendanceList;
+    String timestatus = "", latitude = "", longitude = "", address = "", date = "", time = "";
+    UploadImageAPIS uploadImageAPIS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +81,10 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
 
     private void Init() {
         markAttendanceList = new ArrayList<>();
+        attendancelist = new ArrayList<>();
         apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
         databaseHelper = new DatabaseHelper(this);
-
+        uploadImageAPIS = new UploadImageAPIS(getApplicationContext());
         toolbar = findViewById(R.id.toolbar);
         attendanceInBtn = findViewById(R.id.attendanceInBtn);
         attendanceOutBtn = findViewById(R.id.attendanceOutBtn);
@@ -157,13 +167,21 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
                         Bundle bundle = result.getData().getExtras();
                         Log.e("bundle====>", bundle.get(Constant.file).toString());
                         imagePath = bundle.get(Constant.file).toString();
-                       saveInLocalDatabase();
+                        latitude = bundle.get(Constant.latitude).toString();
+                        longitude = bundle.get(Constant.latitude).toString();
+                        address = bundle.get(Constant.address).toString();
+                        Log.e("lat==>",latitude);
+                        Log.e("lng==>",longitude);
+                        Log.e("address==>",address);
+                        saveInLocalDatabase();
                     }
-
                 }
             });
 
     private void saveInLocalDatabase() {
+        if(markAttendanceStatus.equals("1")){
+            databaseHelper.deleteData(DatabaseHelper.TABLE_MARK_ATTENDANCE_DATA);
+        }
         MarkAttendanceModel markAttendanceModel = new MarkAttendanceModel();
         markAttendanceModel.setAttendanceDate(Utility.getCurrentDate());
         markAttendanceModel.setAttendanceTime(Utility.getCurrentTime());
@@ -171,12 +189,64 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
         if(markAttendanceStatus.equals("1")){
             markAttendanceModel.setAttendanceStatus(Constant.attendanceIN);
             attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_in_time)+Utility.getCurrentDate()+"\n"+Utility.getCurrentTime());
+
         }else {
             markAttendanceModel.setAttendanceStatus(Constant.attendanceOut);
             attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_out_time)+Utility.getCurrentDate()+"\n"+Utility.getCurrentTime());
         }
 
         databaseHelper.insertMarkAttendanceData(markAttendanceModel);
+        SaveAttendance();
+    }
+
+    private void SaveAttendance() {
+        attendancelist = databaseHelper.getAllMarkAttendanceData(true);
+        if (markAttendanceStatus.equals("1")){
+            timestatus = "in";
+        } else if (markAttendanceStatus.equals("2")) {
+            timestatus = "out";
+        }
+        date = Utility.getFormattedDate("dd.MM.yyyy","yyyyMMdd",Utility.getCurrentDate());
+        time = Utility.getFormattedTime("h:mm a","hhmmss",Utility.getCurrentTime());
+
+        Log.e("markattnd==>",attendancelist.toString());
+        Log.e("date==>",attendancelist.get(attendancelist.size()-1).getAttendanceDate());
+        Log.e("time==>",attendancelist.get(attendancelist.size()-1).getAttendanceTime());
+        Utility.showProgressDialogue(this);
+        try {
+            JSONArray jsonArray = new JSONArray();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("date", attendancelist.get(attendancelist.size()-1).getAttendanceDate());
+            jsonObject.put("time", attendancelist.get(attendancelist.size()-1).getAttendanceTime());
+            jsonObject.put("lat_long", latitude+","+longitude);
+            jsonObject.put("address", address);
+            jsonObject.put("timestatus", timestatus);
+            jsonObject.put("image", Utility.getBase64FromPath(getApplicationContext(), imagePath));
+
+            jsonArray.put(jsonObject);
+            uploadImageAPIS.setActionListener(jsonArray, Constant.markAttendance, new ActionListenerCallback() {
+                @Override
+                public void onActionSuccess(String result) {
+                    Utility.hideProgressDialogue();
+                    CommonRespModel commonRespModel = new Gson().fromJson(result, CommonRespModel.class);
+                    if (commonRespModel.getStatus().equals(Constant.TRUE)) {
+                        onBackPressed();
+                        Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
+                    } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
+                        Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
+                    } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
+                }
+
+                @Override
+                public void onActionFailure(String failureMessage) {
+                    Utility.hideProgressDialogue();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

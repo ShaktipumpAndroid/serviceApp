@@ -161,6 +161,19 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
                         }
 
+                        if (complaintDropdownModel.getData().getComplainCloser().size() > 0) {
+
+                            for (int i = 0; i < complaintDropdownModel.getData().getComplainCloser().size(); i++) {
+                                if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_CLOSURE, DatabaseHelper.KEY_ID, complaintDropdownModel.getData().getComplainCloser().get(i).getReason())) {
+                                    SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
+                                    spinnerDataModel.setId(complaintDropdownModel.getData().getComplainCloser().get(i).getReason());
+                                    spinnerDataModel.setName(complaintDropdownModel.getData().getComplainCloser().get(i).getReason());
+                                    databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_COMPLAINT_CLOSURE);
+                                }
+                            }
+
+                        }
+
                         setDropdown();
                     } else if (complaintDropdownModel.getStatus().equals(Constant.FALSE)) {
                         Utility.hideProgressDialogue();
@@ -190,8 +203,13 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
         complaintRelatedToList.add(new SpinnerDataModel("00", getResources().getString(R.string.select_related_to)));
         complaintRelatedToList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_COMPLAINT_RELATED));
+
+        complaintClosureList.add(new SpinnerDataModel("00", getResources().getString(R.string.select_closure)));
+        complaintClosureList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_COMPLAINT_CLOSURE));
+
         setSpinnerAdapter(complaintCategoryList, categorySpinner);
         setSpinnerAdapter(complaintDefectList, defectTypeSpinner);
+        setSpinnerAdapter(complaintClosureList, closureReasonSpinner);
         setSpinnerAdapter(complaintRelatedToList, complaintRelatedToSpinner);
     }
 
