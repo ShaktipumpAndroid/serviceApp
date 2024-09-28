@@ -254,6 +254,7 @@ public class SiteSurveyActivity extends AppCompatActivity implements ImageSelect
     private void cameraIntent() {
 
         camraLauncher.launch(new Intent(SiteSurveyActivity.this, SurfaceCameraActivity.class)
+                .putExtra(Constant.frontCamera,"1")
                 .putExtra(Constant.customerName, customerListModel.getCustomerName()));
 
     }

@@ -9,12 +9,14 @@ android {
     compileSdk = 34
 
     defaultConfig {
+        useLibrary( "org.apache.http.legacy")
         applicationId = "com.shaktipumplimted.serviceapp"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     flavorDimensions += "default"

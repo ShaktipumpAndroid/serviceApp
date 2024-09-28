@@ -22,6 +22,8 @@ public class APIS {
     public static final String COMPLAINT_DROPDOWNS = "get_complaint_category_defect_relatedto_closer.htm";
 
 
+    public static final String ADD_PENDING_REASON = "save_pending_reason.htm";
 
+    //http://spquasrvr1.shaktipumps.com:8423/sap/bc/bsp/sap/zmapp_service_e/save_pending_reason.htm
 
 }
