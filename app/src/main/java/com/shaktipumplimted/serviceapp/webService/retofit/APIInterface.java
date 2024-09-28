@@ -6,6 +6,7 @@ import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetai
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.model.CompForwardListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.DistanceCalculateModel;
 import com.shaktipumplimted.serviceapp.webService.api.APIS;
@@ -42,6 +43,9 @@ public interface APIInterface {
 
     @GET(APIS.PENDING_REASONS_API)
     Call<PendingReasonModel> getPendingReasonList(@Query("token") String token);
+
+    @GET(APIS.PENDING_REASON_HISTORY)
+    Call<PendingReasonListModel> getPendingReasonHistory(@Query("token") String token, @Query("cmpno") String cmpno);
 
     @GET(APIS.COMPLAINT_FORWARD_PERSON_LIST_API)
     Call<CompForwardListModel> complaintForwardPersonList(@Query("token") String token, @Query("forward_to") String forward_to, @Query("cmpno") String cmpno);
