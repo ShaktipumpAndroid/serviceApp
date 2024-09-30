@@ -179,6 +179,10 @@
     <string name="pendingReasonAdded">Pending Reason Added successfully</string>
     <string name="somethingWentWrong">SomethingWentWrong</string>
     <string name="select_closure">Select closure reason</string>
+    <string name="select_defect_type_first">Please select defect type first!</string>
+    <string name="select_comp_related_first">Please select complaint related to first!</string>
+    <string name="yourReportingSapID">Please ask admin to assign any reporting person to you</string>
+    <string name="attendanceDate">Attendance Date</string>
 
 
     <string-array name="login_type_array">

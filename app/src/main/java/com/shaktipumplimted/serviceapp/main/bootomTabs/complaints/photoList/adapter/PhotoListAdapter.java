@@ -19,12 +19,12 @@ import java.util.List;
 
 public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.ViewHolder>{
     Context mContext;
-    private List<PhotoListModel> searchList;
-    private List<PhotoListModel> complaintStatusArrayList;
+    private List<PhotoListModel.Response> searchList;
+    private List<PhotoListModel.Response> complaintStatusArrayList;
     private static ItemClickListener itemClickListener;
 
 
-    public PhotoListAdapter(Context context, List<PhotoListModel> listdata) {
+    public PhotoListAdapter(Context context, List<PhotoListModel.Response> listdata) {
         this.complaintStatusArrayList = listdata;
         this.mContext = context;
         this.searchList = new ArrayList<>();
@@ -43,10 +43,10 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.View
     @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        final PhotoListModel response = complaintStatusArrayList.get(position);
+        final PhotoListModel.Response response = complaintStatusArrayList.get(position);
 
         Glide.with(mContext)
-                .load(response.getImage())
+                .load(response.getImage1())
                 .centerCrop()
                 .placeholder(R.mipmap.ic_launcher)
                 .into(holder.complaintImg);

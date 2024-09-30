@@ -34,7 +34,8 @@ import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.Utils.common.activity.SurfaceCameraActivity;
 import com.shaktipumplimted.serviceapp.Utils.common.model.CommonRespModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.LocalConveyanceActivity;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.adapter.MarkAttendanceAdapter;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.AttendanceDataModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.MarkAttendanceModel;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
@@ -48,6 +49,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MarkAttendanceActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int REQUEST_CODE_PERMISSION = 101;
 
@@ -56,9 +61,9 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
 
     APIInterface apiInterface;
     DatabaseHelper databaseHelper;
-    String markAttendanceStatus ="",imagePath = "";
-    List <MarkAttendanceModel> markAttendanceList, attendancelist;
-    RecyclerView  attendanceList;
+    String markAttendanceStatus ="", imagePath = "";
+    List<MarkAttendanceModel> markAttendanceList,attendanceArrayList;
+    RecyclerView attendanceList;
     String timestatus = "", latitude = "", longitude = "", address = "", date = "", time = "";
     UploadImageAPIS uploadImageAPIS;
 
@@ -81,7 +86,7 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
 
     private void Init() {
         markAttendanceList = new ArrayList<>();
-        attendancelist = new ArrayList<>();
+        attendanceArrayList = new ArrayList<>();
         apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
         databaseHelper = new DatabaseHelper(this);
         uploadImageAPIS = new UploadImageAPIS(getApplicationContext());
@@ -98,29 +103,44 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
         getSupportActionBar().setTitle(getResources().getString(R.string.markAttendance));
         toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
-       setMarkAttendanceData();
+
+        setMarkAttendanceData();
     }
 
     private void setMarkAttendanceData() {
-        markAttendanceList = databaseHelper.getAllMarkAttendanceData(true);
+        markAttendanceList = databaseHelper.getAllMarkAttendanceData(false,Utility.getCurrentDate());
+        attendanceArrayList = databaseHelper.getAllMarkAttendanceData(true,Utility.getCurrentDate());
 
-        if(databaseHelper.isRecordExist(DatabaseHelper.TABLE_MARK_ATTENDANCE_DATA,DatabaseHelper.KEY_ATTENDANCE_DATE,Utility.getCurrentDate())&&
-                databaseHelper.isRecordExist(DatabaseHelper.TABLE_MARK_ATTENDANCE_DATA,DatabaseHelper.KEY_ATTENDANCE_STATUS,Constant.attendanceIN)){
+        if (markAttendanceList.size() > 0) {
+            if (markAttendanceList.get(0).getAttendanceStatus().equals(Constant.attendanceIN)) {
 
-            attendanceInBtn.setBackgroundResource(R.drawable.rounded_bg_grey);
-            attendanceOutBtn.setBackgroundResource(R.drawable.rounded_bg_blue);
-            attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_in_time)+markAttendanceList.get(markAttendanceList.size()-1).getAttendanceDate()+"\n"+markAttendanceList.get(markAttendanceList.size()-1).getAttendanceTime());
+                attendanceInBtn.setBackgroundResource(R.drawable.rounded_bg_grey);
+                attendanceOutBtn.setBackgroundResource(R.drawable.rounded_bg_blue);
+                attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_in_time) + markAttendanceList.get(markAttendanceList.size() - 1).getAttendanceDate() + "\n" + markAttendanceList.get(markAttendanceList.size() - 1).getAttendanceTime());
+            }
+
+            if (markAttendanceList.get(1).getAttendanceStatus().equals(Constant.attendanceOut)){
+
+                attendanceInBtn.setBackgroundResource(R.drawable.rounded_bg_grey);
+                attendanceOutBtn.setBackgroundResource(R.drawable.rounded_bg_grey);
+                attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_in_time) + markAttendanceList.get(0).getAttendanceDate() + "\n" + markAttendanceList.get(0).getAttendanceTime());
+                attendanceOutTimeTxt.setText(getResources().getString(R.string.attendance_out_time) + markAttendanceList.get(markAttendanceList.size() - 1).getAttendanceDate() + "\n" + markAttendanceList.get(markAttendanceList.size() - 1).getAttendanceTime());
+
+            }
+        } else {
+            if (Utility.isInternetOn(getApplicationContext())) {
+                getAttendanceData();
+            } else {
+               Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
+            }
         }
 
-        if(databaseHelper.isRecordExist(DatabaseHelper.TABLE_MARK_ATTENDANCE_DATA,DatabaseHelper.KEY_ATTENDANCE_DATE,Utility.getCurrentDate())&&
-                databaseHelper.isRecordExist(DatabaseHelper.TABLE_MARK_ATTENDANCE_DATA,DatabaseHelper.KEY_ATTENDANCE_STATUS,Constant.attendanceOut)){
-
-            attendanceInBtn.setBackgroundResource(R.drawable.rounded_bg_grey);
-            attendanceOutBtn.setBackgroundResource(R.drawable.rounded_bg_grey);
-            attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_in_time)+markAttendanceList.get(0).getAttendanceDate()+"\n"+markAttendanceList.get(0).getAttendanceTime());
-            attendanceOutTimeTxt.setText(getResources().getString(R.string.attendance_out_time)+markAttendanceList.get(markAttendanceList.size()-1).getAttendanceDate()+"\n"+markAttendanceList.get(markAttendanceList.size()-1).getAttendanceTime());
-
+        if(attendanceArrayList.size()>0){
+            MarkAttendanceAdapter markAttendanceAdapter = new MarkAttendanceAdapter(getApplicationContext(),attendanceArrayList);
+            attendanceList.setHasFixedSize(true);
+            attendanceList.setAdapter(markAttendanceAdapter);
         }
+
     }
 
     private void listner() {
@@ -149,11 +169,10 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
     }
 
 
-
     private void cameraIntent() {
 
         camraLauncher.launch(new Intent(MarkAttendanceActivity.this, SurfaceCameraActivity.class)
-                        .putExtra(Constant.frontCamera,"0")
+                .putExtra(Constant.frontCamera,"0")
                 .putExtra(Constant.customerName, Utility.getSharedPreferences(getApplicationContext(), Constant.userName)));
 
     }
@@ -171,57 +190,60 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
                         address = bundle.get(Constant.address).toString();
 
                         saveInLocalDatabase();
+
                     }
                 }
             });
 
     private void saveInLocalDatabase() {
-        if(markAttendanceStatus.equals("1")){
+        if (markAttendanceStatus.equals("1")) {
             databaseHelper.deleteData(DatabaseHelper.TABLE_MARK_ATTENDANCE_DATA);
         }
+
         MarkAttendanceModel markAttendanceModel = new MarkAttendanceModel();
         markAttendanceModel.setAttendanceDate(Utility.getCurrentDate());
         markAttendanceModel.setAttendanceTime(Utility.getCurrentTime());
         markAttendanceModel.setAttendanceImg(imagePath);
-        if(markAttendanceStatus.equals("1")){
-            markAttendanceModel.setAttendanceStatus(Constant.attendanceIN);
-            attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_in_time)+Utility.getCurrentDate()+"\n"+Utility.getCurrentTime());
+        markAttendanceModel.setAttendanceStatus(Constant.attendanceIN);
 
-        }else {
+        if (markAttendanceStatus.equals("1")) {
+            attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_in_time) + Utility.getCurrentDate() + "\n" + Utility.getCurrentTime());
+
+        } else {
             markAttendanceModel.setAttendanceStatus(Constant.attendanceOut);
-            attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_out_time)+Utility.getCurrentDate()+"\n"+Utility.getCurrentTime());
+            attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_out_time) + Utility.getCurrentDate() + "\n" + Utility.getCurrentTime());
         }
 
         databaseHelper.insertMarkAttendanceData(markAttendanceModel);
-        if(Utility.isInternetOn(getApplicationContext())) {
+        if (Utility.isInternetOn(getApplicationContext())) {
             SaveAttendance();
-        }else{
-            Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
+        } else {
+            Utility.ShowToast(getResources().getString(R.string.checkInternetConnection), getApplicationContext());
         }
     }
 
     private void SaveAttendance() {
-        attendancelist = databaseHelper.getAllMarkAttendanceData(true);
+        markAttendanceList = databaseHelper.getAllMarkAttendanceData(false,Utility.getCurrentDate());
         if (markAttendanceStatus.equals("1")){
             timestatus = "in";
         } else if (markAttendanceStatus.equals("2")) {
             timestatus = "out";
         }
-        date = Utility.getFormattedDate("dd.MM.yyyy","yyyyMMdd",Utility.getCurrentDate());
-        time = Utility.getFormattedTime("h:mm a","hhmmss",Utility.getCurrentTime());
+        date = Utility.getFormattedDate("dd.MM.yyyy","yyyyMMdd",markAttendanceList.get(markAttendanceList.size() - 1).getAttendanceDate());
+        time = Utility.getFormattedTime("h:mm a","hhmmss",markAttendanceList.get(markAttendanceList.size() - 1).getAttendanceTime());
 
         Utility.showProgressDialogue(this);
         try {
             JSONArray jsonArray = new JSONArray();
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("date", attendancelist.get(attendancelist.size()-1).getAttendanceDate());
-            jsonObject.put("time", attendancelist.get(attendancelist.size()-1).getAttendanceTime());
-            jsonObject.put("lat_long", latitude+","+longitude);
+            jsonObject.put("date", date);
+            jsonObject.put("time",time);
+            jsonObject.put("lat_long", latitude + "," + longitude);
 
-            if(!address.isEmpty()){
+            if (!address.isEmpty()) {
                 jsonObject.put("address", address);
-            }else {
-                jsonObject.put("address", Utility.getAddressFromLatLng(getApplicationContext(),latitude,longitude));
+            } else {
+                jsonObject.put("address", Utility.getAddressFromLatLng(getApplicationContext(), latitude, longitude));
             }
 
             jsonObject.put("timestatus", timestatus);
@@ -326,4 +348,81 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
         }
     }
 
+
+    private void getAttendanceData() {
+
+        Utility.showProgressDialogue(this);
+        Call<AttendanceDataModel> call3 = apiInterface.getAttendanceData(Utility.getSharedPreferences(getApplicationContext(), Constant.accessToken));
+        call3.enqueue(new Callback<AttendanceDataModel>() {
+            @Override
+            public void onResponse(@NonNull Call<AttendanceDataModel> call, @NonNull Response<AttendanceDataModel> response) {
+                Log.e("url===>", String.valueOf(call.request().url()));
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    AttendanceDataModel attendanceDataModel = response.body();
+                    if (attendanceDataModel.getStatus().equals(Constant.TRUE)) {
+
+                        imagePath = "";
+
+                        for (int i=0; i<attendanceDataModel.getResponse().size(); i++){
+
+                            Log.e("Time==>",Utility.getFormattedTime("HH:mm:ss","h:mm a",attendanceDataModel.getResponse().get(i).getServerTimeIn()));
+                            if (!attendanceDataModel.getResponse().get(i).getServerTimeIn().isEmpty()&&
+                                    !attendanceDataModel.getResponse().get(i).getServerTimeIn().equals("00:00:00")) {
+
+                                addInLocalDatabase(attendanceDataModel.getResponse().get(i), Constant.attendanceIN, 0);
+                            }
+                            if (!attendanceDataModel.getResponse().get(i).getServerTimeOut().isEmpty() &&
+                            !attendanceDataModel.getResponse().get(i).getServerTimeOut().equals("00:00:00")) {
+                                addInLocalDatabase(attendanceDataModel.getResponse().get(i), Constant.attendanceOut, 1);
+
+                            }
+                        }
+
+                        setMarkAttendanceData();
+
+                    }
+                    if (attendanceDataModel.getStatus().equals(Constant.FALSE)) {
+                        Utility.hideProgressDialogue();
+                    } else if (attendanceDataModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<AttendanceDataModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+
+            }
+        });
+
+
+    }
+
+    private void addInLocalDatabase(AttendanceDataModel.Response response, String attendanceStatus, int value) {
+
+        switch (value) {
+            case 0:
+                MarkAttendanceModel markAttendanceModel = new MarkAttendanceModel();
+                markAttendanceModel.setAttendanceDate(response.getServerDateIn());
+                markAttendanceModel.setAttendanceTime(Utility.getFormattedTime("HH:mm:ss","h:mm a",response.getServerTimeIn()));
+                markAttendanceModel.setAttendanceImg(imagePath);
+                markAttendanceModel.setAttendanceStatus(attendanceStatus);
+                databaseHelper.insertMarkAttendanceData(markAttendanceModel);
+                break;
+            case 1:
+                MarkAttendanceModel markAttendanceModel1 = new MarkAttendanceModel();
+                markAttendanceModel1.setAttendanceDate(response.getServerDateOut());
+                markAttendanceModel1.setAttendanceTime(Utility.getFormattedTime("HH:mm:ss","h:mm a",response.getServerTimeOut()));
+                markAttendanceModel1.setAttendanceImg(imagePath);
+                markAttendanceModel1.setAttendanceStatus(attendanceStatus);
+                databaseHelper.insertMarkAttendanceData(markAttendanceModel1);
+                break;
+        }
+    }
 }

@@ -223,7 +223,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-condensed-medium"
                     android:imeOptions="actionNext"
-                    android:inputType="number"
+                    android:inputType="text"
                     android:maxLines="1"
                     android:singleLine="true"
                     android:textColor="@color/black"

@@ -458,16 +458,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.close();
     }
 
-    public ArrayList<MarkAttendanceModel> getAllMarkAttendanceData(boolean isRetrieveLastData) {
+    public ArrayList<MarkAttendanceModel> getAllMarkAttendanceData(boolean isAllData,String date) {
         String selectQuery;
         ArrayList<MarkAttendanceModel> imageModelArrayList = new ArrayList<MarkAttendanceModel>();
         SQLiteDatabase database = this.getWritableDatabase();
         if (doesTableExist(database, TABLE_MARK_ATTENDANCE_DATA)) {
 
-            if(isRetrieveLastData) {
+            if(isAllData) {
                 selectQuery = "SELECT * FROM " + TABLE_MARK_ATTENDANCE_DATA;
             }else {
-                selectQuery = "SELECT * FROM " + TABLE_MARK_ATTENDANCE_DATA + " WHERE " + KEY_ATTENDANCE_DATE + " != '" + "" + "'" + " AND " + KEY_ATTENDANCE_TIME + " != '" + "" + "'";
+                selectQuery = "SELECT * FROM " + TABLE_MARK_ATTENDANCE_DATA + " WHERE " + KEY_ATTENDANCE_DATE + " == '" + date + "'";
             }
             Cursor mcursor = database.rawQuery(selectQuery, null);
 

@@ -25,6 +25,9 @@ public class APIS {
 
     public static final String ADD_PENDING_REASON = "save_pending_reason.htm";
     public static final String MARK_ATTENDANCE = "attendanceinout.htm";
+    public static final String COMPLAINT_FORWARD_APPROVAL = "forward_approval_complaint.htm";
+    public static final String COMPLAINT_PHOTO_LIST = "view_cmpln_photo.htm";
+    public static final String GET_ATTENDANCE_DATA = "attendance_data_getapi.htm";
 
     //http://spquasrvr1.shaktipumps.com:8423/sap/bc/bsp/sap/zmapp_service_e/save_pending_reason.htm
 

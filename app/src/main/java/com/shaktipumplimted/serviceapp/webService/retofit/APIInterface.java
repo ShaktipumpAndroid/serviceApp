@@ -8,7 +8,9 @@ import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.photoList.model.PhotoListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.DistanceCalculateModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.AttendanceDataModel;
 import com.shaktipumplimted.serviceapp.webService.api.APIS;
 
 import retrofit2.Call;
@@ -52,6 +54,17 @@ public interface APIInterface {
 
     @GET(APIS.COMPLAINT_DROPDOWNS)
     Call<ComplaintDropdownModel> getComplaintDropdowns(@Query("token") String token);
+
+    @GET(APIS.COMPLAINT_FORWARD_APPROVAL)
+    Call<CommonRespModel> complaintForwardApproval(@Query("token") String token, @Query("forward_approval_complaint") String forward_approval_complaint);
+
+    @GET(APIS.COMPLAINT_PHOTO_LIST)
+    Call<PhotoListModel> getComplaintPhotoList(@Query("token") String token, @Query("cmpno") String cmpno, @Query("page") String page);
+
+    @GET(APIS.GET_ATTENDANCE_DATA)
+    Call<AttendanceDataModel> getAttendanceData(@Query("token") String token);
+
+
 
   }
 

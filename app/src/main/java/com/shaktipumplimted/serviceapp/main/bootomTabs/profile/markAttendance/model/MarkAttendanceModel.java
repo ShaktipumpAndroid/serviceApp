@@ -42,4 +42,15 @@ public class MarkAttendanceModel {
     public void setAttendanceImg(String attendanceImg) {
         this.attendanceImg = attendanceImg;
     }
+
+    @Override
+    public String toString() {
+        return "MarkAttendanceModel{" +
+                "uniqId='" + uniqId + '\'' +
+                ", attendanceDate='" + attendanceDate + '\'' +
+                ", attendanceTime='" + attendanceTime + '\'' +
+                ", attendanceStatus='" + attendanceStatus + '\'' +
+                ", attendanceImg='" + attendanceImg + '\'' +
+                '}';
+    }
 }

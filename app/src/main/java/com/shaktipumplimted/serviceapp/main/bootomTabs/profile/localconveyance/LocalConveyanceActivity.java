@@ -321,7 +321,6 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
                 localConveyanceModel.setEndTime(Utility.getCurrentTime());
                 localConveyanceModel.setStartImgPath(localConveyance.getStartImgPath());
                 localConveyanceModel.setEndImgPath(imagePath);
-                Log.e("endLat=>",endLatitudeExt.getText().toString().trim());
                 databaseHelper.updateLocalConveyanceData(localConveyanceModel);
 
                 tripEnded();

@@ -31,18 +31,23 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScanner;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning;
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
-import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
+import com.shaktipumplimted.serviceapp.Utils.common.model.CommonRespModel;
+import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
+import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
+import com.shaktipumplimted.serviceapp.main.MainActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.model.ComplaintDropdownModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.activity.ComplaintForwardActivity;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.photoList.activity.ComplaintPhotoListActivity;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.activity.PendingReasonListActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.activity.PendingReasonListActivity;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.photoList.activity.ComplaintPhotoListActivity;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +87,84 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         Init();
         listner();
         retriveValue();
+    }
+
+    private void Init() {
+        apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
+        databaseHelper = new DatabaseHelper(this);
+        toolbar = findViewById(R.id.toolbar);
+        complaintNo = findViewById(R.id.complaintNo);
+        customerName = findViewById(R.id.customerName);
+        customerMobileNo = findViewById(R.id.customerMobileNo);
+        customerAddress = findViewById(R.id.customerAddress);
+        materialCodeTxt = findViewById(R.id.materialCodeTxt);
+        materialNameTxt = findViewById(R.id.materialNameTxt);
+        serialNoTxt = findViewById(R.id.serialNoTxt);
+        billNoTxt = findViewById(R.id.billNoTxt);
+        billDateTxt = findViewById(R.id.billDateTxt);
+        customerPayExt = findViewById(R.id.customerPayExt);
+        companyPayExt = findViewById(R.id.companyPayExt);
+        focAmountExt = findViewById(R.id.focAmountExt);
+        returnByCompanyExt = findViewById(R.id.returnByCompanyExt);
+        payToFreelancerExt = findViewById(R.id.payToFreelancerExt);
+        remarkTxt = findViewById(R.id.remarkTxt);
+        pumpSerialTxt = findViewById(R.id.pumpSerialTxt);
+        motorSerialTxt = findViewById(R.id.motorSerialTxt);
+        controllerSerialTxt = findViewById(R.id.controllerSerialTxt);
+        categorySpinner = findViewById(R.id.categorySpinner);
+        closureReasonSpinner = findViewById(R.id.closureReasonSpinner);
+        defectTypeSpinner = findViewById(R.id.defectTypeSpinner);
+        complaintRelatedToSpinner = findViewById(R.id.complaintRelatedToSpinner);
+
+        pumpScanBtn = findViewById(R.id.pumpScanBtn);
+        motorScanBtn = findViewById(R.id.motorScanBtn);
+        controllerScanBtn = findViewById(R.id.controllerScanBtn);
+        pendingReasonBtn = findViewById(R.id.pendingReasonBtn);
+        forwardForApprovalBtn = findViewById(R.id.forwardForApprovalBtn);
+        forwardComplaintBtn = findViewById(R.id.forwardComplaintBtn);
+        closeComplaintBtn = findViewById(R.id.closeComplaintBtn);
+
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(getResources().getString(R.string.complaintDetail));
+        toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+
+        options = new GmsBarcodeScannerOptions.Builder()
+                .setBarcodeFormats(
+                        Barcode.FORMAT_ALL_FORMATS)
+                .build();
+
+        scanner = GmsBarcodeScanning.getClient(this);
+
+        retrieveValue();
+
+        Log.e("reportingPersonSapId",Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId));
+
+    }
+
+    private void listner() {
+        pumpScanBtn.setOnClickListener(this);
+        motorScanBtn.setOnClickListener(this);
+        controllerScanBtn.setOnClickListener(this);
+        pendingReasonBtn.setOnClickListener(this);
+        forwardForApprovalBtn.setOnClickListener(this);
+        forwardComplaintBtn.setOnClickListener(this);
+        closeComplaintBtn.setOnClickListener(this);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+
+        categorySpinner.setOnItemSelectedListener(this);
+        closureReasonSpinner.setOnItemSelectedListener(this);
+        defectTypeSpinner.setOnItemSelectedListener(this);
+        closureReasonSpinner.setOnItemSelectedListener(this);
+        complaintRelatedToSpinner.setOnItemSelectedListener(this);
+    }
+
+    private void retrieveValue() {
+        if (getIntent().getExtras() != null) {
+            complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
+        }
     }
 
     private void retriveValue() {
@@ -220,81 +303,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     }
 
 
-    private void Init() {
-        apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
-        databaseHelper = new DatabaseHelper(this);
-        toolbar = findViewById(R.id.toolbar);
-        complaintNo = findViewById(R.id.complaintNo);
-        customerName = findViewById(R.id.customerName);
-        customerMobileNo = findViewById(R.id.customerMobileNo);
-        customerAddress = findViewById(R.id.customerAddress);
-        materialCodeTxt = findViewById(R.id.materialCodeTxt);
-        materialNameTxt = findViewById(R.id.materialNameTxt);
-        serialNoTxt = findViewById(R.id.serialNoTxt);
-        billNoTxt = findViewById(R.id.billNoTxt);
-        billDateTxt = findViewById(R.id.billDateTxt);
-        customerPayExt = findViewById(R.id.customerPayExt);
-        companyPayExt = findViewById(R.id.companyPayExt);
-        focAmountExt = findViewById(R.id.focAmountExt);
-        returnByCompanyExt = findViewById(R.id.returnByCompanyExt);
-        payToFreelancerExt = findViewById(R.id.payToFreelancerExt);
-        remarkTxt = findViewById(R.id.remarkTxt);
-        pumpSerialTxt = findViewById(R.id.pumpSerialTxt);
-        motorSerialTxt = findViewById(R.id.motorSerialTxt);
-        controllerSerialTxt = findViewById(R.id.controllerSerialTxt);
-        categorySpinner = findViewById(R.id.categorySpinner);
-        closureReasonSpinner = findViewById(R.id.closureReasonSpinner);
-        defectTypeSpinner = findViewById(R.id.defectTypeSpinner);
-        complaintRelatedToSpinner = findViewById(R.id.complaintRelatedToSpinner);
 
-        pumpScanBtn = findViewById(R.id.pumpScanBtn);
-        motorScanBtn = findViewById(R.id.motorScanBtn);
-        controllerScanBtn = findViewById(R.id.controllerScanBtn);
-        pendingReasonBtn = findViewById(R.id.pendingReasonBtn);
-        forwardForApprovalBtn = findViewById(R.id.forwardForApprovalBtn);
-        forwardComplaintBtn = findViewById(R.id.forwardComplaintBtn);
-        closeComplaintBtn = findViewById(R.id.closeComplaintBtn);
-
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(getResources().getString(R.string.complaintDetail));
-        toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
-
-        options = new GmsBarcodeScannerOptions.Builder()
-                .setBarcodeFormats(
-                        Barcode.FORMAT_ALL_FORMATS)
-                .build();
-
-        scanner = GmsBarcodeScanning.getClient(this);
-
-        retrieveValue();
-
-
-    }
-
-    private void listner() {
-        pumpScanBtn.setOnClickListener(this);
-        motorScanBtn.setOnClickListener(this);
-        controllerScanBtn.setOnClickListener(this);
-        pendingReasonBtn.setOnClickListener(this);
-        forwardForApprovalBtn.setOnClickListener(this);
-        forwardComplaintBtn.setOnClickListener(this);
-        closeComplaintBtn.setOnClickListener(this);
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
-
-        categorySpinner.setOnItemSelectedListener(this);
-        closureReasonSpinner.setOnItemSelectedListener(this);
-        defectTypeSpinner.setOnItemSelectedListener(this);
-        closureReasonSpinner.setOnItemSelectedListener(this);
-    }
-
-    private void retrieveValue() {
-        if (getIntent().getExtras() != null) {
-            complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
-        }
-    }
 
     /*--------------------------------------------On Click Listner-------------------------------------------------------*/
 
@@ -312,23 +321,24 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                 break;
 
             case R.id.pendingReasonBtn:
-                    Intent intent = new Intent(this, PendingReasonListActivity.class);
-                    intent.putExtra(Constant.complaintData, complaintListModel);
-                    startActivity(intent);
+                Intent intent = new Intent(this, PendingReasonListActivity.class);
+                intent.putExtra(Constant.complaintData, complaintListModel);
+                startActivity(intent);
                 break;
 
             case R.id.forwardForApprovalBtn:
-                    ForwardForApproval(getResources().getString(R.string.want_to_forward_approval));
+                Validation(1);
+
                 break;
 
             case R.id.forwardComplaintBtn:
-                    Intent intent1 = new Intent(this, ComplaintForwardActivity.class);
-                    intent1.putExtra(Constant.complaintData, complaintListModel);
-                    startActivity(intent1);
+                Intent intent1 = new Intent(this, ComplaintForwardActivity.class);
+                intent1.putExtra(Constant.complaintData, complaintListModel);
+                startActivity(intent1);
                 break;
 
             case R.id.closeComplaintBtn:
-                closureValidation();
+                Validation(2);
                 break;
         }
 
@@ -339,19 +349,37 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (parent.getId() == R.id.categorySpinner) {
-            selectedCategory = complaintCategoryList.get(position).getId();
+            if (!complaintCategoryList.get(position).getName().equals(getResources().getString(R.string.select_cmp_cat))) {
+                selectedCategory = complaintCategoryList.get(position).getId();
+            } else {
+                selectedCategory = "";
+            }
 
         }
         if (parent.getId() == R.id.defectTypeSpinner) {
-            selectedDefect = complaintDefectList.get(position).getId();
+            if (!complaintDefectList.get(position).getName().equals(getResources().getString(R.string.select_defect_cat))) {
+                selectedDefect = complaintDefectList.get(position).getId();
+            } else {
+                selectedDefect = "";
+            }
 
         }
         if (parent.getId() == R.id.complaintRelatedToSpinner) {
-            selectedComplaintRelated = complaintRelatedToList.get(position).getId();
+            Log.e("select_related_to==>",complaintRelatedToList.get(position).getName());
+            Log.e("select_related_to2==>",getResources().getString(R.string.select_related_to));
+            if (!complaintRelatedToList.get(position).getName().equals(getResources().getString(R.string.select_related_to))) {
+                selectedComplaintRelated = complaintRelatedToList.get(position).getId();
+            } else {
+                selectedComplaintRelated = "";
+            }
 
         }
         if (parent.getId() == R.id.closureReasonSpinner) {
-            selectedClosureReason = complaintClosureList.get(position).getId();
+            if (!complaintClosureList.get(position).getName().equals(getResources().getString(R.string.select_closure))) {
+                selectedClosureReason = complaintClosureList.get(position).getId();
+            } else {
+                selectedClosureReason = "";
+            }
 
         }
 
@@ -362,7 +390,31 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
     }
 
-    private void closureValidation() {
+    private void Validation(int value) {
+        switch (value) {
+            case 1:
+                if (selectedCategory.isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.select_category_first), getApplicationContext());
+                } else if (selectedDefect.trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.select_defect_type_first), getApplicationContext());
+                } else if (selectedComplaintRelated.trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.select_comp_related_first), getApplicationContext());
+                } else if (returnByCompanyExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_return_company), getApplicationContext());
+                } else if (remarkTxt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.CustomerCommentClosureRemark), getApplicationContext());
+                } else if (Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId).isEmpty() &&
+                        Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId).equals("00000000")) {
+                    Utility.ShowToast(getResources().getString(R.string.yourReportingSapID), getApplicationContext());
+                } else {
+                    ForwardForApproval(getResources().getString(R.string.want_to_forward_approval));
+                }
+
+                break;
+            case 2:
+
+                break;
+        }
 
     }
 
@@ -464,7 +516,61 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     }
 
     private void complaintForward() {
-       // if()
+        try {
+        Utility.showProgressDialogue(this);
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmpno",complaintListModel.getCmpno());
+        jsonObject.put("category",selectedCategory);
+        jsonObject.put("customer",customerPayExt.getText().toString().trim());
+        jsonObject.put("company",companyPayExt.getText().toString().trim());
+        jsonObject.put("pay_freelancer",payToFreelancerExt.getText().toString().trim());
+        jsonObject.put("re_comp",returnByCompanyExt.getText().toString().trim());
+        jsonObject.put("defect",selectedDefect);
+        jsonObject.put("relt_to",selectedComplaintRelated);
+        jsonObject.put("foc_amt",focAmountExt.getText().toString().trim());
+        jsonObject.put("pend_apr_pernr",Utility.getSharedPreferences(getApplicationContext(), Constant.userID));
+        jsonObject.put("await_apr_pernr",Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId));
+        jsonObject.put("await_apr_remark",remarkTxt.getText().toString().trim());
+
+        jsonArray.put(jsonObject);
+
+        Log.e("jsonArray===>",jsonArray.toString());
+        Call<CommonRespModel> call3 = apiInterface.complaintForwardApproval(Utility.getSharedPreferences(this, Constant.accessToken), jsonArray.toString());
+        call3.enqueue(new Callback<CommonRespModel>() {
+            @Override
+            public void onResponse(@NonNull Call<CommonRespModel> call, @NonNull Response<CommonRespModel> response) {
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    Log.e("response====>", String.valueOf(response.body()));
+                    CommonRespModel commonRespModel = response.body();
+
+                    if (commonRespModel.getStatus().equals(Constant.TRUE)) {
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+
+                    } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
+                        Utility.hideProgressDialogue();
+                        Utility.ShowToast(getResources().getString(R.string.something_went_wrong), ComplaintDetailsActivity.this);
+                    } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CommonRespModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+
+            }
+        });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     /*--------------------------------------------OnCreate Menu Options-------------------------------------------------------*/
 
@@ -491,6 +597,5 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         }
         return (super.onOptionsItemSelected(item));
     }
-
 
 }

@@ -1,5 +1,6 @@
 package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.photoList.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
@@ -8,27 +9,40 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.Utils.common.activity.PhotoViewerActivity;
+import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.photoList.adapter.PhotoListAdapter;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.photoList.model.PhotoListModel;
+import com.shaktipumplimted.serviceapp.webService.extra.Constant;
+import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
+import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ComplaintPhotoListActivity extends AppCompatActivity implements PhotoListAdapter.ItemClickListener {
 
     Toolbar toolbar;
     RecyclerView photoList;
-    List<PhotoListModel>photoArrayList;
+    List<PhotoListModel.Response>photoArrayList;
 
     PhotoListAdapter photoListAdapter;
     TextView noPhotoAvailable;
     SwipeRefreshLayout pullToRefresh;
+    APIInterface apiInterface;
+    ComplaintListModel.Datum compListModel;
+    int page = 1,totalPage=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +66,7 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
     }
 
     private void Init() {
+        apiInterface = APIClient.getRetrofit(this).create(APIInterface.class);
         photoList = findViewById(R.id.photoList);
         noPhotoAvailable = findViewById(R.id.noPhotoAvailable);
         pullToRefresh = findViewById(R.id.pullToRefresh);
@@ -63,21 +78,59 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
         getSupportActionBar().setTitle(getResources().getString(R.string.complaintPhoto));
         toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
-        if(Utility.isInternetOn(getApplicationContext())) {
-            getList();
-        }else {
-            Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
-        }
+
 
     }
 
-    private void getList() {
-        photoArrayList = new ArrayList<>();
-        photoArrayList.add(new PhotoListModel("01","https://fastly.picsum.photos/id/0/5000/3333.jpg?hmac=_j6ghY5fCfSD6tvtcV74zXivkJSPIfR9B8w34XeQmvU"));
-        photoArrayList.add(new PhotoListModel("02","https://fastly.picsum.photos/id/16/2500/1667.jpg?hmac=uAkZwYc5phCRNFTrV_prJ_0rP0EdwJaZ4ctje2bY7aE"));
-        photoArrayList.add(new PhotoListModel("03","https://fastly.picsum.photos/id/65/4912/3264.jpg?hmac=uq0IxYtPIqRKinGruj45KcPPzxDjQvErcxyS1tn7bG0"));
-        photoArrayList.add(new PhotoListModel("04","https://fastly.picsum.photos/id/76/4912/3264.jpg?hmac=VkFcSa2Rbv0R0ndYnz_FAmw02ON1pPVjuF_iVKbiiV8"));
+    private void retrieveValue() {
+        if (getIntent().getExtras() != null) {
+            compListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
+            if(Utility.isInternetOn(getApplicationContext())) {
+                getList();
+            }else {
+                Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
+            }
+        }
+    }
 
+    private void getList() {
+
+        photoArrayList = new ArrayList<>();
+        Utility.showProgressDialogue(this);
+        Call<PhotoListModel> call3 = apiInterface.getComplaintPhotoList(Utility.getSharedPreferences(getApplicationContext(), Constant.accessToken),
+                compListModel.getCmpno(), String.valueOf(page));
+        call3.enqueue(new Callback<PhotoListModel>() {
+            @Override
+            public void onResponse(@NonNull Call<PhotoListModel> call, @NonNull Response<PhotoListModel> response) {
+                Log.e("url===>", String.valueOf(call.request().url()));
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    PhotoListModel photoListModel = response.body();
+                    if (photoListModel.getStatus().equals(Constant.TRUE)) {
+                        if(photoListModel.getResponse().size()>0) {
+                            photoArrayList.addAll(photoListModel.getResponse());
+                            pullToRefresh.setRefreshing(false);
+                        }
+                        totalPage = Integer.parseInt(photoListModel.getCount());
+                        setAdapter();
+                    }else if (photoListModel.getStatus().equals(Constant.FAILED)){
+                        Utility.logout(getApplicationContext());
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<PhotoListModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+
+            }
+        });
+    }
+
+    private void setAdapter() {
         if(photoArrayList.size()>0) {
             photoListAdapter = new PhotoListAdapter(this, photoArrayList);
             photoList.setHasFixedSize(true);

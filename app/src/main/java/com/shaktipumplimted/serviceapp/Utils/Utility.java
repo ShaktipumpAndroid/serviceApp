@@ -392,7 +392,7 @@ public class Utility {
 
     public static String getFormattedTime(String inputFormat,String outputFormat,String time) {
 
-        return ChangeTimeFormat(inputFormat,outputFormat,getCurrentTime());
+        return ChangeTimeFormat(inputFormat,outputFormat,time);
     }
 
 
