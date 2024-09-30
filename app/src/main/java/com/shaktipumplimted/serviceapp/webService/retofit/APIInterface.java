@@ -8,6 +8,8 @@ import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.DsrDetailsModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.DsrDropdownModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.DistanceCalculateModel;
 import com.shaktipumplimted.serviceapp.webService.api.APIS;
 
@@ -52,6 +54,13 @@ public interface APIInterface {
 
     @GET(APIS.COMPLAINT_DROPDOWNS)
     Call<ComplaintDropdownModel> getComplaintDropdowns(@Query("token") String token);
+
+    @GET(APIS.DSR_DROPDOWN)
+    Call<DsrDropdownModel> getDsrDropdown(@Query("token") String token);
+
+    @GET(APIS.DSR_SAVE)
+    Call<CommonRespModel> saveDsrEntry(@Query("token") String token);
+
 
   }
 

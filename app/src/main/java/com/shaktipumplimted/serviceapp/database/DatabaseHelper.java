@@ -15,6 +15,7 @@ import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForwa
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonListModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.DsrDetailsModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.LocalConveyanceModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.MarkAttendanceModel;
 
@@ -40,6 +41,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_COMPLAINT_DEFECT = "tbl_complain_defect";
     public static final String TABLE_COMPLAINT_RELATED = "tbl_complain_related_to";
     public static final String TABLE_COMPLAINT_CLOSURE = "tbl_complain_closer";
+    public static final String TABLE_DSR_DROPWODN = "tbl_dsr_dropdown";
+    public static final String TABLE_DSR_RECORD = "tbl_dsr_record";
 
     public static final String TABLE_COMPLAINT_FORWARD_PERSON_DATA = "tbl_complaint_forward_data";
 
@@ -89,6 +92,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_COMPLAINT_STATUS = "complaint_status";
 
     public static final String KEY_STATUS_SELECTED = "status_selected";
+    public static final String KEY_DSR_ACTIVITY = "dsr_activity";
+    public static final String KEY_DSR_PURPOSE = "dsr_purpose";
+    public static final String KEY_DSR_OUTCOME = "dsr_outcome";
+    public static final String KEY_DSR_DATE = "dsr_date";
+    public static final String KEY_DSR_LAT = "dsr_latitude";
+    public static final String KEY_DSR_LNG = "dsr_longitude";
+    public static final String KEY_DSR_TIME = "dsr_time";
 
     /*------------------------------------- Complaint Data Columns*/
     public static final String KEY_COMPLAINT_NUMBER = "complaint_number";
@@ -199,6 +209,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_NAME + " TEXT)";
 
 
+    private static final String CREATE_TABLE_DSR_DROPWODN = "CREATE TABLE "
+            + TABLE_DSR_DROPWODN + "(" + KEY_ID + " TEXT,"
+            + KEY_NAME + " TEXT)";
+
+
 
     /*-----------------------------------------------------Local Conveyance Tables---------------------------------------------*/
     private static final String CREATE_TABLE_LOCAL_CONVEYANCE_DATA = "CREATE TABLE "
@@ -247,6 +262,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_CMP_LNG + " TEXT,"
             + KEY_CURRENT_STATUS + " TEXT)";
 
+
+    /*-----------------------------------------------------Create Dsr record data Table---------------------------------------------*/
+    private static final String CREATE_TABLE_DSR_RECORD = "CREATE TABLE "
+            + TABLE_DSR_RECORD + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + KEY_DSR_ACTIVITY + " TEXT,"
+            + KEY_DSR_DATE + " TEXT,"
+            + KEY_DSR_LAT + " TEXT,"
+            + KEY_DSR_LNG + " TEXT,"
+            + KEY_DSR_TIME + " TEXT,"
+            + KEY_DSR_PURPOSE + " TEXT,"
+            + KEY_DSR_OUTCOME + " TEXT)";
+
+
+
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -266,6 +296,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_COMPLAINT_DEFECT);
         db.execSQL(CREATE_TABLE_COMPLAINT_RELATED);
         db.execSQL(CREATE_TABLE_COMPLAINT_CLOSURE);
+        db.execSQL(CREATE_TABLE_DSR_DROPWODN);
+        db.execSQL(CREATE_TABLE_DSR_RECORD);
         db.execSQL(CREATE_TABLE_COMPLAINT_FORWARD_PERSON_DATA);
         db.execSQL(CREATE_TABLE_PENDING_REASON_IMAGES);
 
@@ -287,6 +319,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_RELATED);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLAINT_CLOSURE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PENDING_REASON_IMAGE_DATA);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DSR_DROPWODN);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DSR_RECORD);
           onCreate(db);
     }
 
@@ -705,6 +739,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return  spinnerArrayList;
     }
+
+
+
+
+
+    /*---------------------------------------------DSR entry Data--------------------------------------------------*/
+
+
+    public void insertDsrData(DsrDetailsModel dsrDetailsModel) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_DSR_ACTIVITY, dsrDetailsModel.getDsrActivity());
+        contentValues.put(KEY_DSR_PURPOSE, dsrDetailsModel.getDsrPurpose());
+        contentValues.put(KEY_DSR_OUTCOME, dsrDetailsModel.getDsrOutcome());
+        contentValues.put(KEY_DSR_DATE, dsrDetailsModel.getDate());
+        contentValues.put(KEY_DSR_TIME, dsrDetailsModel.getTime());
+        contentValues.put(KEY_DSR_LAT, dsrDetailsModel.getLat());
+        contentValues.put(KEY_DSR_LNG, dsrDetailsModel.getLng());
+
+        database.insert(TABLE_DSR_RECORD, null, contentValues);
+        database.close();
+    }
+
+
+
+
+
+
+
 
     /*------------------------------------------Delete Database-----------------------------------------------------*/
     public void deleteData(String tableName) {

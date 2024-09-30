@@ -32,6 +32,7 @@ public class Constant {
 
     public static final String addPendingImage = "addPendingImage";
     public static final String markAttendance = "markAttendance";
+    public static final String localConveyance = "localConveyance";
     /*------------------------------------Other Objects---------------------------------------*/
     public static String imagePath = "image";
 
@@ -51,5 +52,4 @@ public class Constant {
     public static String frontCamera = "frontCamera";
 
     public static String address = "address";
-
 }

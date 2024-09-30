@@ -208,7 +208,7 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
             timestatus = "out";
         }
         date = Utility.getFormattedDate("dd.MM.yyyy","yyyyMMdd",Utility.getCurrentDate());
-        time = Utility.getFormattedTime("h:mm a","hhmmss",Utility.getCurrentTime());
+        time = Utility.getFormattedTime("HH:mm","hhmmss",Utility.getCurrentTime());
 
         Utility.showProgressDialogue(this);
         try {
