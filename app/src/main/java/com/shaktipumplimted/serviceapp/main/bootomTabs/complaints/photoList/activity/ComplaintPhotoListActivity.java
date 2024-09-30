@@ -51,6 +51,7 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
 
         Init();
         listner();
+        retrieveValue();
     }
 
     private void listner() {
@@ -98,7 +99,7 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
         photoArrayList = new ArrayList<>();
         Utility.showProgressDialogue(this);
         Call<PhotoListModel> call3 = apiInterface.getComplaintPhotoList(Utility.getSharedPreferences(getApplicationContext(), Constant.accessToken),
-                compListModel.getCmpno(), String.valueOf(page));
+                "GO0016", String.valueOf(page),"000001");
         call3.enqueue(new Callback<PhotoListModel>() {
             @Override
             public void onResponse(@NonNull Call<PhotoListModel> call, @NonNull Response<PhotoListModel> response) {
@@ -111,7 +112,7 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
                             photoArrayList.addAll(photoListModel.getResponse());
                             pullToRefresh.setRefreshing(false);
                         }
-                        totalPage = Integer.parseInt(photoListModel.getCount());
+                      //  totalPage = Integer.parseInt(photoListModel.getCount());
                         setAdapter();
                     }else if (photoListModel.getStatus().equals(Constant.FAILED)){
                         Utility.logout(getApplicationContext());
@@ -145,8 +146,10 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
     }
 
     @Override
-    public void SetOnItemClickListener(PhotoListModel response, int position) {
+    public void SetOnItemClickListener(PhotoListModel.Response response, int position) {
         Intent intent = new Intent(getApplicationContext(), PhotoViewerActivity.class);
+        intent.putExtra(Constant.imagePath,response.getImage1());
+        intent.putExtra(Constant.Images,"1");
         startActivity(intent);
 
     }

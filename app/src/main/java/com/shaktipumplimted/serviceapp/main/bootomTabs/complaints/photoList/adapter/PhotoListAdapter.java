@@ -6,12 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.shaktipumplimted.serviceapp.R;
+import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.photoList.model.PhotoListModel;
 
 import java.util.ArrayList;
@@ -46,17 +48,17 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.View
         final PhotoListModel.Response response = complaintStatusArrayList.get(position);
 
         Glide.with(mContext)
-                .load(response.getImage1())
+                .load(Utility.getBitmapFromBase64(response.getImage1()))
                 .centerCrop()
                 .placeholder(R.mipmap.ic_launcher)
                 .into(holder.complaintImg);
 
-      /*  holder.compStatusCard.setOnClickListener(new View.OnClickListener() {
+        holder.imgItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 itemClickListener.SetOnItemClickListener(response,position);
             }
-        });*/
+        });
 
     }
 
@@ -69,8 +71,10 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView complaintImg;
+        RelativeLayout imgItem;
         public ViewHolder(View itemView) {
             super(itemView);
+            imgItem = itemView.findViewById(R.id.imgItem);
             complaintImg = itemView.findViewById(R.id.complaintImg);
 
         }
@@ -83,6 +87,6 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.View
     }
 
     public interface ItemClickListener {
-        void SetOnItemClickListener(PhotoListModel response, int position);
+        void SetOnItemClickListener(PhotoListModel.Response response, int position);
     }
 }

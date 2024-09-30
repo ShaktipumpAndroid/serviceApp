@@ -190,6 +190,12 @@ public class Utility {
         transaction.commit();
     }
 
+    public static Bitmap getBitmapFromBase64(String encodedImage) {
+        byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        return decodedByte;
+    }
+
 
     public void removeFragments(FragmentActivity activty) {
         activty.getSupportFragmentManager().popBackStack("F", FragmentManager.POP_BACK_STACK_INCLUSIVE);

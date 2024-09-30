@@ -591,6 +591,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         switch (item.getItemId()) {
             case R.id.navigation_view_photo:
                 Intent intent = new Intent(getApplicationContext(), ComplaintPhotoListActivity.class);
+                intent.putExtra(Constant.complaintData,complaintListModel);
                 startActivity(intent);
                 return true;
 
