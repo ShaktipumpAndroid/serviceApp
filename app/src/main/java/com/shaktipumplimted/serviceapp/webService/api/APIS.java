@@ -28,6 +28,9 @@ public class APIS {
     public static final String COMPLAINT_FORWARD_APPROVAL = "forward_approval_complaint.htm";
     public static final String COMPLAINT_PHOTO_LIST = "view_cmpln_photo.htm";
     public static final String GET_ATTENDANCE_DATA = "attendance_data_getapi.htm";
+    public static final String LOCAL_CONVEYANCE = "local_conveyance.htm";
+    public static final String DSR_DROPDOWN = "search_help.htm";
+    public static final String DSR_SAVE = "dsr_save.htm";
 
     //http://spquasrvr1.shaktipumps.com:8423/sap/bc/bsp/sap/zmapp_service_e/save_pending_reason.htm
 

@@ -34,6 +34,7 @@ public class UploadImageAPIS {
     ActionListenerCallback callBack;
     Context mContext;
     JSONArray jsonArray;
+
     public UploadImageAPIS(Context context) {
 
         //initializing the callback object from the constructor
@@ -42,29 +43,34 @@ public class UploadImageAPIS {
 
     }
 
-    public void setActionListener(JSONArray jsonArray, String Value,ActionListenerCallback  callBack) {
+    public void setActionListener(JSONArray jsonArray, String Value, ActionListenerCallback callBack) {
 
         this.callBack = callBack;
         this.jsonArray = jsonArray;
-        switch (Value){
+        switch (Value) {
             case Constant.addPendingImage:
 
-               new syncData(jsonArray,APIS.BASEURL+APIS.ADD_PENDING_REASON+"?token="
-                        + Utility.getSharedPreferences(mContext,Constant.accessToken),"inprocess_complaint",callBack).execute();
+                new syncData(jsonArray, APIS.BASEURL + APIS.ADD_PENDING_REASON + "?token="
+                        + Utility.getSharedPreferences(mContext, Constant.accessToken), "inprocess_complaint", callBack).execute();
                 break;
             case Constant.markAttendance:
-                new syncData(jsonArray,APIS.BASEURL+APIS.MARK_ATTENDANCE+"?token="
-                        + Utility.getSharedPreferences(mContext,Constant.accessToken),"data",callBack).execute();
+                new syncData(jsonArray, APIS.BASEURL + APIS.MARK_ATTENDANCE + "?token="
+                        + Utility.getSharedPreferences(mContext, Constant.accessToken), "data", callBack).execute();
+                break;
+            case Constant.localConveyance:
+                new syncData(jsonArray, APIS.BASEURL + APIS.LOCAL_CONVEYANCE + "?token="
+                        + Utility.getSharedPreferences(mContext, Constant.accessToken), "data", callBack).execute();
                 break;
         }
 
     }
 
 
-    private static class syncData  extends AsyncTask<String, String, String> {
-          JSONArray jsonArray;
-          String url,arrayName;
+    private static class syncData extends AsyncTask<String, String, String> {
+        JSONArray jsonArray;
+        String url, arrayName;
         ActionListenerCallback callBack;
+
         public syncData(JSONArray jaInvcData, String url, String arrayName, ActionListenerCallback callBack) {
             this.jsonArray = jaInvcData;
             this.url = url;
@@ -75,6 +81,7 @@ public class UploadImageAPIS {
         @Override
         protected void onPreExecute() {
         }
+
         @Override
         protected String doInBackground(String... strings) {
             String obj2 = null;
@@ -93,17 +100,18 @@ public class UploadImageAPIS {
             return obj2;
 
         }
+
         @Override
         protected void onPostExecute(String result) {
 
             try {
-                Log.e("result===>",result);
-               if(!result.isEmpty()) {
+                Log.e("result===>", result);
+                if (!result.isEmpty()) {
 
-                   callBack.onActionSuccess(result);
-               }else {
-                   callBack.onActionFailure(result);
-               }
+                    callBack.onActionSuccess(result);
+                } else {
+                    callBack.onActionFailure(result);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 callBack.onActionFailure(result);
@@ -117,8 +125,8 @@ public class UploadImageAPIS {
         String result = "";
 
         System.out.println("URL comes in jsonparser class is:  " + url);
-        Log.e("url is....", url+"");
-        Log.e("params  is....", postParameters+"");
+        Log.e("url is....", url + "");
+        Log.e("params  is....", postParameters + "");
 
         try {
 
