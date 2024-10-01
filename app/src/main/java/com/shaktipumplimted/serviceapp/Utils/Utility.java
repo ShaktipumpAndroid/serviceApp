@@ -183,7 +183,6 @@ public class Utility {
 
         FragmentTransaction transaction = activty.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
-
         if (backstack) {
             transaction.addToBackStack(tagName);
         }

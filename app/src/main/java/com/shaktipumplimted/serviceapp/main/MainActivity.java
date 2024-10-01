@@ -3,6 +3,7 @@ package com.shaktipumplimted.serviceapp.main;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.fragment.ProfileFragment;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.routeList.fragment.RouteListFragment;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.unsync.UnsyncListFragment;
+import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
 import java.lang.reflect.Field;
 
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     BottomNavigationView navigationView;
     Toolbar toolbar;
+    String apiCall ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Init();
+
+        retrieveValue();
+    }
+
+    private void retrieveValue() {
+        if(getIntent().getExtras()!=null){
+            apiCall = getIntent().getStringExtra(Constant.APICALL);
+        }
         listner();
     }
 
@@ -44,7 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
 
                     case R.id.navigation_complaint:
-                        Utility.loadFragment(MainActivity.this, new ComplaintListFragment(),
+                        Fragment fragment = new ComplaintListFragment();
+                        Bundle mBundle = new Bundle();
+                        mBundle.putString(Constant.APICALL, apiCall);
+                        fragment.setArguments(mBundle);
+                        Utility.loadFragment(MainActivity.this, fragment,
                                 false, null);
 
                         return true;

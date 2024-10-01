@@ -32,6 +32,7 @@ public class Constant {
 
     public static final String addPendingImage = "addPendingImage";
     public static final String markAttendance = "markAttendance";
+    public static final String APICALL = "apiCall";
     /*------------------------------------Other Objects---------------------------------------*/
     public static String imagePath = "image";
 

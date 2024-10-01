@@ -75,9 +75,9 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
 
 
 
+
         return view;
     }
-
 
 
 
@@ -94,7 +94,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
 
         searchViewMethod();
         listner();
-        getLists();
+        retrieveValue();
 
     }
 
@@ -104,6 +104,19 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
             getStatusList();
         });
     }
+    private void retrieveValue() {
+        Bundle bundle = getArguments();
+            if(bundle.getString(Constant.APICALL).equals(Constant.TRUE)){
+               if(Utility.isInternetOn(getActivity())){
+                   getStatusList();
+               }else {
+                   setStatusAdapter();
+               }
+            }else {
+                getLists();
+            }
+      }
+
 
     private void getLists() {
         if(Utility.isInternetOn(mContext)){

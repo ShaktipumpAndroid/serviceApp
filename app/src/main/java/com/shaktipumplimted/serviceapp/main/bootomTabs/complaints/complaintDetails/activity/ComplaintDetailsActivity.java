@@ -140,8 +140,6 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
         retrieveValue();
 
-        Log.e("reportingPersonSapId",Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId));
-
     }
 
     private void listner() {
@@ -365,8 +363,6 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
         }
         if (parent.getId() == R.id.complaintRelatedToSpinner) {
-            Log.e("select_related_to==>",complaintRelatedToList.get(position).getName());
-            Log.e("select_related_to2==>",getResources().getString(R.string.select_related_to));
             if (!complaintRelatedToList.get(position).getName().equals(getResources().getString(R.string.select_related_to))) {
                 selectedComplaintRelated = complaintRelatedToList.get(position).getId();
             } else {
@@ -504,6 +500,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
         okBtn.setOnClickListener(v -> {alertDialog.dismiss();
             if(Utility.isInternetOn(getApplicationContext())){
+
                  complaintForward();
             }else {
                 Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
@@ -547,6 +544,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
                     if (commonRespModel.getStatus().equals(Constant.TRUE)) {
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.putExtra(Constant.APICALL,Constant.TRUE);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
