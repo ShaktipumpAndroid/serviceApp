@@ -14,14 +14,15 @@ import android.widget.ImageView;
 
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
+import com.shaktipumplimted.serviceapp.Utils.ZoomImageView;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
 public class PhotoViewerActivity extends AppCompatActivity {
 
     private ScaleGestureDetector mScaleGestureDetector;
     private float mScaleFactor = 1.0f;
-    ImageView showImg;
-    Toolbar mToolbar;
+    ZoomImageView showImg;
+    Toolbar toolbar;
     Bitmap myBitmap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,20 +33,18 @@ public class PhotoViewerActivity extends AppCompatActivity {
     }
 
     private void listner() {
-        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
     private void Init() {
-        mScaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
-
         showImg = findViewById(R.id.showImg);
-        mToolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
 
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setTitle(getResources().getString(R.string.photoGallery));
-        mToolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+        getSupportActionBar().setTitle(getResources().getString(R.string.photoGallery));
+        toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
 
         if(getIntent().getExtras()!=null){
@@ -58,24 +57,7 @@ public class PhotoViewerActivity extends AppCompatActivity {
 
 
         showImg.setImageBitmap(myBitmap);
-    }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent motionEvent) {
-        mScaleGestureDetector.onTouchEvent(motionEvent);
-        return true;
-    }
-
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        @Override
-        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
-            mScaleFactor *= scaleGestureDetector.getScaleFactor();
-            mScaleFactor = Math.max(0.1f,
-                    Math.min(mScaleFactor, 10.0f));
-            showImg.setScaleX(mScaleFactor);
-            showImg.setScaleY(mScaleFactor);
-            return true;
-        }
     }
 
     @Override

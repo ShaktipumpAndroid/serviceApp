@@ -9,9 +9,10 @@
     tools:context=".Utils.common.activity.PhotoViewerActivity">
 
     <include layout="@layout/toolbar" />
-    x
 
-    <ImageView
+
+
+    <com.shaktipumplimted.serviceapp.Utils.ZoomImageView
         android:id="@+id/showImg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,5 +21,6 @@
         android:layout_marginTop="@dimen/_5sdp"
         android:layout_marginEnd="@dimen/_5sdp"
         android:layout_marginBottom="@dimen/_5sdp"
+
         android:src="@mipmap/ic_launcher_round" />
 </LinearLayout>

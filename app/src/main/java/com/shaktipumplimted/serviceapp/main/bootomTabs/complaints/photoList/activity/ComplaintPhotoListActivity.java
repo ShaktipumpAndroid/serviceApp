@@ -3,6 +3,7 @@ package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.photoList.act
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -42,8 +43,10 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
     SwipeRefreshLayout pullToRefresh;
     APIInterface apiInterface;
     ComplaintListModel.Datum compListModel;
-    int page = 1,totalPage=1;
+    int lastPage = 1;
+    private String mMaxoffset = "";
 
+    NestedScrollView nestedScrollView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +75,7 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
         noPhotoAvailable = findViewById(R.id.noPhotoAvailable);
         pullToRefresh = findViewById(R.id.pullToRefresh);
         toolbar = findViewById(R.id.toolbar);
-
+        nestedScrollView =  findViewById(R.id.nestedScrollView);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -81,6 +84,27 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
 
 
 
+
+        if (nestedScrollView != null) {
+            nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                if (v.getChildAt(v.getChildCount() - 1) != null) {
+                    if ((scrollY >= (v.getChildAt(v.getChildCount() - 1).getMeasuredHeight() - v.getMeasuredHeight())) && scrollY > oldScrollY) {
+                        lastPage = lastPage + 1;
+                        if (Integer.parseInt(mMaxoffset) >= lastPage) {
+                            if (Utility.isInternetOn(getApplicationContext())) {
+                                getList();
+                            } else {
+
+                                Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
+                            }
+                        } else {
+                            Utility.ShowToast( getResources().getString(R.string.no_more_data),getApplicationContext());
+                        }
+                    }
+                }
+            });
+
+        }
     }
 
     private void retrieveValue() {
@@ -99,7 +123,7 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
         photoArrayList = new ArrayList<>();
         Utility.showProgressDialogue(this);
         Call<PhotoListModel> call3 = apiInterface.getComplaintPhotoList(Utility.getSharedPreferences(getApplicationContext(), Constant.accessToken),
-                "GO0016", String.valueOf(page),"000001");
+                "GO0016", String.valueOf(lastPage),"000001");
         call3.enqueue(new Callback<PhotoListModel>() {
             @Override
             public void onResponse(@NonNull Call<PhotoListModel> call, @NonNull Response<PhotoListModel> response) {
@@ -112,6 +136,8 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
                             photoArrayList.addAll(photoListModel.getResponse());
                             pullToRefresh.setRefreshing(false);
                         }
+                        mMaxoffset = photoListModel.getCount();
+                        Log.e("mMaxoffset==>",mMaxoffset);
                       //  totalPage = Integer.parseInt(photoListModel.getCount());
                         setAdapter();
                     }else if (photoListModel.getStatus().equals(Constant.FAILED)){

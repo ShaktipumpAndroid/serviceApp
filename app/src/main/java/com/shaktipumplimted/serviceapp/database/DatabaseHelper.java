@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "Shakti Service App";
-    public static final int DATABASE_VERSION = Build.VERSION.SDK_INT;
+    public static final int DATABASE_VERSION = 35;
 
     /*-------------------------------------------TABLE NAME---------------------------------------------------*/
 

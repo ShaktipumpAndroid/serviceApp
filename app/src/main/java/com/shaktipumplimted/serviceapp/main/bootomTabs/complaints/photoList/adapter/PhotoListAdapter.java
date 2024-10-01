@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -71,7 +72,7 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView complaintImg;
-        RelativeLayout imgItem;
+        CardView imgItem;
         public ViewHolder(View itemView) {
             super(itemView);
             imgItem = itemView.findViewById(R.id.imgItem);
