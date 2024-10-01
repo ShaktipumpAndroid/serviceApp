@@ -615,7 +615,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             jsonObject.put("latitude", gpsTracker.getLatitude());
             jsonObject.put("longitude", gpsTracker.getLongitude());
             jsonObject.put("cr_date", Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd", Utility.getCurrentDate()));
-            jsonObject.put("cr_time", Utility.getFormattedTime("h:mm a", "hhmmss", Utility.getCurrentTime()));
+            jsonObject.put("cr_time", Utility.getFormattedTime("HH:mm", "hhmmss", Utility.getCurrentTime()));
             jsonObject.put("cmpln_status", Constant.REPLY);
 
             for (int i = 0; i < imageArrayList.size(); i++) {

@@ -387,7 +387,7 @@ public class Utility {
     }
 
     public static String getCurrentTime() {
-        SimpleDateFormat  simpleDateFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        SimpleDateFormat  simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return simpleDateFormat.format(new Date()).trim();
     }
     public static String getFormattedDate(String inputFormat,String outputFormat,String date) {
