@@ -17,6 +17,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.GpsTracker;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
+import com.shaktipumplimted.serviceapp.Utils.common.model.CommonRespModel;
 import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.activity.ComplaintDetailsActivity;
@@ -26,6 +27,10 @@ import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.Ds
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -166,18 +171,26 @@ public class DSREntryActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.submitBtn:
-                if(Utility.isInternetOn(getApplicationContext())){
-                    if(selectedActivity.isEmpty()){
-                        Utility.ShowToast(getResources().getString(R.string.pls_select_activity),getApplicationContext());
-                    } else if (outcomeExt.getText().toString().isEmpty()) {
-                        Utility.ShowToast(getResources().getString(R.string.pls_enter_outcome),getApplicationContext());
-                    } else if (purposeExt.getText().toString().isEmpty()) {
-                        Utility.ShowToast(getResources().getString(R.string.pls_enter_purpose),getApplicationContext());
-                    } else{
-                        saveData();
-                    }
+                if(databaseHelper.isRecordExist(DatabaseHelper.TABLE_DSR_RECORD,DatabaseHelper.KEY_DSR_DATE,Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd",Utility.getCurrentDate()))){
+                    Utility.ShowToast(getResources().getString(R.string.Dsr_already_filled),getApplicationContext());
                 }else{
-                    saveLocally();
+                    if(Utility.isInternetOn(getApplicationContext())){
+                        /*if(selectedActivity.isEmpty()){
+                            Utility.ShowToast(getResources().getString(R.string.pls_select_activity),getApplicationContext());
+                        } else*/ if (outcomeExt.getText().toString().isEmpty()) {
+                            Utility.ShowToast(getResources().getString(R.string.pls_enter_outcome),getApplicationContext());
+                        } else if (purposeExt.getText().toString().isEmpty()) {
+                            Utility.ShowToast(getResources().getString(R.string.pls_enter_purpose),getApplicationContext());
+                        } else{
+                            try {
+                                saveData();
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }else{
+                        saveLocally();
+                    }
                 }
                 break;
         }
@@ -195,14 +208,54 @@ public class DSREntryActivity extends AppCompatActivity implements View.OnClickL
         databaseHelper.insertDsrData(dsrDetailsModel);
     }
 
-    private void saveData() {
+    private void saveData() throws JSONException {
+        Utility.showProgressDialogue(this);
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("budat", Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd",Utility.getCurrentDate()));
+        jsonObject.put("help_name", selectedActivity);
+        jsonObject.put("dsr_agenda", outcomeExt.getText().toString().trim());
+        jsonObject.put("dsr_comment", outcomeExt.getText().toString().trim());
+        jsonObject.put("time", Utility.getFormattedTime("HH:mm", "hhmmss",Utility.getCurrentTime()));
+        jsonObject.put("latitude", latitude);
+        jsonObject.put("longitude", longitude);
 
+        jsonArray.put(jsonObject);
+
+
+        Call<CommonRespModel> call3 = apiInterface.saveDsrEntry(Utility.getSharedPreferences(this, Constant.accessToken), jsonArray.toString());
+        call3.enqueue(new Callback<CommonRespModel>() {
+            @Override
+            public void onResponse(@NonNull Call<CommonRespModel> call, @NonNull Response<CommonRespModel> response) {
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    CommonRespModel commonRespModel = response.body();
+                    if (commonRespModel.getStatus().equals(Constant.TRUE)) {
+                        onBackPressed();
+                        Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
+                    } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
+                        Utility.hideProgressDialogue();
+                        Utility.ShowToast(getResources().getString(R.string.something_went_wrong), DSREntryActivity.this);
+                    } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CommonRespModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+            }
+        });
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if(view.getId()==R.id.operationSpinner){
             selectedActivity = dsrList.get(position).getId();
+            Log.e("selected==>",selectedActivity);
         }
     }
 

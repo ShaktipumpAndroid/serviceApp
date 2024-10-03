@@ -188,6 +188,7 @@
     <string name="pls_select_activity">Please select activity</string>
     <string name="pls_enter_outcome">Please enter outcome</string>
     <string name="pls_enter_purpose">Please enter purpose</string>
+    <string name="Dsr_already_filled">DSR entry already done</string>
 
 
     <string-array name="login_type_array">
