@@ -3,6 +3,8 @@ package com.shaktipumplimted.serviceapp.Utils.common.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class CommonRespModel {
     @SerializedName("status")
     @Expose
@@ -11,6 +13,10 @@ public class CommonRespModel {
     @SerializedName("message")
     @Expose
     private String message;
+
+    @SerializedName("response")
+    @Expose
+    private List<Object> response;
 
     public String getStatus() {
         return status;
@@ -27,5 +33,15 @@ public class CommonRespModel {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public void setResponse(List<Object> response) {
+        this.response = response;
+    }
+
+    public CommonRespModel withResponse(List<Object> response) {
+        this.response = response;
+        return this;
+    }
+
 }
 

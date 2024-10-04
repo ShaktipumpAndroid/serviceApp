@@ -73,7 +73,10 @@ public interface APIInterface {
     Call<DsrDropdownModel> getDsrDropdown(@Query("token") String token);
 
     @GET(APIS.DSR_SAVE)
-    Call<CommonRespModel> saveDsrEntry(@Query("token") String token);
+    Call<CommonRespModel> saveDsrEntry(@Query("token") String token ,@Query("data") String data);
+
+    @GET(APIS.COMPLAINT_FORWARD)
+    Call<CommonRespModel> forwardComplaint(@Query("token") String token ,@Query("complaint_forward") String data);
 
 
   }

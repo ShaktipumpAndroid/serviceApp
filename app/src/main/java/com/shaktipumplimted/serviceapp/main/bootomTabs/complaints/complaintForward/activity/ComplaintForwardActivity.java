@@ -24,13 +24,19 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
+import com.shaktipumplimted.serviceapp.Utils.common.model.CommonRespModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.adapter.ComplaintForwardAdapter;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.model.CompForwardListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.DSREntryActivity;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -234,10 +240,66 @@ public class ComplaintForwardActivity extends AppCompatActivity implements Compo
 
         messageTxt.setText(message);
 
-        okBtn.setOnClickListener(v -> alertDialog.dismiss());
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    saveData(response);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 
         cancelBtn.setOnClickListener(v -> alertDialog.dismiss());
 
+    }
+
+    private void saveData(CompForwardListModel.Response forwardModel) throws JSONException {
+        Utility.showProgressDialogue(this);
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmpno", complaintListModel.getCmpno());
+        if(serviceCenterRadio.isChecked()){
+            jsonObject.put("forward_to","Service Center");
+        } else if (freelancerRadio.isChecked()) {
+            jsonObject.put("forward_to","Freelancer");
+        } else if (solarInstPartnerRadio.isChecked()) {
+            jsonObject.put("forward_to","Solar installer");
+        }
+        jsonObject.put("cmp_pen_re", "");
+        jsonObject.put("forward_to_code", forwardModel.getPartnerCode());
+
+
+        jsonArray.put(jsonObject);
+
+
+        Call<CommonRespModel> call3 = apiInterface.forwardComplaint(Utility.getSharedPreferences(this, Constant.accessToken), jsonArray.toString());
+        call3.enqueue(new Callback<CommonRespModel>() {
+            @Override
+            public void onResponse(@NonNull Call<CommonRespModel> call, @NonNull Response<CommonRespModel> response) {
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    CommonRespModel commonRespModel = response.body();
+                    if (commonRespModel.getStatus().equals(Constant.TRUE)) {
+                        onBackPressed();
+                        Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
+                    } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
+                        Utility.hideProgressDialogue();
+                        Utility.ShowToast(getResources().getString(R.string.something_went_wrong), ComplaintForwardActivity.this);
+                    } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CommonRespModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+            }
+        });
     }
 
 
