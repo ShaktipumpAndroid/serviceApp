@@ -31,6 +31,7 @@ public class APIS {
     public static final String LOCAL_CONVEYANCE = "local_conveyance.htm";
     public static final String DSR_DROPDOWN = "search_help.htm";
     public static final String DSR_SAVE = "dsr_save.htm";
+    public static final String COMPLAINT_FORWARD = "compliant_forward_to.htm";
 
     //http://spquasrvr1.shaktipumps.com:8423/sap/bc/bsp/sap/zmapp_service_e/save_pending_reason.htm
 

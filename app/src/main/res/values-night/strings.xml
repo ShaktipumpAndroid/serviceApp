@@ -192,5 +192,7 @@
     <string name="checkLoginPassword">Please enter correct ID and Passward!</string>
     <string name="selectLoginType">Select Login Type</string>
     <string name="serviceCenterTech">Service Center Technician</string>
+    <string name="Dsr_already_filled">DSR entry already done</string>
+
 
 </resources>
