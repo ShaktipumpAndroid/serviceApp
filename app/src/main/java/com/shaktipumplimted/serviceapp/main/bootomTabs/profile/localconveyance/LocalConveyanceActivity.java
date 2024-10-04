@@ -365,8 +365,6 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
         if(value.equals("3")){
             localConveyanceList = new ArrayList<>();
             localConveyanceList = databaseHelper.getAllLocalConveyanceData(true);
-            LocalConveyanceModel localConveyance = localConveyanceList.get(localConveyanceList.size() - 1);
-
             startLatitudeLayout.setHint(getResources().getString(R.string.startLatitude));
             startLongitudeLayout.setHint(getResources().getString(R.string.startLongitude));
             startAddressLayout.setHint(getResources().getString(R.string.startAddress));
@@ -412,8 +410,8 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("begda", Utility.getFormattedDate("dd.MM.yyyy","yyyyMMdd",response.getStartDate()));
             jsonObject.put("endda", Utility.getFormattedDate("dd.MM.yyyy","yyyyMMdd",response.getEndDate()));
-            jsonObject.put("start_time", Utility.getFormattedTime("HH:mm","hhmmss",response.getStartTime()));
-            jsonObject.put("end_time", Utility.getFormattedTime("HH:mm","hhmmss",response.getEndTime()));
+            jsonObject.put("start_time", Utility.getFormattedTime("hh:mm a","hhmmss",response.getStartTime()));
+            jsonObject.put("end_time", Utility.getFormattedTime("hh:mm a","hhmmss",response.getEndTime()));
             jsonObject.put("start_lat", response.getStartLatitude());
             jsonObject.put("end_lat", response.getEndLatitude());
             jsonObject.put("start_long", response.getStartLongitude());

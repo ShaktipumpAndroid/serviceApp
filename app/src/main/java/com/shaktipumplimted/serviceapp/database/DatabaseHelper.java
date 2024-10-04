@@ -17,13 +17,14 @@ import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.DsrDetailsModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.LocalConveyanceModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.AllAttendanceRecordModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.MarkAttendanceModel;
 
 import java.util.ArrayList;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "Shakti Service App";
-    public static final int DATABASE_VERSION = 35;
+    public static final int DATABASE_VERSION = 36;
 
     /*-------------------------------------------TABLE NAME---------------------------------------------------*/
 
@@ -35,6 +36,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_LOCAL_CONVEYANCE_DATA = "tbl_local_conveyance_data";
 
     public static final String TABLE_MARK_ATTENDANCE_DATA = "tbl_mark_attendance_data";
+
+    public static final String TABLE_ATTENDANCE_HISTORY_DATA = "tbl_attendance_history_data";
     public static final String TABLE_COMPLAINT_DATA = "tbl_complaint_data";
     public static final String TABLE_PENDING_REASON_DATA = "tbl_pending_reason_data";
     public static final String TABLE_COMPLAINT_CATEGORY = "tbl_complain_category";
@@ -86,7 +89,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String KEY_ATTENDANCE_STATUS = "attendance_out_time";
     public static final String KEY_ATTENDANCE_IN_IMG = "attendance_in_img";
-
+    public static final String KEY_ATTENDANCE_IN_TIME = "attendance_in_time";
+    public static final String KEY_ATTENDANCE_OUT_TIME = "attendance_out_time";
 
     public static final String KEY_COMPLAINT_STATUS_ID = "complaint_status_id";
     public static final String KEY_COMPLAINT_STATUS = "complaint_status";
@@ -239,6 +243,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_ATTENDANCE_STATUS + " TEXT,"
             + KEY_ATTENDANCE_IN_IMG + " TEXT)";
 
+    private static final String CREATE_TABLE_ATTENDANCE_HISTORY_DATA = "CREATE TABLE "
+            + TABLE_ATTENDANCE_HISTORY_DATA + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + KEY_ATTENDANCE_DATE + " TEXT,"
+            + KEY_ATTENDANCE_IN_TIME + " TEXT,"
+            + KEY_ATTENDANCE_OUT_TIME + " TEXT)";
+
     /*-----------------------------------------------------Create complaint data Table---------------------------------------------*/
 
     private static final String CREATE_TABLE_COMPLAINT_DATA = "CREATE TABLE "
@@ -300,6 +310,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_DSR_RECORD);
         db.execSQL(CREATE_TABLE_COMPLAINT_FORWARD_PERSON_DATA);
         db.execSQL(CREATE_TABLE_PENDING_REASON_IMAGES);
+        db.execSQL(CREATE_TABLE_ATTENDANCE_HISTORY_DATA);
 
     }
 
@@ -321,6 +332,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PENDING_REASON_IMAGE_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DSR_DROPWODN);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DSR_RECORD);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE_HISTORY_DATA);
           onCreate(db);
     }
 
@@ -526,7 +538,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return  imageModelArrayList;
     }
 
-    /*---------------------------------------------Mark Attendance Data--------------------------------------------------*/
+    public void insertAttendanceHistoryData(AllAttendanceRecordModel allAttendanceRecordModel) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_ATTENDANCE_DATE, allAttendanceRecordModel.getAttendanceDate());
+        contentValues.put(KEY_ATTENDANCE_IN_TIME, allAttendanceRecordModel.getAttendanceInTime());
+        contentValues.put(KEY_ATTENDANCE_OUT_TIME, allAttendanceRecordModel.getAttendanceOutTime());
+        database.insert(TABLE_ATTENDANCE_HISTORY_DATA, null, contentValues);
+        database.close();
+    }
+
+    public void updateAttendanceHistoryData(AllAttendanceRecordModel allAttendanceRecordModel) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_ATTENDANCE_DATE, allAttendanceRecordModel.getAttendanceDate());
+        contentValues.put(KEY_ATTENDANCE_IN_TIME, allAttendanceRecordModel.getAttendanceInTime());
+        contentValues.put(KEY_ATTENDANCE_OUT_TIME, allAttendanceRecordModel.getAttendanceOutTime());
+        // update Row
+        String where = KEY_ATTENDANCE_DATE + "='" + allAttendanceRecordModel.getAttendanceDate() + "'";
+        db.update(TABLE_ATTENDANCE_HISTORY_DATA, contentValues, where, null);
+        db.close();
+    }
+
+    public ArrayList<AllAttendanceRecordModel> getAllAttendanceHistoryData() {
+        String selectQuery;
+        ArrayList<AllAttendanceRecordModel> attendanceRecordArrayList = new ArrayList<AllAttendanceRecordModel>();
+        SQLiteDatabase database = this.getWritableDatabase();
+        if (doesTableExist(database, TABLE_ATTENDANCE_HISTORY_DATA)) {
+
+                selectQuery = "SELECT * FROM " + TABLE_ATTENDANCE_HISTORY_DATA;
+            Cursor mcursor = database.rawQuery(selectQuery, null);
+
+            attendanceRecordArrayList.clear();
+            AllAttendanceRecordModel attendanceRecordModel;
+            if (mcursor.getCount() > 0) {
+                for (int i = 0; i < mcursor.getCount(); i++) {
+                    mcursor.moveToNext();
+                    attendanceRecordModel = new AllAttendanceRecordModel();
+                    attendanceRecordModel.setUniqId(mcursor.getString(0));
+                    attendanceRecordModel.setAttendanceDate(mcursor.getString(1));
+                    attendanceRecordModel.setAttendanceInTime(mcursor.getString(2));
+                    attendanceRecordModel.setAttendanceOutTime(mcursor.getString(3));
+
+                    attendanceRecordArrayList.add(attendanceRecordModel);
+                }
+            }
+            mcursor.close();
+            database.close();
+        }
+        return  attendanceRecordArrayList;
+    }
+
+
+
+    /*---------------------------------------------Complaint Status Data--------------------------------------------------*/
     public void insertComplaintStatusData(ComplaintStatusModel.Datum complaintStatusModel, boolean bool) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();

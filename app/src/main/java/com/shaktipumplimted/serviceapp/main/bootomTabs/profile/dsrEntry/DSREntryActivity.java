@@ -189,7 +189,7 @@ public class DSREntryActivity extends AppCompatActivity implements View.OnClickL
         dsrDetailsModel.setDsrOutcome(outcomeExt.getText().toString().trim());
         dsrDetailsModel.setDsrPurpose(purposeExt.getText().toString().trim());
         dsrDetailsModel.setDate(Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd",Utility.getCurrentDate()));
-        dsrDetailsModel.setTime(Utility.getFormattedTime("HH:mm", "hhmmss",Utility.getCurrentTime()));
+        dsrDetailsModel.setTime(Utility.getFormattedTime("hh:mm a", "hhmmss",Utility.getCurrentTime()));
         dsrDetailsModel.setLat(latitude);
         dsrDetailsModel.setLng(longitude);
         databaseHelper.insertDsrData(dsrDetailsModel);

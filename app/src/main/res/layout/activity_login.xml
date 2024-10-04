@@ -29,17 +29,16 @@
 
 
             <RelativeLayout
-                android:id="@+id/login_type_layout"
+                android:id="@+id/loginTypeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@drawable/blue_border">
 
                 <Spinner
-                    android:id="@+id/login_type_spinner"
+                    android:id="@+id/loginTypeSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:entries="@array/login_type_array"
                     android:padding="@dimen/_10sdp" />
             </RelativeLayout>
 

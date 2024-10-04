@@ -387,7 +387,7 @@ public class Utility {
     }
 
     public static String getCurrentTime() {
-        SimpleDateFormat  simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        SimpleDateFormat  simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         return simpleDateFormat.format(new Date()).trim();
     }
     public static String getFormattedDate(String inputFormat,String outputFormat,String date) {
@@ -482,6 +482,17 @@ public class Utility {
             isOnRoleApp = false;
         }
         return isOnRoleApp;
+    }
+
+    public static boolean isFreelancerLogin(Context context){
+        boolean isFreelancerLogin = false;
+        if(Utility.getSharedPreferences(context,Constant.loginType).equals(Constant.freelancer)||
+                Utility.getSharedPreferences(context,Constant.loginType).equals(Constant.serviceCenterTech)){
+            isFreelancerLogin = true;
+        }else if(Utility.getSharedPreferences(context,Constant.loginType).equals(Constant.employee)){
+            isFreelancerLogin = false;
+        }
+        return isFreelancerLogin;
     }
 
     public static String getBase64FromPath(Context context,String Imagepath) {

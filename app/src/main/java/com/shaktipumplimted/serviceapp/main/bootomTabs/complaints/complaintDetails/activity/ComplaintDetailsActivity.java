@@ -138,7 +138,6 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
         scanner = GmsBarcodeScanning.getClient(this);
 
-        retrieveValue();
 
     }
 
@@ -157,12 +156,6 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         defectTypeSpinner.setOnItemSelectedListener(this);
         closureReasonSpinner.setOnItemSelectedListener(this);
         complaintRelatedToSpinner.setOnItemSelectedListener(this);
-    }
-
-    private void retrieveValue() {
-        if (getIntent().getExtras() != null) {
-            complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
-        }
     }
 
     private void retriveValue() {

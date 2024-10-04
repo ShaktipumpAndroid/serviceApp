@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,7 +13,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.shaktipumplimted.serviceapp.R;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.MarkAttendanceModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.AllAttendanceRecordModel;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
 import java.util.ArrayList;
@@ -22,12 +21,12 @@ import java.util.List;
 
 public class MarkAttendanceAdapter extends RecyclerView.Adapter<MarkAttendanceAdapter.ViewHolder> {
     Context mContext;
-    private List<MarkAttendanceModel> searchList;
-    private List<MarkAttendanceModel> attendanceArrayList;
+    private List<AllAttendanceRecordModel> searchList;
+    private List<AllAttendanceRecordModel> attendanceArrayList;
     private static ItemClickListener itemClickListener;
 
 
-    public MarkAttendanceAdapter(Context context, List<MarkAttendanceModel> listdata) {
+    public MarkAttendanceAdapter(Context context, List<AllAttendanceRecordModel> listdata) {
         this.mContext = context;
         this.attendanceArrayList = listdata;
         this.searchList = new ArrayList<>();
@@ -46,20 +45,11 @@ public class MarkAttendanceAdapter extends RecyclerView.Adapter<MarkAttendanceAd
     @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        final MarkAttendanceModel response = attendanceArrayList.get(position);
+        final AllAttendanceRecordModel response = attendanceArrayList.get(position);
         
         holder.attendanceDateTxt.setText(response.getAttendanceDate());
-        if(!response.getAttendanceStatus().isEmpty()&& response.getAttendanceStatus().equals(Constant.attendanceIN)) {
-            holder.attendanceInTimeTxt.setText(response.getAttendanceTime());
-        }else {
-            holder.attendanceInLinear.setVisibility(View.GONE);
-        }
-
-        if(!response.getAttendanceStatus().isEmpty()&& response.getAttendanceStatus().equals(Constant.attendanceOut)) {
-            holder.attendanceOutTimeTxt.setText(response.getAttendanceTime());
-        }else {
-            holder.attendanceOutLinear.setVisibility(View.GONE);
-        }
+        holder.attendanceInTimeTxt.setText(response.getAttendanceInTime());
+        holder.attendanceOutTimeTxt.setText(response.getAttendanceOutTime());
 
     }
 
@@ -94,6 +84,6 @@ public class MarkAttendanceAdapter extends RecyclerView.Adapter<MarkAttendanceAd
     }
 
     public interface ItemClickListener {
-        void SetOnItemClickListener(MarkAttendanceModel response, int position);
+        void SetOnItemClickListener(AllAttendanceRecordModel response, int position);
     }
 }

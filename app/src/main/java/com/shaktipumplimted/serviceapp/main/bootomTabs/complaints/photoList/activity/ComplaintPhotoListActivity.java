@@ -36,7 +36,7 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
 
     Toolbar toolbar;
     RecyclerView photoList;
-    List<PhotoListModel.Response>photoArrayList;
+    List<PhotoListModel.Response>photoArrayList,arrayList;
 
     PhotoListAdapter photoListAdapter;
     TextView noPhotoAvailable;
@@ -70,6 +70,7 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
     }
 
     private void Init() {
+        photoArrayList = new ArrayList<>();
         apiInterface = APIClient.getRetrofit(this).create(APIInterface.class);
         photoList = findViewById(R.id.photoList);
         noPhotoAvailable = findViewById(R.id.noPhotoAvailable);
@@ -81,8 +82,6 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getResources().getString(R.string.complaintPhoto));
         toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
-
-
 
 
         if (nestedScrollView != null) {
@@ -119,11 +118,10 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
     }
 
     private void getList() {
-
-        photoArrayList = new ArrayList<>();
+        arrayList = new ArrayList<>();
         Utility.showProgressDialogue(this);
         Call<PhotoListModel> call3 = apiInterface.getComplaintPhotoList(Utility.getSharedPreferences(getApplicationContext(), Constant.accessToken),
-                "GO0016", String.valueOf(lastPage),"000001");
+                "GO0016", String.valueOf(lastPage));
         call3.enqueue(new Callback<PhotoListModel>() {
             @Override
             public void onResponse(@NonNull Call<PhotoListModel> call, @NonNull Response<PhotoListModel> response) {
@@ -133,13 +131,16 @@ public class ComplaintPhotoListActivity extends AppCompatActivity implements Pho
                     PhotoListModel photoListModel = response.body();
                     if (photoListModel.getStatus().equals(Constant.TRUE)) {
                         if(photoListModel.getResponse().size()>0) {
-                            photoArrayList.addAll(photoListModel.getResponse());
+                            arrayList = photoListModel.getResponse();
+                            photoArrayList.addAll(arrayList);
                             pullToRefresh.setRefreshing(false);
                         }
                         mMaxoffset = photoListModel.getCount();
                         Log.e("mMaxoffset==>",mMaxoffset);
                       //  totalPage = Integer.parseInt(photoListModel.getCount());
                         setAdapter();
+                    }else if (photoListModel.getStatus().equals(Constant.FALSE)){
+                        Utility.ShowToast(getResources().getString(R.string.something_went_wrong),getApplicationContext());
                     }else if (photoListModel.getStatus().equals(Constant.FAILED)){
                         Utility.logout(getApplicationContext());
                     }

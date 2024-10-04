@@ -196,14 +196,7 @@
     <string name="pls_enter_outcome">Please enter outcome</string>
     <string name="pls_enter_purpose">Please enter purpose</string>
     <string name="no_more_data">Sorry, no more data available!</string>
-
-    <string-array name="login_type_array">
-        <item>@string/select_login_type</item>
-        <item>@string/employee</item>
-        <item>@string/freelancer</item>
-        <item>@string/service_center</item>
-        <item>@string/srv_cntr_t</item>
-
-    </string-array>
-
+    <string name="checkLoginPassword">Please enter correct ID and Password!</string>
+    <string name="selectLoginType">Select Login Type</string>
+    <string name="serviceCenterTech">Service Center Technician</string>
 </resources>

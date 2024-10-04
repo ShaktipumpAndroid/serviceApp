@@ -24,6 +24,7 @@ import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.activity.ComplaintDetailsActivity;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.activity.ComplaintDetailsOffRoleActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.adpater.ComplaintListAdapter;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.adpater.ComplaintStatusAdapter;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
@@ -218,6 +219,8 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                             }
                             getcomplaintList();
                         }
+                    }else if (complaintStatusModel.getStatus().equals(Constant.FALSE)) {
+                    Utility.ShowToast(getResources().getString(R.string.something_went_wrong),getActivity());
                     }else if (complaintStatusModel.getStatus().equals(Constant.FAILED)){
                         Utility.logout(getActivity());
                     }
@@ -259,6 +262,8 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                         }
                         setStatusAdapter();
                         pullToRefresh.setRefreshing(false);
+                    }else if (complaintListModel.getStatus().equals(Constant.FALSE)){
+                        Utility.ShowToast(getResources().getString(R.string.something_went_wrong),getActivity());
                     }else if (complaintListModel.getStatus().equals(Constant.FAILED)){
                         Utility.logout(getActivity());
                     }
@@ -340,9 +345,21 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
 
     @Override
     public void SetOnItemClickListener(ComplaintListModel.Datum response, int position) {
-        Intent intent = new Intent(mContext, ComplaintDetailsActivity.class);
-        intent.putExtra(Constant.complaintData,response);
-        startActivity(intent);
+        if(Utility.isOnRoleApp()) {
+            Intent intent = new Intent(mContext, ComplaintDetailsActivity.class);
+            intent.putExtra(Constant.complaintData, response);
+            startActivity(intent);
+        }else {
+            if(Utility.isFreelancerLogin(mContext)){
+                Intent intent = new Intent(mContext, ComplaintDetailsOffRoleActivity.class);
+                intent.putExtra(Constant.complaintData, response);
+                startActivity(intent);
+            }else {
+                Intent intent = new Intent(mContext, ComplaintDetailsActivity.class);
+                intent.putExtra(Constant.complaintData, response);
+                startActivity(intent);
+            }
+        }
     }
 
 

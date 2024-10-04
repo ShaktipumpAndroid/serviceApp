@@ -5,7 +5,6 @@ public class Constant {
 
     /*--------------------------------------------API Status Manage-------------------------------------------------------*/
     public static String TRUE = "true";
-
     public static String FALSE = "false";
     public static String FAILED = "failed";
 /*--------------------------------------------User Details-------------------------------------------------------*/
@@ -15,42 +14,40 @@ public class Constant {
     public static String userMobile = "userMobile";
     public static String reportingPersonSapId = "reportingPersonSapId";
     public static String reportingPersonName = "reportingPersonName";
-    public static String accessToken = "accessToken";
 
+    public static String accessToken = "accessToken";
     public static String OnRoll = "ONROLL";
     public static String employee = "Employee";
-    public static String service_center = "Service Center";
+    public static String serviceCenterTech = "Service Center Technician";
     public static String freelancer = "Freelancer";
-    public static String srv_cntr_t = "Service center technician";
-
     public static String APIKEY = "AIzaSyAohhwZ11LRwoxsS8lJ0VHGkA4L-cwjWmw";
-
     public static String attendanceIN = "IN";
     public static String attendanceOut = "OUT";
-
     public static final String REPLY = "REPLY";
-
     public static final String addPendingImage = "addPendingImage";
+
     public static final String markAttendance = "markAttendance";
     public static final String APICALL = "apiCall";
     public static final String localConveyance = "localConveyance";
+
     /*------------------------------------Other Objects---------------------------------------*/
     public static String imagePath = "image";
 
     public static String file = "file";
+
     public static String latitude = "Latitude";
+
     public static String longitude = "Longitude";
+
     public static String customerName = "customerName";
     public static String Images ="Images";
-
-
     public static String complaintData ="complaintData";
     public static String complaintNo = "complaintNo";
+
     public static String customerDetails = "customerDetails";
-
     public static String localConveyanceJourneyStart = "localConveyanceJourneyStart";
-
     public static String frontCamera = "frontCamera";
 
     public static String address = "address";
+    public static String loginType = "loginType";
 }
