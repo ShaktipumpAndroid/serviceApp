@@ -110,6 +110,7 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
         if (Utility.isInternetOn(getApplicationContext())) {
             getAttendanceData();
         } else {
+            setMarkAttendanceData();
             Utility.ShowToast(getResources().getString(R.string.checkInternetConnection), getApplicationContext());
         }
 
@@ -208,9 +209,9 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
         markAttendanceModel.setAttendanceDate(Utility.getCurrentDate());
         markAttendanceModel.setAttendanceTime(Utility.getCurrentTime());
         markAttendanceModel.setAttendanceImg(imagePath);
-        markAttendanceModel.setAttendanceStatus(Constant.attendanceIN);
 
         if (markAttendanceStatus.equals("1")) {
+            markAttendanceModel.setAttendanceStatus(Constant.attendanceIN);
             attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_in_time) + Utility.getCurrentDate() + "\n" + Utility.getCurrentTime());
 
         } else {

@@ -125,6 +125,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_CMP_LNG = "complaint_longitude";
     public static final String KEY_CURRENT_STATUS = "current_status";
 
+    public static final String KEY_CURRENT_LAT = "current_lat";
+
+    public static final String KEY_CURRENT_LNG = "current_lng";
+
+    public static final String KEY_CUST_PAY = "customer_pay";
+
+    public static final String KEY_COMP_PAY = "company_pay";
+
+    public static final String KEY_FOC_AMOUNT = "for_amount";
+
+    public static final String KEY_RETURN_BY_COMP = "reture_by_company";
+
+    public static final String KEY_PAY_TO_FREELANCER = "pay_to_freelancer";
+
+    public static final String KEY_PUMP_SR_NO = "pump_sr_no";
+
+    public static final String KEY_MOTOR_SR_NO = "motor_sr_no";
+
+    public static final String KEY_CONTROLLER_SR_NO = "controller_sr_no";
+
+    public static final String KEY_CMP_CATEGORY = "cmp_category";
+
+    public static final String KEY_CMP_CLOSURE_REASON = "closure_reason";
+
+    public static final String KEY_CMP_DEFECT_TYPE = "defect_type";
+
+    public static final String KEY_CMP_RELATED_TO = "related_to";
+
+    public static final String KEY_CMP_REMARK = "complaint_remark";
+
+    public static final String KEY_DATA_SAVED_LOCALLY = "data_saved_locally";
+
+    /*----------------------------------------Complaint forward key code------------------------------------------------------*/
+
     public static final String KEY_PERSON_CODE = "person_code";
     public static final String KEY_PERSON_NAME = "person_name";
 
@@ -272,7 +306,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_CMP_PENDING_RE + " TEXT,"
             + KEY_CMP_LAT + " TEXT,"
             + KEY_CMP_LNG + " TEXT,"
-            + KEY_CURRENT_STATUS + " TEXT)";
+            + KEY_CURRENT_STATUS + " TEXT,"
+            + KEY_CURRENT_LAT + " TEXT,"
+            + KEY_CURRENT_LNG + " TEXT,"
+            + KEY_CUST_PAY + " TEXT,"
+            + KEY_COMP_PAY + " TEXT,"
+            + KEY_FOC_AMOUNT + " TEXT,"
+            + KEY_RETURN_BY_COMP + " TEXT,"
+            + KEY_PAY_TO_FREELANCER + " TEXT,"
+            + KEY_PUMP_SR_NO + " TEXT,"
+            + KEY_MOTOR_SR_NO + " TEXT,"
+            + KEY_CONTROLLER_SR_NO + " TEXT,"
+            + KEY_CMP_CATEGORY + " TEXT,"
+            + KEY_CMP_CLOSURE_REASON + " TEXT,"
+            + KEY_CMP_DEFECT_TYPE + " TEXT,"
+            + KEY_CMP_RELATED_TO + " TEXT,"
+            + KEY_CMP_REMARK + " TEXT,"
+            + KEY_DATA_SAVED_LOCALLY + " TEXT)";
 
 
     /*-----------------------------------------------------Create Dsr record data Table---------------------------------------------*/
@@ -608,7 +658,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.close();
     }
 
-    @SuppressLint("Range")
+    /*@SuppressLint("Range")
     public ArrayList<ComplaintStatusModel.Datum> getAllComplaintStatusData() {
         String selectQuery;
         ArrayList<ComplaintStatusModel.Datum> complaintStatusList = new ArrayList<ComplaintStatusModel.Datum>();
@@ -637,7 +687,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return  complaintStatusList;
     }
-
+*/
 
 
 
@@ -665,23 +715,83 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_CMP_LAT, complaintListModel.getLat());
         contentValues.put(KEY_CMP_LNG, complaintListModel.getLng());
         contentValues.put(KEY_CURRENT_STATUS, complaintListModel.getCurrentStatus());
-
+        contentValues.put(KEY_CURRENT_LAT, complaintListModel.getCurrentLat());
+        contentValues.put(KEY_CURRENT_LNG, complaintListModel.getCurrentLng());
+        contentValues.put(KEY_CUST_PAY, complaintListModel.getCustomerPay());
+        contentValues.put(KEY_COMP_PAY, complaintListModel.getCompanyPay());
+        contentValues.put(KEY_FOC_AMOUNT, complaintListModel.getFocAmount());
+        contentValues.put(KEY_RETURN_BY_COMP, complaintListModel.getReturnByCompany());
+        contentValues.put(KEY_PAY_TO_FREELANCER, complaintListModel.getPayToFreelancer());
+        contentValues.put(KEY_PUMP_SR_NO, complaintListModel.getPumpSrNo());
+        contentValues.put(KEY_MOTOR_SR_NO, complaintListModel.getMotorSrNo());
+        contentValues.put(KEY_CONTROLLER_SR_NO, complaintListModel.getControllerSrNo());
+        contentValues.put(KEY_CMP_CATEGORY, complaintListModel.getCategory());
+        contentValues.put(KEY_CMP_CLOSURE_REASON, complaintListModel.getClosureReason());
+        contentValues.put(KEY_CMP_DEFECT_TYPE, complaintListModel.getDefectType());
+        contentValues.put(KEY_CMP_RELATED_TO, complaintListModel.getRelatedTo());
+        contentValues.put(KEY_CMP_REMARK, complaintListModel.getRemark());
+        contentValues.put(KEY_DATA_SAVED_LOCALLY, "false");
 
         database.insert(TABLE_COMPLAINT_DATA, null, contentValues);
         database.close();
     }
 
+
+    public void updateComplaintDetailsData(ComplaintListModel.Datum complaintListModel) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_COMPLAINT_NUMBER, complaintListModel.getCmpno());
+        contentValues.put(KEY_CUST_ADDRESS, complaintListModel.getCaddress());
+        contentValues.put(KEY_CUST_MOB_NO, complaintListModel.getMblno());
+        contentValues.put(KEY_CUST_NAME, complaintListModel.getCstname());
+        contentValues.put(KEY_PERNR, complaintListModel.getPernr());
+        contentValues.put(KEY_ENAME, complaintListModel.getEname());
+        contentValues.put(KEY_STATUS, complaintListModel.getStatus());
+        contentValues.put(KEY_MATERIAL_CODE, complaintListModel.getMatnr());
+        contentValues.put(KEY_MATERIAL_NAME, complaintListModel.getMaktx());
+        contentValues.put(KEY_BILL_NO, complaintListModel.getVbeln());
+        contentValues.put(KEY_BILL_DATE, complaintListModel.getFkdat());
+        contentValues.put(KEY_FRWD_TO, complaintListModel.getFwrdTo());
+        contentValues.put(KEY_COMPLAINT_DATE, complaintListModel.getFdate());
+        contentValues.put(KEY_CMP_ACTION, complaintListModel.getAction());
+        contentValues.put(KEY_CMP_PENDING_RE, complaintListModel.getCmpPenRe());
+        contentValues.put(KEY_CMP_LAT, complaintListModel.getLat());
+        contentValues.put(KEY_CMP_LNG, complaintListModel.getLng());
+        contentValues.put(KEY_CURRENT_STATUS, complaintListModel.getCurrentStatus());
+        contentValues.put(KEY_CURRENT_LAT, complaintListModel.getCurrentLat());
+        contentValues.put(KEY_CURRENT_LNG, complaintListModel.getCurrentLng());
+        contentValues.put(KEY_CUST_PAY, complaintListModel.getCustomerPay());
+        contentValues.put(KEY_COMP_PAY, complaintListModel.getCompanyPay());
+        contentValues.put(KEY_FOC_AMOUNT, complaintListModel.getFocAmount());
+        contentValues.put(KEY_RETURN_BY_COMP, complaintListModel.getReturnByCompany());
+        contentValues.put(KEY_PAY_TO_FREELANCER, complaintListModel.getPayToFreelancer());
+        contentValues.put(KEY_PUMP_SR_NO, complaintListModel.getPumpSrNo());
+        contentValues.put(KEY_MOTOR_SR_NO, complaintListModel.getMotorSrNo());
+        contentValues.put(KEY_CONTROLLER_SR_NO, complaintListModel.getControllerSrNo());
+        contentValues.put(KEY_CMP_CATEGORY, complaintListModel.getCategory());
+        contentValues.put(KEY_CMP_CLOSURE_REASON, complaintListModel.getClosureReason());
+        contentValues.put(KEY_CMP_DEFECT_TYPE, complaintListModel.getDefectType());
+        contentValues.put(KEY_CMP_RELATED_TO, complaintListModel.getRelatedTo());
+        contentValues.put(KEY_CMP_REMARK, complaintListModel.getRemark());
+        contentValues.put(KEY_DATA_SAVED_LOCALLY, String.valueOf(complaintListModel.isDataSavedLocally()));
+
+        String where = KEY_COMPLAINT_NUMBER + "='" + complaintListModel.getCmpno() + "'";
+        database.update(TABLE_ATTENDANCE_HISTORY_DATA, contentValues, where, null);
+        database.close();
+    }
+
     @SuppressLint("Range")
-    public ArrayList<ComplaintListModel.Datum> getAllComplaintDetailData(String status) {
+    public ArrayList<ComplaintListModel.Datum> getAllComplaintDetailData(String status,String isSavedLocally) {
         String selectQuery;
         ArrayList<ComplaintListModel.Datum> complaintModelList = new ArrayList<ComplaintListModel.Datum>();
         SQLiteDatabase database = this.getWritableDatabase();
         if (doesTableExist(database, TABLE_COMPLAINT_DATA)) {
 
-            if(status.isEmpty()){
-                selectQuery = "SELECT * FROM " + TABLE_COMPLAINT_DATA;
-            }else{
-                selectQuery = "SELECT * FROM " + TABLE_COMPLAINT_DATA +  " WHERE " + KEY_STATUS + " == '" + status + "'";
+            if(!status.isEmpty()){
+                selectQuery = "SELECT * FROM " + TABLE_COMPLAINT_DATA+  " WHERE " +  KEY_STATUS + " == '" + status  + "'" + " AND " + KEY_DATA_SAVED_LOCALLY + " == '" + isSavedLocally + "'";
+            }else {
+                selectQuery = "SELECT * FROM " + TABLE_COMPLAINT_DATA +  " WHERE " + KEY_DATA_SAVED_LOCALLY + " == '" + isSavedLocally + "'";
+
             }
 
 
@@ -711,8 +821,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     complaintModel.setLat(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_LAT)));
                     complaintModel.setLng(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_LNG)));
                     complaintModel.setCurrentStatus(mcursor.getString(mcursor.getColumnIndex(KEY_CURRENT_STATUS)));
-
-
+                    complaintModel.setCurrentLat(mcursor.getString(mcursor.getColumnIndex(KEY_CURRENT_LAT)));
+                    complaintModel.setCurrentLng(mcursor.getString(mcursor.getColumnIndex(KEY_CURRENT_LNG)));
+                    complaintModel.setCustomerPay(mcursor.getString(mcursor.getColumnIndex(KEY_CUST_PAY)));
+                    complaintModel.setCompanyPay(mcursor.getString(mcursor.getColumnIndex(KEY_COMP_PAY)));
+                    complaintModel.setFocAmount(mcursor.getString(mcursor.getColumnIndex(KEY_FOC_AMOUNT)));
+                    complaintModel.setReturnByCompany(mcursor.getString(mcursor.getColumnIndex(KEY_RETURN_BY_COMP)));
+                    complaintModel.setPayToFreelancer(mcursor.getString(mcursor.getColumnIndex(KEY_PAY_TO_FREELANCER)));
+                    complaintModel.setPumpSrNo(mcursor.getString(mcursor.getColumnIndex(KEY_PUMP_SR_NO)));
+                    complaintModel.setMotorSrNo(mcursor.getString(mcursor.getColumnIndex(KEY_MOTOR_SR_NO)));
+                    complaintModel.setControllerSrNo(mcursor.getString(mcursor.getColumnIndex(KEY_CONTROLLER_SR_NO)));
+                    complaintModel.setCategory(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_CATEGORY)));
+                    complaintModel.setClosureReason(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_CLOSURE_REASON)));
+                    complaintModel.setDefectType(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_DEFECT_TYPE)));
+                    complaintModel.setRelatedTo(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_RELATED_TO)));
+                    complaintModel.setRemark(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_REMARK)));
+                    complaintModel.setDataSavedLocally(Boolean.parseBoolean(mcursor.getString(mcursor.getColumnIndex(KEY_DATA_SAVED_LOCALLY))));
                     complaintModelList.add(complaintModel);
                 }
             }
