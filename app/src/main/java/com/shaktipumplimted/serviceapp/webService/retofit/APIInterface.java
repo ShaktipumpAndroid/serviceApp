@@ -13,6 +13,7 @@ import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.Ds
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.DsrDropdownModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.DistanceCalculateModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.AttendanceDataModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customerDetails.checkOut.model.CheckOutDropdownModel;
 import com.shaktipumplimted.serviceapp.webService.api.APIS;
 
 import retrofit2.Call;
@@ -77,6 +78,9 @@ public interface APIInterface {
 
     @GET(APIS.COMPLAINT_FORWARD)
     Call<CommonRespModel> forwardComplaint(@Query("token") String token ,@Query("complaint_forward") String data);
+
+    @GET(APIS.CHECK_OUT_DROPDOWN)
+    Call<CheckOutDropdownModel> getCheckOutDropdown(@Query("token") String token);
 
 
   }

@@ -45,6 +45,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_DSR_RECORD = "tbl_dsr_record";
 
     public static final String TABLE_COMPLAINT_FORWARD_PERSON_DATA = "tbl_complaint_forward_data";
+    public static final String TABLE_CHECK_OUT_DROPDOWN = "tbl_check_out_dropdown";
 
     /*------------------------------------------------KET IDS--------------------------------------------------------*/
 
@@ -213,6 +214,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + TABLE_DSR_DROPWODN + "(" + KEY_ID + " TEXT,"
             + KEY_NAME + " TEXT)";
 
+    private static final String CREATE_TABLE_CHECK_OUT_DROPDOWN = "CREATE TABLE "
+            + TABLE_CHECK_OUT_DROPDOWN + "(" + KEY_ID + " TEXT,"
+            + KEY_NAME + " TEXT)";
+
 
 
     /*-----------------------------------------------------Local Conveyance Tables---------------------------------------------*/
@@ -300,6 +305,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_DSR_RECORD);
         db.execSQL(CREATE_TABLE_COMPLAINT_FORWARD_PERSON_DATA);
         db.execSQL(CREATE_TABLE_PENDING_REASON_IMAGES);
+        db.execSQL(CREATE_TABLE_CHECK_OUT_DROPDOWN);
 
     }
 
@@ -321,6 +327,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PENDING_REASON_IMAGE_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DSR_DROPWODN);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DSR_RECORD);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHECK_OUT_DROPDOWN);
           onCreate(db);
     }
 
