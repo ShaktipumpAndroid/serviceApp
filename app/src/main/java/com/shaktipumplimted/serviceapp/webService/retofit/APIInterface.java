@@ -62,7 +62,7 @@ public interface APIInterface {
     Call<CommonRespModel> complaintForwardApproval(@Query("token") String token, @Query("forward_approval_complaint") String forward_approval_complaint);
 
     @GET(APIS.COMPLAINT_PHOTO_LIST)
-    Call<PhotoListModel> getComplaintPhotoList(@Query("token") String token, @Query("cmpno") String cmpno, @Query("page") String page,@Query("posnr")String posnr);
+    Call<PhotoListModel> getComplaintPhotoList(@Query("token") String token, @Query("cmpno") String cmpno, @Query("page") String page);
 
 
     @GET(APIS.GET_ATTENDANCE_DATA)

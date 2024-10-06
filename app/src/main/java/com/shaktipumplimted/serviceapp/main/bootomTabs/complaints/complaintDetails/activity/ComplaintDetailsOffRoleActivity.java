@@ -1,4 +1,4 @@
-package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.activity;
+package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.activity;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -10,7 +10,6 @@ import static android.os.Build.VERSION.SDK_INT;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,9 +25,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -44,52 +40,45 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.Gson;
+import com.google.android.material.textfield.TextInputEditText;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.FileUtils;
-import com.shaktipumplimted.serviceapp.Utils.GpsTracker;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.Utils.common.activity.PhotoViewerActivity;
 import com.shaktipumplimted.serviceapp.Utils.common.activity.SurfaceCameraActivity;
 import com.shaktipumplimted.serviceapp.Utils.common.adapter.ImageSelectionAdapter;
-import com.shaktipumplimted.serviceapp.Utils.common.model.CommonRespModel;
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
 import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.model.ComplaintDropdownModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonModel;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
-import com.shaktipumplimted.serviceapp.webService.uploadImages.UploadImageAPIS;
-import com.shaktipumplimted.serviceapp.webService.uploadImages.interfaces.ActionListenerCallback;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AddPendingReasonActivity extends AppCompatActivity implements View.OnClickListener, ImageSelectionAdapter.ImageSelectionListener, AdapterView.OnItemSelectedListener {
+public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, ImageSelectionAdapter.ImageSelectionListener {
 
     private static final int REQUEST_CODE_PERMISSION = 101;
     private static final int PICK_FROM_FILE = 102;
-
     Toolbar toolbar;
-    Spinner pendingReasonSpinner;
-    EditText actionExt;
-    TextView followUpDateTxt, submitBtn;
-    RelativeLayout followUpDateBtn;
+    TextInputEditText complaintNo, customerName, customerMobileNo, customerAddress, materialCodeTxt, materialNameTxt,
+            billNoTxt, billDateTxt, remarkTxt;
+    Spinner categorySpinner;
+    List<SpinnerDataModel> complaintCategoryList = new ArrayList<>();
+    String selectedCategory = "";
+    ComplaintListModel.Datum complaintListModel;
+    DatabaseHelper databaseHelper;
+    APIInterface apiInterface;
 
-    RecyclerView compImagesList;
+    RecyclerView complaintImgList;
     List<ImageModel> imageArrayList = new ArrayList<>();
     List<ImageModel> imageList = new ArrayList<>();
 
@@ -98,139 +87,156 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
     ImageSelectionAdapter customAdapter;
 
     List<String> itemNameList = new ArrayList<>();
-    List<SpinnerDataModel> pendingReasonList = new ArrayList<>();
-    ComplaintListModel.Datum complaintListModel;
+
     int selectedIndex;
-    boolean isUpdate = false, isSelectedAllImages = false;
-
-    String selectedFollowUpDate = "", selectedPendingReason = "";
-    DatabaseHelper databaseHelper;
-    public final static SimpleDateFormat dateFormat =
-            new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
-
-    public final static SimpleDateFormat sendDateFormat =
-            new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
-
-    APIInterface apiInterface;
-    GpsTracker gpsTracker;
-
-    UploadImageAPIS uploadImageAPIS;
+    boolean isUpdate = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_pending_reason);
+        setContentView(R.layout.activity_complaint_details_off_role);
 
         Init();
         listner();
         retrieveValue();
     }
 
-
-
-
     private void Init() {
         apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
         databaseHelper = new DatabaseHelper(this);
-        uploadImageAPIS = new UploadImageAPIS(getApplicationContext());
-        gpsTracker = new GpsTracker(getApplicationContext());
-        pendingReasonSpinner = findViewById(R.id.pendingReasonSpinner);
-        actionExt = findViewById(R.id.actionExt);
-        followUpDateTxt = findViewById(R.id.followUpDateTxt);
-        followUpDateBtn = findViewById(R.id.followUpDateBtn);
-        compImagesList = findViewById(R.id.compImagesList);
-        submitBtn = findViewById(R.id.submitBtn);
         toolbar = findViewById(R.id.toolbar);
-
+        complaintNo = findViewById(R.id.complaintNo);
+        customerName = findViewById(R.id.customerName);
+        customerMobileNo = findViewById(R.id.customerMobileNo);
+        customerAddress = findViewById(R.id.customerAddress);
+        materialCodeTxt = findViewById(R.id.materialCodeTxt);
+        materialNameTxt = findViewById(R.id.materialNameTxt);
+        billNoTxt = findViewById(R.id.billNoTxt);
+        billDateTxt = findViewById(R.id.billDateTxt);
+        remarkTxt = findViewById(R.id.remarkTxt);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(getResources().getString(R.string.addPendingReason));
+        getSupportActionBar().setTitle(getResources().getString(R.string.complaintDetail));
         toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
-        followUpDateTxt.setText(Utility.getCurrentDate());
 
-
-        if(Utility.isInternetOn(getApplicationContext())){
-            if(databaseHelper.isDataAvailable(DatabaseHelper.TABLE_PENDING_REASON_DATA)){
-                setAdapter();
-            }else {
-                getPendingReasonList();
-            }
-        }else {
-            setAdapter();
-        }
     }
 
     private void listner() {
-        followUpDateBtn.setOnClickListener(this);
-        submitBtn.setOnClickListener(this);
-        pendingReasonSpinner.setOnItemSelectedListener(this);
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        categorySpinner.setOnItemSelectedListener(this);
     }
 
     private void retrieveValue() {
-        if (getIntent().getExtras() != null) {complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
+        if (getIntent().getExtras() != null) {
+            complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
+
+            complaintNo.setText(complaintListModel.getCmpno());
+            customerName.setText(complaintListModel.getCstname());
+            customerMobileNo.setText(complaintListModel.getMblno());
+            customerAddress.setText(complaintListModel.getCaddress());
+            materialCodeTxt.setText(complaintListModel.getMatnr());
+            materialNameTxt.setText(complaintListModel.getMaktx());
+            billNoTxt.setText(complaintListModel.getVbeln());
+            billDateTxt.setText(complaintListModel.getFkdat());
+
             SetAdapter();
+        }
+
+        if (Utility.isInternetOn(getApplicationContext())) {
+            if (databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CATEGORY) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_DEFECT)
+                    && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_RELATED) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CLOSURE)) {
+                setDropdown();
+            } else {
+                getDropdownsList();
+            }
+        } else {
+            setDropdown();
+        }
+    }
+
+    private void getDropdownsList() {
+        complaintCategoryList = new ArrayList<>();
+
+        Utility.showProgressDialogue(this);
+        Call<ComplaintDropdownModel> call3 = apiInterface.getComplaintDropdowns(Utility.getSharedPreferences(this, Constant.accessToken));
+        call3.enqueue(new Callback<ComplaintDropdownModel>() {
+            @Override
+            public void onResponse(@NonNull Call<ComplaintDropdownModel> call, @NonNull Response<ComplaintDropdownModel> response) {
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    ComplaintDropdownModel complaintDropdownModel = response.body();
+
+                    if (complaintDropdownModel.getStatus().equals(Constant.TRUE)) {
+
+                        if (complaintDropdownModel.getData().getComplainCategory().size() > 0) {
+
+                            for (int i = 0; i < complaintDropdownModel.getData().getComplainCategory().size(); i++) {
+                                if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_CATEGORY, DatabaseHelper.KEY_ID, complaintDropdownModel.getData().getComplainCategory().get(i).getCatId())) {
+                                    SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
+                                    spinnerDataModel.setId(complaintDropdownModel.getData().getComplainCategory().get(i).getCatId());
+                                    spinnerDataModel.setName(complaintDropdownModel.getData().getComplainCategory().get(i).getCategory());
+                                    databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_COMPLAINT_CATEGORY);
+                                }
+                            }
+
+                        }
+
+                        setDropdown();
+                    } else if (complaintDropdownModel.getStatus().equals(Constant.FALSE)) {
+                        Utility.hideProgressDialogue();
+                        Utility.ShowToast(getResources().getString(R.string.something_went_wrong), ComplaintDetailsOffRoleActivity.this);
+                    } else if (complaintDropdownModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ComplaintDropdownModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+
+            }
+        });
+    }
+
+    private void setDropdown() {
+        complaintCategoryList.add(new SpinnerDataModel("00", getResources().getString(R.string.select_cmp_cat)));
+        complaintCategoryList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_COMPLAINT_CATEGORY));
+
+        setSpinnerAdapter(complaintCategoryList, categorySpinner);
+
+        if (Utility.isFreelancerLogin(getApplicationContext())) {
+            categorySpinner.setSelection(3);
+            categorySpinner.setClickable(false);
+        }
+
+    }
+
+    private void setSpinnerAdapter(List<SpinnerDataModel> spinnerList, Spinner spinner) {
+        SpinnerAdapter spinnerAdapter = new com.shaktipumplimted.serviceapp.Utils.common.adapter.SpinnerAdapter(ComplaintDetailsOffRoleActivity.this, spinnerList);
+        spinner.setAdapter(spinnerAdapter);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if (parent.getId() == R.id.categorySpinner) {
+            if (!complaintCategoryList.get(position).getName().equals(getResources().getString(R.string.select_cmp_cat))) {
+                selectedCategory = complaintCategoryList.get(position).getId();
+            } else {
+                selectedCategory = "";
+            }
+
         }
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.followUpDateBtn:
-                ChooseDate();
-                break;
-            case R.id.submitBtn:
-                if (selectedPendingReason.isEmpty()) {
-                    Utility.ShowToast(getResources().getString(R.string.selectPendingReason), getApplicationContext());
-                } else if (actionExt.getText().toString().trim().isEmpty()) {
-                    Utility.ShowToast(getResources().getString(R.string.EnterAction), getApplicationContext());
-                } else if (followUpDateTxt.getText().toString().trim().isEmpty()) {
-                    Utility.ShowToast(getResources().getString(R.string.followUpDate), getApplicationContext());
-                } else {
-                    for (int i = 0; i < imageArrayList.size(); i++) {
-                        if (!imageArrayList.get(i).isImageSelected()) {
-                            isSelectedAllImages = false;
-                            Utility.ShowToast(getResources().getString(R.string.select_all_images), getApplicationContext());
-                            break;
-                        } else {
-                            isSelectedAllImages = true;
-                        }
-                    }
-                    if (isSelectedAllImages) {
-                        if (Utility.isInternetOn(getApplicationContext())) {
-                            addPendingReason();
-                        } else {
-                            Utility.ShowToast(getResources().getString(R.string.checkInternetConnection), getApplicationContext());
-                        }
-                    }
-                }
-
-
-                break;
-        }
-    }
-
-    private void ChooseDate() {
-
-        Calendar calendar = Calendar.getInstance();
-        DatePickerDialog dialog = new DatePickerDialog(AddPendingReasonActivity.this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker arg0, int year, int month, int day_of_month) {
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH, month);
-                calendar.set(Calendar.DAY_OF_MONTH, day_of_month);
-                followUpDateTxt.setText(dateFormat.format(calendar.getTime()));
-                selectedFollowUpDate = sendDateFormat.format(calendar.getTime());
-                Log.e("Date1==>", selectedFollowUpDate.toString());
-            }
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
-        dialog.show();
-
+    public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
 
     /*------------------------------------------------------------------------ImageList---------------------------------------------------------------------*/
     private void SetAdapter() {
@@ -249,12 +255,12 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             imageModel.setImageSelected(false);
             imageModel.setBillNo(complaintListModel.getCmpno());
             imageModel.setPosition(i + 1);
-            imageModel.setSelectedCategory(selectedPendingReason);
+            imageModel.setSelectedCategory(selectedCategory);
             imageArrayList.add(imageModel);
         }
 
         //Create Table
-        imageList = databaseHelper.getAllImages(DatabaseHelper.TABLE_PENDING_REASON_IMAGE_DATA, complaintListModel.getCmpno());
+        imageList = databaseHelper.getAllImages(DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA, complaintListModel.getCmpno());
 
         if (itemNameList.size() > 0 && imageList != null && imageList.size() > 0) {
 
@@ -277,9 +283,9 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             }
         }
 
-        customAdapter = new ImageSelectionAdapter(AddPendingReasonActivity.this, imageArrayList, false);
-        compImagesList.setHasFixedSize(true);
-        compImagesList.setAdapter(customAdapter);
+        customAdapter = new ImageSelectionAdapter(ComplaintDetailsOffRoleActivity.this, imageArrayList, false);
+        complaintImgList.setHasFixedSize(true);
+        complaintImgList.setAdapter(customAdapter);
         customAdapter.ImageSelection(this);
 
     }
@@ -292,22 +298,22 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             isUpdate = true;
             selectImage("1");
         } else {
-            if(!selectedPendingReason.isEmpty()) {
+            if (!selectedCategory.isEmpty()) {
                 isUpdate = false;
                 selectImage("0");
-            }else {
-                Utility.ShowToast(getResources().getString(R.string.selectPendingReasonFirst),getApplicationContext());
+            } else {
+                Utility.ShowToast(getResources().getString(R.string.select_category_first), getApplicationContext());
             }
         }
 
     }
 
     private void selectImage(String value) {
-        LayoutInflater inflater = (LayoutInflater) AddPendingReasonActivity.this.getSystemService(
+        LayoutInflater inflater = (LayoutInflater) ComplaintDetailsOffRoleActivity.this.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.pick_img_layout, null);
         final AlertDialog.Builder builder =
-                new AlertDialog.Builder(AddPendingReasonActivity.this, R.style.MyDialogTheme);
+                new AlertDialog.Builder(ComplaintDetailsOffRoleActivity.this, R.style.MyDialogTheme);
 
         builder.setView(layout);
         builder.setCancelable(true);
@@ -339,7 +345,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             if (value.equals("0")) {
                 galleryIntent();
             } else {
-                Intent i_display_image = new Intent(AddPendingReasonActivity.this, PhotoViewerActivity.class);
+                Intent i_display_image = new Intent(ComplaintDetailsOffRoleActivity.this, PhotoViewerActivity.class);
                 i_display_image.putExtra(Constant.imagePath, imageArrayList.get(selectedIndex).getImagePath());
                 startActivity(i_display_image);
             }
@@ -366,7 +372,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
 
     private void cameraIntent() {
 
-        camraLauncher.launch(new Intent(AddPendingReasonActivity.this, SurfaceCameraActivity.class)
+        camraLauncher.launch(new Intent(ComplaintDetailsOffRoleActivity.this, SurfaceCameraActivity.class)
                 .putExtra(Constant.frontCamera, "1")
                 .putExtra(Constant.customerName, complaintListModel.getCstname()));
 
@@ -380,7 +386,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
 
                         Bundle bundle = result.getData().getExtras();
                         Log.e("bundle====>", bundle.get(Constant.file).toString());
-                        UpdateArrayList(bundle.get(Constant.file).toString());
+                        UpdateArrayList(bundle.get(Constant.file).toString(), bundle.getString(Constant.latitude), bundle.getString(Constant.longitude));
 
                     }
 
@@ -399,7 +405,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             case PICK_FROM_FILE:
                 try {
                     Uri mImageCaptureUri = data.getData();
-                    String path = FileUtils.getPath(AddPendingReasonActivity.this, mImageCaptureUri); // From Gallery
+                    String path = FileUtils.getPath(ComplaintDetailsOffRoleActivity.this, mImageCaptureUri); // From Gallery
                     if (path == null) {
                         path = mImageCaptureUri.getPath(); // From File Manager
                     }
@@ -412,13 +418,13 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
                         file = "";
                     }
                     if (TextUtils.isEmpty(file)) {
-                        Toast.makeText(AddPendingReasonActivity.this, "File not valid!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ComplaintDetailsOffRoleActivity.this, "File not valid!", Toast.LENGTH_LONG).show();
                     } else {
 
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
 
                         File file1 = Utility.saveFile(bitmap, complaintListModel.getCstname(), "complaintImages");
-                        UpdateArrayList(file1.getPath());
+                        UpdateArrayList(file1.getPath(), "", "");
 
                     }
                 } catch (Exception e) {
@@ -430,23 +436,23 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
 
     }
 
-    private void UpdateArrayList(String path) {
+    private void UpdateArrayList(String path, String latitude, String longitude) {
 
         ImageModel imageModel = new ImageModel();
         imageModel.setName(imageArrayList.get(selectedIndex).getName());
         imageModel.setImagePath(path);
         imageModel.setImageSelected(true);
         imageModel.setBillNo(complaintListModel.getCmpno());
-        imageModel.setLatitude("");
-        imageModel.setLongitude("");
+        imageModel.setLatitude(latitude);
+        imageModel.setLongitude(longitude);
         imageModel.setSelectedCategory(imageArrayList.get(selectedIndex).getSelectedCategory());
         imageModel.setPosition(imageArrayList.get(selectedIndex).getPosition());
         imageArrayList.set(selectedIndex, imageModel);
 
         if (isUpdate) {
-            databaseHelper.updateImagesData(imageModel, true, DatabaseHelper.TABLE_PENDING_REASON_IMAGE_DATA);
+            databaseHelper.updateImagesData(imageModel, true, DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA);
         } else {
-            databaseHelper.insertImagesData(imageModel, true, DatabaseHelper.TABLE_PENDING_REASON_IMAGE_DATA);
+            databaseHelper.insertImagesData(imageModel, true, DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA);
         }
 
         customAdapter.notifyDataSetChanged();
@@ -537,119 +543,4 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
         }
     }
 
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (parent.getId() == R.id.pendingReasonSpinner) {
-            if (!parent.getSelectedItem().toString().equals(getResources().getString(R.string.selectPendingReason))) {
-                selectedPendingReason = pendingReasonList.get(position).getId();
-            }
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
-
-    private void getPendingReasonList() {
-        pendingReasonList = new ArrayList<>();
-
-        Utility.showProgressDialogue(this);
-        Call<PendingReasonModel> call3 = apiInterface.getPendingReasonList(Utility.getSharedPreferences(this, Constant.accessToken));
-        call3.enqueue(new Callback<PendingReasonModel>() {
-            @Override
-            public void onResponse(@NonNull Call<PendingReasonModel> call, @NonNull Response<PendingReasonModel> response) {
-                Utility.hideProgressDialogue();
-                if (response.isSuccessful()) {
-                    PendingReasonModel pendingReasonModel = response.body();
-                    if (pendingReasonModel.getStatus().equals(Constant.TRUE)) {
-
-                        if (pendingReasonModel.getPendingReason().size() > 0) {
-                            for (int i = 0; i < pendingReasonModel.getPendingReason().size(); i++) {
-                                if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_PENDING_REASON_DATA, DatabaseHelper.KEY_ID, pendingReasonModel.getPendingReason().get(i).getCmpPenRe())) {
-                                    SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
-                                    spinnerDataModel.setId(pendingReasonModel.getPendingReason().get(i).getCmpPenRe());
-                                    spinnerDataModel.setName(pendingReasonModel.getPendingReason().get(i).getName());
-                                    databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_PENDING_REASON_DATA);
-                                }
-                            }
-                            setAdapter();
-                        }
-                    }else if (complaintListModel.getStatus().equals(Constant.FALSE)){
-                        Utility.ShowToast(getResources().getString(R.string.something_went_wrong),getApplicationContext());
-                    } else if (pendingReasonModel.getStatus().equals(Constant.FAILED)) {
-                        Utility.logout(getApplicationContext());
-                    }
-                }
-
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<PendingReasonModel> call, @NonNull Throwable t) {
-                call.cancel();
-                Utility.hideProgressDialogue();
-                Log.e("Error====>", t.getMessage().toString().trim());
-
-            }
-        });
-    }
-
-    private void setAdapter() {
-        pendingReasonList.add(new SpinnerDataModel("00", getResources().getString(R.string.selectPendingReason)));
-        pendingReasonList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_PENDING_REASON_DATA));
-        SpinnerAdapter spinnerAdapter = new com.shaktipumplimted.serviceapp.Utils.common.adapter.SpinnerAdapter(AddPendingReasonActivity.this, pendingReasonList);
-        pendingReasonSpinner.setAdapter(spinnerAdapter);
-
-    }
-
-
-    public void addPendingReason() {
-        Utility.showProgressDialogue(this);
-        try {
-            JSONArray jsonArray = new JSONArray();
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("cmpno", complaintListModel.getCmpno());
-            jsonObject.put("follow_up_date", selectedFollowUpDate);
-            jsonObject.put("reason", actionExt.getText().toString().trim());
-            jsonObject.put("CMP_PEN_RE", selectedPendingReason);
-            jsonObject.put("latitude", gpsTracker.getLatitude());
-            jsonObject.put("longitude", gpsTracker.getLongitude());
-            jsonObject.put("cr_date", Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd", Utility.getCurrentDate()));
-            jsonObject.put("cr_time", Utility.getFormattedTime("hh:mm a", "hhmmss", Utility.getCurrentTime()));
-            jsonObject.put("cmpln_status", Constant.REPLY);
-
-            for (int i = 0; i < imageArrayList.size(); i++) {
-                if (imageArrayList.get(i).isImageSelected()) {
-                    jsonObject.put("photo" + imageArrayList.get(i).getPosition(), Utility.getBase64FromPath(getApplicationContext(), imageArrayList.get(i).getImagePath()));
-                }
-            }
-            jsonArray.put(jsonObject);
-            uploadImageAPIS.setActionListener(jsonArray, Constant.addPendingImage, new ActionListenerCallback() {
-                @Override
-                public void onActionSuccess(String result) {
-                    Utility.hideProgressDialogue();
-                    CommonRespModel commonRespModel = new Gson().fromJson(result, CommonRespModel.class);
-                    if (commonRespModel.getStatus().equals(Constant.TRUE)) {
-                        databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_PENDING_REASON_IMAGE_DATA, DatabaseHelper.KEY_IMAGE_BILL_NO, complaintListModel.getCmpno());
-                        onBackPressed();
-                        Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
-                    } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
-                        Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
-                    } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {
-                        Utility.logout(getApplicationContext());
-                    }
-
-                }
-
-                @Override
-                public void onActionFailure(String failureMessage) {
-                    Utility.hideProgressDialogue();
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
