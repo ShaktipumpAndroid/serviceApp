@@ -13,8 +13,11 @@ import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.Ds
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.DsrDropdownModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.DistanceCalculateModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.AttendanceDataModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.reports.gatePassReports.model.GatePassReportModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.reports.localConveyanceReport.model.LocalConveyanceReportModel;
 import com.shaktipumplimted.serviceapp.webService.api.APIS;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -78,8 +81,20 @@ public interface APIInterface {
     @GET(APIS.COMPLAINT_FORWARD)
     Call<CommonRespModel> forwardComplaint(@Query("token") String token ,@Query("complaint_forward") String data);
 
+    @GET(APIS.sendVerificationOtpAPI)
+    Call<ResponseBody> sendOTP(@Query("mobiles") String mobileno, @Query("message") String message, @Query("sender") String sender,
+                               @Query("unicode") String unicode, @Query("route") String route, @Query("country") String country,
+                               @Query("DLT_TE_ID") String dlt_te_id);
 
-  }
+
+    @GET(APIS.TRAVEL_REPORT)
+    Call<LocalConveyanceReportModel> getTravelReport(@Query("token") String token , @Query("start_date") String start_date, @Query("end_date") String end_date);
+
+    @GET(APIS.GATEPASS_REPORT)
+    Call<GatePassReportModel> getGatePassReport(@Query("token") String token);
+
+}
+
 
 
 

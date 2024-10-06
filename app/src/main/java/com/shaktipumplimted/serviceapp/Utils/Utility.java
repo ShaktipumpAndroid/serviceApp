@@ -37,6 +37,7 @@ import com.shaktipumplimted.serviceapp.BuildConfig;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.login.LoginActivity;
+import com.shaktipumplimted.serviceapp.otpReader.AppSignatureHashHelper.AppSignatureHashHelper;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
 import org.json.JSONArray;
@@ -53,6 +54,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -193,6 +195,10 @@ public class Utility {
         byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         return decodedByte;
+    }
+
+    public static boolean isValidMobile(String phone) {
+        return android.util.Patterns.PHONE.matcher(phone).matches();
     }
 
 
@@ -492,7 +498,7 @@ public class Utility {
         }else if(Utility.getSharedPreferences(context,Constant.loginType).equals(Constant.employee)){
             isFreelancerLogin = false;
         }
-        return isFreelancerLogin;
+        return true;
     }
 
     public static String getBase64FromPath(Context context,String Imagepath) {
@@ -509,5 +515,13 @@ public class Utility {
         }
         return imageString;
 
+    }
+    public static String getOtp(){
+        Random random = new Random();
+        return  String.format("%04d", random.nextInt(10000));
+    }
+    public static String getHashKey(Context context) {
+        AppSignatureHashHelper appSignatureHashHelper = new AppSignatureHashHelper(context);
+        return appSignatureHashHelper.getAppSignatures().get(0);
     }
 }

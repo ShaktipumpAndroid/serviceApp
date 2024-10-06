@@ -33,6 +33,15 @@ public class APIS {
     public static final String DSR_SAVE = "dsr_save.htm";
     public static final String COMPLAINT_FORWARD = "compliant_forward_to.htm";
 
+
+    public static final String TRAVEL_REPORT = "travel_report_api.htm";
+    public static final String GATEPASS_REPORT ="gatepass_report_api.htm";
+
+
+    //Send OTP API
+    public static final String sendVerificationOtpAPI = "sendhttp.php?authkey=393770756d707334373701";
+
+
     //http://spquasrvr1.shaktipumps.com:8423/sap/bc/bsp/sap/zmapp_service_e/save_pending_reason.htm
 
 }

@@ -18,6 +18,7 @@ import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.DSREntryActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.LocalConveyanceActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.MarkAttendanceActivity;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.reports.activity.ReportsActivity;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
 
@@ -92,6 +93,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
                 break;
             case R.id.reportLinear:
+                Intent intent3 = new Intent(getActivity(), ReportsActivity.class);
+                startActivity(intent3);
 
                 break;
             case R.id.logoutLinear:

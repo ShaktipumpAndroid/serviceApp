@@ -1,7 +1,8 @@
 package com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model;
 
 public class LocalConveyanceModel {
-    String uniqId,startLatitude, startLongitude,endLatitude,endLongitude,startAddress,endAddress,startDate,startTime,endDate,endTime,startImgPath,endImgPath;
+    String uniqId,startLatitude, startLongitude,endLatitude,endLongitude,startAddress,endAddress,
+            startDate,startTime,endDate,endTime,startImgPath,endImgPath,travelMode;
 
     public String getUniqId() {
         return uniqId;
@@ -107,6 +108,14 @@ public class LocalConveyanceModel {
         this.endImgPath = endImgPath;
     }
 
+    public String getTravelMode() {
+        return travelMode;
+    }
+
+    public void setTravelMode(String travelMode) {
+        this.travelMode = travelMode;
+    }
+
     @Override
     public String toString() {
         return "LocalConveyanceModel{" +
@@ -123,6 +132,7 @@ public class LocalConveyanceModel {
                 ", endTime='" + endTime + '\'' +
                 ", startImgPath='" + startImgPath + '\'' +
                 ", endImgPath='" + endImgPath + '\'' +
+                ", travelMode='" + travelMode + '\'' +
                 '}';
     }
 }

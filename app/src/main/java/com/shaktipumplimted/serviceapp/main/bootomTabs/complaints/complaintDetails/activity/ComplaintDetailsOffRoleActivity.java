@@ -24,7 +24,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -41,8 +42,10 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.FileUtils;
+import com.shaktipumplimted.serviceapp.Utils.GpsTracker;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.Utils.common.activity.PhotoViewerActivity;
 import com.shaktipumplimted.serviceapp.Utils.common.activity.SurfaceCameraActivity;
@@ -52,6 +55,8 @@ import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.model.ComplaintDropdownModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.DistanceCalculateModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.LocalConveyanceModel;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
@@ -64,19 +69,26 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, ImageSelectionAdapter.ImageSelectionListener {
+public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implements ImageSelectionAdapter.ImageSelectionListener, View.OnClickListener {
 
     private static final int REQUEST_CODE_PERMISSION = 101;
     private static final int PICK_FROM_FILE = 102;
     Toolbar toolbar;
     TextInputEditText complaintNo, customerName, customerMobileNo, customerAddress, materialCodeTxt, materialNameTxt,
             billNoTxt, billDateTxt, remarkTxt;
+    TextView submitBtn;
     Spinner categorySpinner;
     List<SpinnerDataModel> complaintCategoryList = new ArrayList<>();
-    String selectedCategory = "";
+    String selectedCategory = "", imagePath = "",distance="";
     ComplaintListModel.Datum complaintListModel;
     DatabaseHelper databaseHelper;
-    APIInterface apiInterface;
+
+    ImageView imgIcon;
+    RelativeLayout startLocImg;
+    GpsTracker gpsTracker;
+    Context mContext;
+    List<LocalConveyanceModel> localConveyanceList = new ArrayList<>();
+    APIInterface apiInterface,apiInterface1;
 
     RecyclerView complaintImgList;
     List<ImageModel> imageArrayList = new ArrayList<>();
@@ -89,7 +101,8 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
     List<String> itemNameList = new ArrayList<>();
 
     int selectedIndex;
-    boolean isUpdate = false;
+    boolean isUpdate = false, isSelectedAllImages = false, isEndTravelImg = false;
+    LocalConveyanceModel localConveyance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +115,11 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
     }
 
     private void Init() {
+        mContext = this;
+        localConveyanceList = new ArrayList<>();
+
         apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
+        apiInterface1 = APIClient.getRetrofitDirection(getApplicationContext()).create(APIInterface.class);
         databaseHelper = new DatabaseHelper(this);
         toolbar = findViewById(R.id.toolbar);
         complaintNo = findViewById(R.id.complaintNo);
@@ -114,6 +131,9 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
         billNoTxt = findViewById(R.id.billNoTxt);
         billDateTxt = findViewById(R.id.billDateTxt);
         remarkTxt = findViewById(R.id.remarkTxt);
+        categorySpinner = findViewById(R.id.categorySpinner);
+        complaintImgList = findViewById(R.id.complaintImgList);
+        submitBtn = findViewById(R.id.submitBtn);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -124,7 +144,8 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
     }
 
     private void listner() {
-        categorySpinner.setOnItemSelectedListener(this);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        submitBtn.setOnClickListener(this);
     }
 
     private void retrieveValue() {
@@ -144,8 +165,7 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
         }
 
         if (Utility.isInternetOn(getApplicationContext())) {
-            if (databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CATEGORY) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_DEFECT)
-                    && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_RELATED) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CLOSURE)) {
+            if (databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CATEGORY)) {
                 setDropdown();
             } else {
                 getDropdownsList();
@@ -211,6 +231,8 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
         if (Utility.isFreelancerLogin(getApplicationContext())) {
             categorySpinner.setSelection(3);
             categorySpinner.setClickable(false);
+            categorySpinner.setEnabled(false);
+            selectedCategory = complaintCategoryList.get(3).getId();
         }
 
     }
@@ -219,24 +241,6 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
         SpinnerAdapter spinnerAdapter = new com.shaktipumplimted.serviceapp.Utils.common.adapter.SpinnerAdapter(ComplaintDetailsOffRoleActivity.this, spinnerList);
         spinner.setAdapter(spinnerAdapter);
     }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (parent.getId() == R.id.categorySpinner) {
-            if (!complaintCategoryList.get(position).getName().equals(getResources().getString(R.string.select_cmp_cat))) {
-                selectedCategory = complaintCategoryList.get(position).getId();
-            } else {
-                selectedCategory = "";
-            }
-
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
 
     /*------------------------------------------------------------------------ImageList---------------------------------------------------------------------*/
     private void SetAdapter() {
@@ -293,7 +297,7 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
     @Override
     public void ImageSelectionListener(ImageModel imageModelList, int position) {
         selectedIndex = position;
-
+        isEndTravelImg = false;
         if (imageModelList.isImageSelected()) {
             isUpdate = true;
             selectImage("1");
@@ -386,8 +390,14 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
 
                         Bundle bundle = result.getData().getExtras();
                         Log.e("bundle====>", bundle.get(Constant.file).toString());
-                        UpdateArrayList(bundle.get(Constant.file).toString(), bundle.getString(Constant.latitude), bundle.getString(Constant.longitude));
 
+                        if (isEndTravelImg) {
+                            imagePath = bundle.get(Constant.file).toString();
+                            imgIcon.setImageResource(R.mipmap.tick_icon);
+                        }else {
+                            UpdateArrayList(bundle.get(Constant.file).toString(), bundle.getString(Constant.latitude), bundle.getString(Constant.longitude));
+
+                        }
                     }
 
                 }
@@ -541,6 +551,218 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
                 }
                 break;
         }
+    }
+
+    /*-------------------------------------------------On Click------------------------------------------------------*/
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.submitBtn:
+                closeComplaint();
+                break;
+        }
+
+    }
+
+    private void closeComplaint() {
+        if (remarkTxt.getText().toString().trim().isEmpty()) {
+            Utility.ShowToast(getResources().getString(R.string.CustomerCommentClosureRemark), getApplicationContext());
+        } else {
+            for (int i = 0; i < imageArrayList.size(); i++) {
+                if (!imageArrayList.get(i).isImageSelected()) {
+                    isSelectedAllImages = false;
+                    Utility.ShowToast(getResources().getString(R.string.select_all_images), getApplicationContext());
+                    break;
+                } else {
+                    isSelectedAllImages = true;
+                }
+            }
+            if (isSelectedAllImages) {
+                startEndTravel();
+
+            }
+        }
+    }
+
+    private void startEndTravel() {
+        gpsTracker = new GpsTracker(this);
+        if (checkPermission()) {
+            if (gpsTracker.canGetLocation()) {
+                localConveyanceList = databaseHelper.getAllLocalConveyanceData(true);
+                 localConveyance = localConveyanceList.get(localConveyanceList.size() - 1);
+
+                if (Utility.isInternetOn(getApplicationContext())) {
+                    if(complaintListModel.getLat()!=null && !complaintListModel.getLat().isEmpty()) {
+                        getCalculatedDistance(complaintListModel.getLat(), complaintListModel.getLng(),
+                                String.valueOf(gpsTracker.getLatitude()),
+                                String.valueOf(gpsTracker.getLongitude()));
+                    }else {
+                        getCalculatedDistance2(localConveyance.getStartLatitude(), localConveyance.getStartLongitude(),
+                                String.valueOf(gpsTracker.getLatitude()),
+                                String.valueOf(gpsTracker.getLongitude()));
+                    }
+                } else {
+                    Utility.ShowToast(getResources().getString(R.string.dataSavedLocally), getApplicationContext());
+                    LocalConveyanceModel localConveyanceModel = new LocalConveyanceModel();
+                    localConveyanceModel.setStartLatitude(localConveyance.getStartLatitude());
+                    localConveyanceModel.setStartLongitude(localConveyance.getStartLongitude());
+                    localConveyanceModel.setEndLatitude(String.valueOf(gpsTracker.getLatitude()));
+                    localConveyanceModel.setEndLongitude(String.valueOf(gpsTracker.getLongitude()));
+                    localConveyanceModel.setStartAddress(localConveyance.getStartAddress());
+                    localConveyanceModel.setEndAddress("");
+                    localConveyanceModel.setStartDate(localConveyance.getStartDate());
+                    localConveyanceModel.setStartTime(localConveyance.getStartTime());
+                    localConveyanceModel.setEndDate(Utility.getCurrentDate());
+                    localConveyanceModel.setEndTime(Utility.getCurrentTime());
+                    localConveyanceModel.setStartImgPath(localConveyance.getStartImgPath());
+                    localConveyanceModel.setEndImgPath(imagePath);
+                    localConveyanceModel.setTravelMode(complaintListModel.getCmpno());
+                    databaseHelper.updateLocalConveyanceData(localConveyanceModel);
+                    Utility.setSharedPreference(getApplicationContext(), Constant.localConveyanceJourneyStart, "false");
+                }
+            } else {
+                gpsTracker.showSettingsAlert();
+            }
+        } else {
+            requestPermission();
+        }
+    }
+
+    private void getCalculatedDistance(String startLat, String startLong, String endLat, String endLong) {
+        Utility.showProgressDialogue(this);
+        Call<DistanceCalculateModel> call3 = apiInterface1.getDistance(startLat + "," + startLong,
+                endLat + "," + endLong, Constant.APIKEY);
+        call3.enqueue(new Callback<DistanceCalculateModel>() {
+            @Override
+            public void onResponse(@NonNull Call<DistanceCalculateModel> call, @NonNull Response<DistanceCalculateModel> response) {
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    DistanceCalculateModel distanceCalculateModel = response.body();
+
+                    Log.e("distanceCalculate====>", String.valueOf(distanceCalculateModel.getRoutes().get(0).getLegs().get(0).getDistance().getText()));
+
+                    distance = String.valueOf(distanceCalculateModel.getRoutes().get(0).getLegs().get(0).getDistance().getText());
+
+                    getCalculatedDistance2(localConveyance.getStartLatitude(), localConveyance.getStartLongitude(),
+                            String.valueOf(gpsTracker.getLatitude()),
+                            String.valueOf(gpsTracker.getLongitude()));
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DistanceCalculateModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+            }
+        });
+
+
+    }
+
+    private void getCalculatedDistance2(String startLat, String startLong, String endLat, String endLong) {
+        Utility.showProgressDialogue(this);
+        Call<DistanceCalculateModel> call3 = apiInterface1.getDistance(startLat + "," + startLong,
+                endLat + "," + endLong, Constant.APIKEY);
+        call3.enqueue(new Callback<DistanceCalculateModel>() {
+            @Override
+            public void onResponse(@NonNull Call<DistanceCalculateModel> call, @NonNull Response<DistanceCalculateModel> response) {
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    DistanceCalculateModel distanceCalculateModel = response.body();
+
+                    saveTravelPopup(distanceCalculateModel.getRoutes(),startLat,startLong,endLat,endLong);
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DistanceCalculateModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+            }
+        });
+
+
+    }
+
+    private void saveTravelPopup(List<DistanceCalculateModel.Route> routes, String startLat, String startLong, String endLat, String endLong) {
+        LayoutInflater inflater = (LayoutInflater) mContext
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.start_end_popup,
+                null);
+        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(mContext, R.style.MyDialogTheme);
+
+        builder.setView(layout);
+        builder.setCancelable(false);
+        android.app.AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        alertDialog.show();
+
+
+        TextInputLayout startLatitudeLayout = layout.findViewById(R.id.startLatitudeLayout);
+        TextInputLayout startLongitudeLayout = layout.findViewById(R.id.startLongitudeLayout);
+        TextInputLayout startAddressLayout = layout.findViewById(R.id.startAddressLayout);
+        TextInputEditText startLatitudeExt = layout.findViewById(R.id.startLatitudeExt);
+        TextInputEditText startLongitudeExt = layout.findViewById(R.id.startLongitudeExt);
+        TextInputEditText startAddressExt = layout.findViewById(R.id.startAddressExt);
+
+        TextInputLayout endtLatitudeLayout = layout.findViewById(R.id.endLatitudeLayout);
+        TextInputLayout endLongitudeLayout = layout.findViewById(R.id.endLongitudeLayout);
+        TextInputLayout endAddressLayout = layout.findViewById(R.id.endAddressLayout);
+        TextInputEditText endLatitudeExt = layout.findViewById(R.id.endLatitudeExt);
+        TextInputEditText endLongitudeExt = layout.findViewById(R.id.endLongitudeExt);
+        TextInputEditText endAddressExt = layout.findViewById(R.id.endAddressExt);
+        TextInputLayout travelModeLayout = layout.findViewById(R.id.travelLayout);
+        TextInputEditText travelModeEdt = layout.findViewById(R.id.travelModeEdt);
+        TextInputLayout distanceLayout = layout.findViewById(R.id.distanceLayout);
+        TextInputEditText distanceEdt = layout.findViewById(R.id.distanceEdt);
+
+        TextView startLocImgTxt = layout.findViewById(R.id.startLocImgTxt);
+        imgIcon = layout.findViewById(R.id.imgIcon);
+        startLocImg = layout.findViewById(R.id.startLocImg);
+        TextView confirmBtn = layout.findViewById(R.id.confirmBtn);
+        TextView cancelBtn  = layout.findViewById(R.id.cancelBtn);
+
+
+
+        startLatitudeLayout.setHint(getResources().getString(R.string.startLatitude));
+            startLongitudeLayout.setHint(getResources().getString(R.string.startLongitude));
+            startAddressLayout.setHint(getResources().getString(R.string.startAddress));
+            startLocImgTxt.setText(getResources().getString(R.string.endLocImg));
+            endtLatitudeLayout.setVisibility(View.VISIBLE);
+            endLongitudeLayout.setVisibility(View.VISIBLE);
+            endAddressLayout.setVisibility(View.VISIBLE);
+            travelModeLayout.setVisibility(View.VISIBLE);
+            distanceLayout.setVisibility(View.VISIBLE);
+            startLocImg.setVisibility(View.GONE);
+
+            startLatitudeExt.setText(startLat);
+            startLongitudeExt.setText(startLong);
+            startAddressExt.setText(routes.get(0).getLegs().get(0).getStartAddress());
+            endLatitudeExt.setText(endLat);
+            endLongitudeExt.setText(endLong);
+            endAddressExt.setText(routes.get(0).getLegs().get(0).getEndAddress());
+            distanceEdt.setText(distance);
+            travelModeEdt.setText(complaintListModel.getCmpno());
+        travelModeEdt.setEnabled(false);
+
+        confirmBtn.setOnClickListener(v -> {
+            alertDialog.dismiss();
+
+            Utility.setSharedPreference(getApplicationContext(), Constant.localConveyanceJourneyStart, "false");
+                //    saveData(response,travelModeEdt.getText().toString().trim());
+
+
+
+        });
+
+        cancelBtn.setOnClickListener(v -> alertDialog.dismiss());
+
     }
 
 }

@@ -82,4 +82,7 @@ dependencies {
 
     //Glide
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+
+    //SMS Reader
+    implementation("com.google.android.gms:play-services-auth-api-phone:18.1.0")
 }

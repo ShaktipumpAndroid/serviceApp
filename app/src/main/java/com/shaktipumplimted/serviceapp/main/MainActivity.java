@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Init();
-
         retrieveValue();
     }
 
@@ -48,46 +47,35 @@ public class MainActivity extends AppCompatActivity {
 
     private void listner() {
 
-        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
+        navigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
 
 
-                    case R.id.navigation_complaint:
-                        Fragment fragment = new ComplaintListFragment();
-                        Bundle mBundle = new Bundle();
-                        mBundle.putString(Constant.APICALL, apiCall);
-                        fragment.setArguments(mBundle);
-                        Utility.loadFragment(MainActivity.this, fragment,
-                                false, null);
+                case R.id.navigation_complaint:
+                    Fragment fragment = new ComplaintListFragment();
+                    Bundle mBundle = new Bundle();
+                    mBundle.putString(Constant.APICALL, apiCall);
+                    fragment.setArguments(mBundle);
+                    Utility.loadFragment(MainActivity.this, fragment,
+                            false, null);
 
-                        return true;
+                    return true;
 
-                    case R.id.navigation_routes:
-
-
-                        Utility.loadFragment(MainActivity.this, new RouteListFragment(),
-                                false,
-                                null);
-                        return true;
-
-                    case R.id.navigation_unsync:
+                case R.id.navigation_unsync:
 
 
-                        Utility.loadFragment(MainActivity.this, new UnsyncListFragment(),
-                                false, null);
+                    Utility.loadFragment(MainActivity.this, new UnsyncListFragment(),
+                            false, null);
 
-                        break;
-                    case R.id.navigation_profile:
+                    break;
+                case R.id.navigation_profile:
 
-                        Utility.loadFragment(MainActivity.this, new ProfileFragment(), false,
-                                null);
+                    Utility.loadFragment(MainActivity.this, new ProfileFragment(), false,
+                            null);
 
-                        return true;
-                }
-                return true;
+                    return true;
             }
+            return true;
         });
         navigationView.setSelectedItemId(R.id.navigation_complaint);
     }

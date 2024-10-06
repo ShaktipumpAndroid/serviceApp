@@ -16,7 +16,7 @@ public class CommonRespModel {
 
     @SerializedName("response")
     @Expose
-    private List<Object> response;
+    private List<String> response;
 
     public String getStatus() {
         return status;
@@ -34,11 +34,11 @@ public class CommonRespModel {
         this.message = message;
     }
 
-    public void setResponse(List<Object> response) {
+    public void setResponse(List<String> response) {
         this.response = response;
     }
 
-    public CommonRespModel withResponse(List<Object> response) {
+    public CommonRespModel withResponse(List<String> response) {
         this.response = response;
         return this;
     }

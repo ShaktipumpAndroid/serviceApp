@@ -82,6 +82,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_END_TIME = "end_time";
     public static final String KEY_START_TRAVEL_IMG = "startTravelImg";
     public static final String KEY_END_TRAVEL_IMG = "endTravelImg";
+    public static final String KEY_TRAVEL_MODE = "travel_mode";
 
 
     public static final String KEY_ATTENDANCE_DATE = "attendance_in_date";
@@ -233,7 +234,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_START_TIME + " TEXT,"
             + KEY_END_TIME + " TEXT,"
             + KEY_START_TRAVEL_IMG + " TEXT,"
-            + KEY_END_TRAVEL_IMG + " TEXT)";
+            + KEY_END_TRAVEL_IMG + " TEXT,"
+            + KEY_TRAVEL_MODE + " TEXT)";
 
     /*-----------------------------------------------------Create Mark Attendance Tables---------------------------------------------*/
     private static final String CREATE_TABLE_MARK_ATTENDANCE_DATA = "CREATE TABLE "
@@ -418,6 +420,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_END_TIME, localConveyanceModel.getEndTime());
         contentValues.put(KEY_START_TRAVEL_IMG, localConveyanceModel.getStartImgPath());
         contentValues.put(KEY_END_TRAVEL_IMG, localConveyanceModel.getEndImgPath());
+        contentValues.put(KEY_TRAVEL_MODE, localConveyanceModel.getTravelMode());
 
         database.insert(TABLE_LOCAL_CONVEYANCE_DATA, null, contentValues);
         database.close();
@@ -439,6 +442,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_END_TIME, localConveyanceModel.getEndTime());
         contentValues.put(KEY_START_TRAVEL_IMG, localConveyanceModel.getStartImgPath());
         contentValues.put(KEY_END_TRAVEL_IMG, localConveyanceModel.getEndImgPath());
+        contentValues.put(KEY_TRAVEL_MODE, localConveyanceModel.getTravelMode());
         // update Row
      String   where = KEY_START_DATE + "='" + localConveyanceModel.getStartDate() + "'" + " AND " +
              KEY_START_TIME + "='" + localConveyanceModel.getStartTime() + "'" + " AND " +
@@ -481,6 +485,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     localConveyanceModel.setEndTime(mcursor.getString(10));
                     localConveyanceModel.setStartImgPath(mcursor.getString(11));
                     localConveyanceModel.setEndImgPath(mcursor.getString(12));
+                    localConveyanceModel.setTravelMode(mcursor.getString(13));
+
                     imageModelArrayList.add(localConveyanceModel);
                 }
             }

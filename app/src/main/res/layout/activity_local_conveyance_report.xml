@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".main.bootomTabs.profile.reports.localConveyanceReport.LocalConveyanceReportActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+    <include
+        layout="@layout/toolbar"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:weightSum="3">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_weight="1">
+
+            <RelativeLayout
+                android:id="@+id/fromDateRl"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:background="@drawable/blue_border">
+
+                <TextView
+                    android:id="@+id/fromDateTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:gravity="center|start"
+                    android:hint="@string/selectFromDate"
+                    android:layout_marginStart="@dimen/_2sdp"
+                    android:textColor="@color/black"
+                    android:layout_toStartOf="@+id/calender_icon"
+                    android:textSize="@dimen/_12sdp" />
+
+
+                <RelativeLayout
+                    android:id="@+id/calender_icon"
+                    android:layout_width="@dimen/_40sdp"
+                    android:layout_height="@dimen/_40sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true">
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/calender_icon" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_weight="1">
+            <RelativeLayout
+                android:id="@+id/toDateRl"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:background="@drawable/blue_border">
+
+                <TextView
+                    android:id="@+id/toDateTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:gravity="center|start"
+                    android:hint="@string/selectToDate"
+                    android:layout_marginStart="@dimen/_2sdp"
+                    android:textColor="@color/black"
+                    android:layout_toStartOf="@+id/calender_icon2"
+                    android:textSize="@dimen/_12sdp" />
+
+
+                <RelativeLayout
+                    android:id="@+id/calender_icon2"
+                    android:layout_width="@dimen/_40sdp"
+                    android:layout_height="@dimen/_40sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true">
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/calender_icon" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/_5sdp">
+
+            <TextView
+                android:id="@+id/searchBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_bg_blue"
+                android:text="@string/search"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12sdp"
+                android:fontFamily="sans-serif-condensed-medium"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/localConveyanceReportList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/noDataFound"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:textColor="@android:color/black"
+        android:visibility="visible"
+        android:textSize="@dimen/_12sdp"
+        android:gravity="center"
+        android:text="@string/travelReportSearch"/>
+</RelativeLayout>
