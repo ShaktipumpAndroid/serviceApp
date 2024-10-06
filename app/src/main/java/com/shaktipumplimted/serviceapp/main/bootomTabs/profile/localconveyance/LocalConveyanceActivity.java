@@ -53,6 +53,7 @@ import com.shaktipumplimted.serviceapp.webService.uploadImages.UploadImageAPIS;
 import com.shaktipumplimted.serviceapp.webService.uploadImages.interfaces.ActionListenerCallback;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -259,7 +260,6 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             endtLatitudeLayout.setVisibility(View.VISIBLE);
             endLongitudeLayout.setVisibility(View.VISIBLE);
             endAddressLayout.setVisibility(View.VISIBLE);
-            travelModeEdt.setVisibility(View.VISIBLE);
 
             startLatitudeLayout.setVisibility(View.GONE);
             startLongitudeLayout.setVisibility(View.GONE);
@@ -363,8 +363,6 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
         TextView confirmBtn = layout.findViewById(R.id.confirmBtn);
         TextView cancelBtn  = layout.findViewById(R.id.cancelBtn);
         if(value.equals("3")){
-            localConveyanceList = new ArrayList<>();
-            localConveyanceList = databaseHelper.getAllLocalConveyanceData(true);
             startLatitudeLayout.setHint(getResources().getString(R.string.startLatitude));
             startLongitudeLayout.setHint(getResources().getString(R.string.startLongitude));
             startAddressLayout.setHint(getResources().getString(R.string.startAddress));
@@ -384,10 +382,16 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             endAddressExt.setText(response.getEndAddress());
             distanceEdt.setText(distance);
             endAddressExt.setText(response.getEndAddress());
-            travelModeEdt.requestFocus();
+            if(response.getTravelMode()!=null && !response.getTravelMode().isEmpty()){
+                travelModeEdt.setEnabled(false);
+                travelModeEdt.setText(response.getTravelMode());
+            }else {
+                travelModeEdt.requestFocus();
+            }
         }
 
         confirmBtn.setOnClickListener(v -> {
+            alertDialog.dismiss();
              if (value.equals("3")) {
                 if(travelModeEdt.getText().toString().isEmpty()){
                     Utility.ShowToast(getResources().getString(R.string.pls_enter_travel_mode),getApplicationContext());
@@ -395,11 +399,10 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
                     saveData(response,travelModeEdt.getText().toString().trim());
                 }
             }
-            alertDialog.dismiss();
+
         });
 
         cancelBtn.setOnClickListener(v -> alertDialog.dismiss());
-        startLocImg.setOnClickListener(this);
 
     }
 
@@ -421,14 +424,22 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             jsonObject.put("travel_MODE", travelMode);
             jsonObject.put("distance", distance);
             jsonObject.put("lat_long", response.getStartLatitude()+","+response.getStartLongitude());
-            jsonObject.put("PHOTO1" , Utility.getBase64FromPath(getApplicationContext(), response.getStartImgPath()));
-            jsonObject.put("PHOTO2" , Utility.getBase64FromPath(getApplicationContext(), response.getEndImgPath()));
-
+            if(response.getStartImgPath()!=null &&!response.getStartImgPath().isEmpty()) {
+                jsonObject.put("PHOTO1", Utility.getBase64FromPath(getApplicationContext(), response.getStartImgPath()));
+            }else {
+                jsonObject.put("PHOTO1","");
+            }
+            if(response.getEndImgPath()!=null &&!response.getEndImgPath().isEmpty()) {
+                jsonObject.put("PHOTO2", Utility.getBase64FromPath(getApplicationContext(), response.getEndImgPath()));
+            }else {
+                jsonObject.put("PHOTO2","");
+            }
             jsonArray.put(jsonObject);
             uploadImageAPIS.setActionListener(jsonArray, Constant.localConveyance, new ActionListenerCallback() {
                 @Override
                 public void onActionSuccess(String result) {
                     Utility.hideProgressDialogue();
+
                     CommonRespModel commonRespModel = new Gson().fromJson(result, CommonRespModel.class);
                     if (commonRespModel.getStatus().equals(Constant.TRUE)) {
                         databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_LOCAL_CONVEYANCE_DATA, DatabaseHelper.KEY_START_TIME, response.getStartTime());
@@ -445,6 +456,15 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
                 @Override
                 public void onActionFailure(String failureMessage) {
                     Utility.hideProgressDialogue();
+                    try {
+                        JSONObject jsonObject = new JSONObject(failureMessage);
+                         if(jsonObject.getString("status").equals(Constant.FAILED)) {
+                            Utility.logout(getApplicationContext());
+                        }
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
                 }
             });
         } catch (Exception e) {

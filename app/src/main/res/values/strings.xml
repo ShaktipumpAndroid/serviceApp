@@ -200,6 +200,31 @@
     <string name="selectLoginType">Select Login Type</string>
     <string name="serviceCenterTech">Service Center Technician</string>
     <string name="Dsr_already_filled">DSR entry already done</string>
+    <string name="EnterRegisteredMobileNumber">Enter Registered Mobile Number</string>
+    <string name="sendOTP">Send OTP</string>
+    <string name="otp_send_successfully">Otp sent successfully to your registered mobile number</string>
+    <string name="verification">Verification</string>
+    <string name="verification_code_via_sms">You will get a verification code via sms</string>
+    <string name="pls_enter_veri_code">Please enter verification code</string>
+    <string name="verify">Verify</string>
+    <string name="didnt_recieve_otp">Didn\'t Receive the verification code?</string>
+    <string name="resend_otp"> Resend Otp</string>
+    <string name="otpVerification">OTP Verification</string>
+    <string name="verificationCodeMatched">Verification code matched</string>
+    <string name="enterValidMobile">Please enter valid mobile number</string>
+    <string name="otpIncorrect">OTP is incorrect, please try with resend OTP</string>
+    <string name="gatePassReport">Gate Pass Report</string>
+    <string name="localConveyanceReport">Local Conveyance Report</string>
+    <string name="selectFromDate">Select From Date</string>
+    <string name="selectToDate">Select To Date</string>
+    <string name="search">Search</string>
+    <string name="startDate">Start Date</string>
+    <string name="endDate">End Date</string>
+    <string name="travelReportSearch">Select Date and search for your travel report</string>
+    <string name="invoiceNo">Invoice No.</string>
+    <string name="quantity">Quantity</string>
+    <string name="visitComplaint">If you want to visit this complaint please start your journey first!</string>
+    <string name="dataSavedLocally">Your complaint data saved locally</string>
 
     <string-array name="login_type_array">
         <item>@string/select_login_type</item>

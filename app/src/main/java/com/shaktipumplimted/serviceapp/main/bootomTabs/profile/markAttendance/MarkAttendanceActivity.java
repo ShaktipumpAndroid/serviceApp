@@ -45,6 +45,7 @@ import com.shaktipumplimted.serviceapp.webService.uploadImages.UploadImageAPIS;
 import com.shaktipumplimted.serviceapp.webService.uploadImages.interfaces.ActionListenerCallback;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -271,6 +272,14 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
                 @Override
                 public void onActionFailure(String failureMessage) {
                     Utility.hideProgressDialogue();
+                    try {
+                        JSONObject jsonObject = new JSONObject(failureMessage);
+                        if(jsonObject.getString("status").equals(Constant.FAILED)) {
+                            Utility.logout(getApplicationContext());
+                        }
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             });
         } catch (Exception e) {

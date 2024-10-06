@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -27,7 +28,20 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.ServiceApp"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".main.bootomTabs.profile.reports.gatePassReports.GatePassReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".main.bootomTabs.profile.reports.localConveyanceReport.LocalConveyanceReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".main.bootomTabs.profile.reports.activity.ReportsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".login.OTPVerificationActivity"
+            android:exported="false" />
         <activity
             android:name=".main.bootomTabs.complaints.complaintDetails.activity.ComplaintDetailsOffRoleActivity"
             android:exported="false" />
@@ -98,6 +112,14 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
+
+        <receiver
+            android:name=".otpReader.BroadcastRecieverSMS.MySMSBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

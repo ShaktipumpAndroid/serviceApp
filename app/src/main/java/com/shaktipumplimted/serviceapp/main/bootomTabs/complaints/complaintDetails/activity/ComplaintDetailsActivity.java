@@ -532,7 +532,6 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
             public void onResponse(@NonNull Call<CommonRespModel> call, @NonNull Response<CommonRespModel> response) {
                 Utility.hideProgressDialogue();
                 if (response.isSuccessful()) {
-                    Log.e("response====>", String.valueOf(response.body()));
                     CommonRespModel commonRespModel = response.body();
 
                     if (commonRespModel.getStatus().equals(Constant.TRUE)) {

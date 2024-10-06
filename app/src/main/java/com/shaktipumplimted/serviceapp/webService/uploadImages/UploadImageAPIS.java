@@ -32,7 +32,7 @@ import java.util.ArrayList;
 public class UploadImageAPIS {
 
     ActionListenerCallback callBack;
-    Context mContext;
+    public  static Context mContext;
     JSONArray jsonArray;
 
     public UploadImageAPIS(Context context) {
@@ -105,13 +105,21 @@ public class UploadImageAPIS {
         protected void onPostExecute(String result) {
 
             try {
-                Log.e("result===>", result);
-                if (!result.isEmpty()) {
 
-                    callBack.onActionSuccess(result);
-                } else {
-                    callBack.onActionFailure(result);
-                }
+                JSONObject jsonObject = new JSONObject(result);
+
+                    if (!result.isEmpty()) {
+                        if(jsonObject.getString("status").equals(Constant.TRUE)) {
+                            callBack.onActionSuccess(result);
+                        }else  if(jsonObject.getString("status").equals(Constant.FALSE)) {
+                            callBack.onActionFailure(result);
+                        }else  if(jsonObject.getString("status").equals(Constant.FAILED)) {
+                            callBack.onActionFailure(result);
+                        }
+                    } else {
+                        callBack.onActionFailure(result);
+                    }
+
             } catch (Exception e) {
                 e.printStackTrace();
                 callBack.onActionFailure(result);

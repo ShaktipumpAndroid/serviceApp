@@ -17,8 +17,10 @@ public class Constant {
 
     public static String accessToken = "accessToken";
     public static String OnRoll = "ONROLL";
+    public static String OffRoll = "OFFROLL";
     public static String employee = "Employee";
     public static String serviceCenterTech = "Service Center Technician";
+    public static String SRV_CNTR_T = "SRV_CNTR_T";
     public static String freelancer = "Freelancer";
     public static String APIKEY = "AIzaSyAohhwZ11LRwoxsS8lJ0VHGkA4L-cwjWmw";
     public static String attendanceIN = "IN";
@@ -50,4 +52,6 @@ public class Constant {
 
     public static String address = "address";
     public static String loginType = "loginType";
+    public static String mobileNumber = "mobileNumber";
+    public static String verificationCode = "verificationCode";
 }

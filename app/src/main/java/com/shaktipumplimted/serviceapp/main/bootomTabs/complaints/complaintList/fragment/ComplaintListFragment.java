@@ -1,5 +1,6 @@
 package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.fragment;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -59,7 +60,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
     APIInterface apiInterface;
     DatabaseHelper databaseHelper;
 
-
+    AlertDialog alertDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -350,11 +351,15 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
             intent.putExtra(Constant.complaintData, response);
             startActivity(intent);
         }else {
-            if(Utility.isFreelancerLogin(mContext)){
-                Intent intent = new Intent(mContext, ComplaintDetailsOffRoleActivity.class);
-                intent.putExtra(Constant.complaintData, response);
-                startActivity(intent);
-            }else {
+            if (Utility.isFreelancerLogin(mContext)) {
+                if (Utility.isTravelStart(getActivity())) {
+                    Intent intent = new Intent(mContext, ComplaintDetailsOffRoleActivity.class);
+                    intent.putExtra(Constant.complaintData, response);
+                    startActivity(intent);
+                } else {
+                    ShowAlertResponse();
+                }
+            } else {
                 Intent intent = new Intent(mContext, ComplaintDetailsActivity.class);
                 intent.putExtra(Constant.complaintData, response);
                 startActivity(intent);
@@ -362,7 +367,33 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
         }
     }
 
+    private void ShowAlertResponse() {
+        LayoutInflater inflater = (LayoutInflater) mContext
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.send_successfully_layout,
+                null);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.MyDialogTheme);
 
+        builder.setView(layout);
+        builder.setCancelable(false);
+        alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        alertDialog.show();
+
+
+        TextView OK_txt = layout.findViewById(R.id.OK_txt);
+        TextView title_txt = layout.findViewById(R.id.title_txt);
+        ImageView user_img = layout.findViewById(R.id.user_img);
+
+        user_img.setVisibility(View.GONE);
+        title_txt.setText(getResources().getString(R.string.visitComplaint));
+
+        OK_txt.setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+
+    }
 
 
 }

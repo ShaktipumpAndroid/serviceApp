@@ -8,19 +8,18 @@
         android:enabled="true"/>
 
 
-    <item
+    <!--<item
         android:id="@+id/navigation_routes"
         android:icon="@mipmap/routes"
         android:title="@string/route"
 
-        android:enabled="true"/>
+        android:enabled="true"/>-->
 
 
     <item
         android:id="@+id/navigation_unsync"
         android:icon="@mipmap/unsync"
         android:title="@string/unsync"
-
         android:enabled="true"/>
 
 
