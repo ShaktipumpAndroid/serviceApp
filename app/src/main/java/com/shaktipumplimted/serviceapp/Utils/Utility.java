@@ -472,6 +472,7 @@ public class Utility {
         databaseHelper.deleteData(DatabaseHelper.TABLE_COMPLAINT_CLOSURE);
         databaseHelper.deleteData(DatabaseHelper.TABLE_PENDING_REASON_IMAGE_DATA);
         databaseHelper.deleteData(DatabaseHelper.TABLE_COMPLAINT_FORWARD_PERSON_DATA);
+        databaseHelper.deleteData(DatabaseHelper.TABLE_DSR_RECORD);
 
         Intent intent = new Intent(context, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

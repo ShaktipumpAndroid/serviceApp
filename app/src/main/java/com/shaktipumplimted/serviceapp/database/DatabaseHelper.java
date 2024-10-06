@@ -840,7 +840,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.close();
     }
 
+    public ArrayList<DsrDetailsModel> getAllDsrEntry() {
+        ArrayList<DsrDetailsModel> spinnerArrayList = new ArrayList<DsrDetailsModel>();
+        SQLiteDatabase database = this.getWritableDatabase();
+        if (doesTableExist(database, TABLE_DSR_RECORD)) {
+            String selectQuery = "SELECT  *  FROM " + TABLE_DSR_RECORD;
+            Cursor mcursor = database.rawQuery(selectQuery, null);
 
+            spinnerArrayList.clear();
+            DsrDetailsModel dsrDetailsModel;
+            if (mcursor.getCount() > 0) {
+                for (int i = 0; i < mcursor.getCount(); i++) {
+                    mcursor.moveToNext();
+                    dsrDetailsModel = new DsrDetailsModel();
+                    dsrDetailsModel.setUniqId(mcursor.getString(0));
+                    dsrDetailsModel.setDsrActivity(mcursor.getString(1));
+                    dsrDetailsModel.setDate(mcursor.getString(2));
+                    dsrDetailsModel.setLat(mcursor.getString(3));
+                    dsrDetailsModel.setLng(mcursor.getString(4));
+                    dsrDetailsModel.setTime(mcursor.getString(5));
+                    dsrDetailsModel.setDsrPurpose(mcursor.getString(6));
+                    dsrDetailsModel.setDsrOutcome(mcursor.getString(7));
+
+                    spinnerArrayList.add(dsrDetailsModel);
+                }
+            }
+            mcursor.close();
+            database.close();
+        }
+        return  spinnerArrayList;
+    }
 
 
 

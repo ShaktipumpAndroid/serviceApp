@@ -225,6 +225,13 @@
     <string name="quantity">Quantity</string>
     <string name="visitComplaint">If you want to visit this complaint please start your journey first!</string>
     <string name="dataSavedLocally">Your complaint data saved locally</string>
+    <string name="dsrDate">DSR date</string>
+    <string name="dsrActivity">DSR activity</string>
+    <string name="dsrOutcome">DSR outcome</string>
+    <string name="dsrAgenda">DSR agenda</string>
+    <string name="attendance">Attendance</string>
+    <string name="contact_admin_assign">Contact admin for assigning responsible person</string>
+    <string name="pls_fill_dsr_entry">Please fill DSR entry first</string>
 
     <string-array name="login_type_array">
         <item>@string/select_login_type</item>

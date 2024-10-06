@@ -392,7 +392,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                     Utility.ShowToast(getResources().getString(R.string.enter_return_company), getApplicationContext());
                 } else if (remarkTxt.getText().toString().trim().isEmpty()) {
                     Utility.ShowToast(getResources().getString(R.string.CustomerCommentClosureRemark), getApplicationContext());
-                } else if (Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId).isEmpty() &&
+                } else if (Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId).isEmpty() ||
                         Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId).equals("00000000")) {
                     Utility.ShowToast(getResources().getString(R.string.yourReportingSapID), getApplicationContext());
                 } else {
@@ -406,9 +406,6 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         }
 
     }
-
-
-
 
     /*--------------------------------------------Scanner Code-------------------------------------------------------*/
 
@@ -493,8 +490,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
         okBtn.setOnClickListener(v -> {alertDialog.dismiss();
             if(Utility.isInternetOn(getApplicationContext())){
-
-                 complaintForward();
+                    complaintForward();
             }else {
                 Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
             }
