@@ -41,6 +41,16 @@ public class ComplaintStatusModel {
 
         boolean isSelected;
 
+        public Datum(String valpos, String domvalueL, boolean isSelected) {
+            this.valpos = valpos;
+            this.domvalueL = domvalueL;
+            this.isSelected = isSelected;
+        }
+
+        public Datum() {
+
+        }
+
         public String getValpos() {
             return valpos;
         }

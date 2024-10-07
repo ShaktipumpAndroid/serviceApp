@@ -23,16 +23,28 @@ public class Constant {
     public static String SRV_CNTR_T = "SRV_CNTR_T";
     public static String freelancer = "Freelancer";
     public static String APIKEY = "AIzaSyAohhwZ11LRwoxsS8lJ0VHGkA4L-cwjWmw";
+
+    /*--------------------------------------------attendance Key-------------------------------------------------------*/
     public static String attendanceIN = "IN";
     public static String attendanceOut = "OUT";
+    /*--------------------------------------------Complaint Status Key-------------------------------------------------------*/
+    public static final String all = "All";
     public static final String REPLY = "REPLY";
+    public static final String PENDING_FOR_CLOSURE = "Pending For Closure";
+
+    public static final String PENDING_FOR_APPROVAL = "Pending For Approval";
+
+    public static final String AWAITING_FOR_APPROVAL = "Awaiting For Approval";
+    public static final String APROPVED_COMPLAINTS = "Approved Complaints";
+    public static final String CLOSURE_COMPLAINTS = "CLOSURE";
+
     public static final String addPendingImage = "addPendingImage";
 
     public static final String markAttendance = "markAttendance";
     public static final String APICALL = "apiCall";
     public static final String localConveyance = "localConveyance";
 
-    /*------------------------------------Other Objects---------------------------------------*/
+    /*------------------------------------data transfer Keys---------------------------------------*/
     public static String imagePath = "image";
 
     public static String file = "file";
@@ -54,4 +66,5 @@ public class Constant {
     public static String loginType = "loginType";
     public static String mobileNumber = "mobileNumber";
     public static String verificationCode = "verificationCode";
+
 }

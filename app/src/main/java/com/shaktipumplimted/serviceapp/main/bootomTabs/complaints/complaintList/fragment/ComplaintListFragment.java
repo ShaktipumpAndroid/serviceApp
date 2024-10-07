@@ -56,7 +56,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
     SearchView searchUser;
     TextView noDataFound;
     SwipeRefreshLayout pullToRefresh;
-    int selectedPosition = 4, prevPosition =4;
+    int selectedPosition = 0, prevPosition =0;
     APIInterface apiInterface;
     DatabaseHelper databaseHelper;
 
@@ -103,14 +103,14 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
     private void listner() {
         pullToRefresh.setOnRefreshListener(() -> {
             pullToRefresh.setRefreshing(true);
-            getStatusList();
+            getcomplaintList();
         });
     }
     private void retrieveValue() {
         Bundle bundle = getArguments();
             if(bundle.getString(Constant.APICALL).equals(Constant.TRUE)){
                if(Utility.isInternetOn(getActivity())){
-                   getStatusList();
+                   getcomplaintList();
                }else {
                    setStatusAdapter();
                }
@@ -123,7 +123,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
     private void getLists() {
         if(Utility.isInternetOn(mContext)){
             if(!databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_DATA)){
-                getStatusList();
+                getcomplaintList();
             }else{
                 setStatusAdapter();
             }
@@ -192,8 +192,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
 
     private void getStatusList() {
         complaintStatusArrayList = new ArrayList<>();
-
-        Utility.showProgressDialogue(getActivity());
+       /* Utility.showProgressDialogue(getActivity());
         Call<ComplaintStatusModel> call3 = apiInterface.getStatusList(Utility.getSharedPreferences(getActivity(), Constant.accessToken));
         call3.enqueue(new Callback<ComplaintStatusModel>() {
             @Override
@@ -236,7 +235,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                 Log.e("Error====>", t.getMessage().toString().trim());
 
             }
-        });
+        });*/
     }
 
     private void getcomplaintList() {
@@ -284,7 +283,18 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
 
     private void setStatusAdapter() {
 
-        complaintStatusArrayList = databaseHelper.getAllComplaintStatusData();
+      //  complaintStatusArrayList = databaseHelper.getAllComplaintStatusData();
+
+        complaintStatusArrayList = new ArrayList<>();
+
+        complaintStatusArrayList.add( new ComplaintStatusModel.Datum("0000",Constant.all,true));
+        complaintStatusArrayList.add( new ComplaintStatusModel.Datum("0001",Constant.REPLY,false));
+        complaintStatusArrayList.add( new ComplaintStatusModel.Datum("0002",Constant.PENDING_FOR_CLOSURE,false));
+        complaintStatusArrayList.add( new ComplaintStatusModel.Datum("0003",Constant.PENDING_FOR_APPROVAL,false));
+        complaintStatusArrayList.add( new ComplaintStatusModel.Datum("0004",Constant.AWAITING_FOR_APPROVAL,false));
+        complaintStatusArrayList.add( new ComplaintStatusModel.Datum("0005",Constant.APROPVED_COMPLAINTS,false));
+        complaintStatusArrayList.add( new ComplaintStatusModel.Datum("0006",Constant.CLOSURE_COMPLAINTS,false));
+
         Log.e("complaintStatus===>",complaintStatusArrayList.toString());
         complaintStatusAdapter = new ComplaintStatusAdapter(mContext, complaintStatusArrayList,selectedPosition);
         compStatusList.setHasFixedSize(true);
@@ -293,7 +303,8 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
         setComplaintAdapter("");
     }
     private void setComplaintAdapter(String status) {
-        complaintArrayList = databaseHelper.getAllComplaintDetailData(status);
+        complaintArrayList = databaseHelper.getAllComplaintDetailData(status,"false");
+         Log.e("complaintArrayList", String.valueOf(complaintArrayList.toString()));
         if(complaintArrayList.size()>0) {
             noDataFound.setVisibility(View.GONE);
             compList.setVisibility(View.VISIBLE);
@@ -336,7 +347,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
 
 
         }
-        if(!response.getDomvalueL().equals("All")){
+        if(!response.getDomvalueL().equals(Constant.all)){
             setComplaintAdapter(response.getDomvalueL());
         }else{
             setComplaintAdapter("");
