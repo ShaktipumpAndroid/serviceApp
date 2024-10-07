@@ -35,6 +35,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.shaktipumplimted.serviceapp.BuildConfig;
 import com.shaktipumplimted.serviceapp.R;
+import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.login.LoginActivity;
 import com.shaktipumplimted.serviceapp.otpReader.AppSignatureHashHelper.AppSignatureHashHelper;
@@ -524,5 +525,17 @@ public class Utility {
     public static String getHashKey(Context context) {
         AppSignatureHashHelper appSignatureHashHelper = new AppSignatureHashHelper(context);
         return appSignatureHashHelper.getAppSignatures().get(0);
+    }
+
+    public static int selectedPosition(List<SpinnerDataModel> array, String value){
+        int position =0;
+        for (int i=0; i<array.size(); i++){
+            if(array.get(i).getName().equals(value)){
+                position = i;
+            }
+        }
+
+
+        return position;
     }
 }

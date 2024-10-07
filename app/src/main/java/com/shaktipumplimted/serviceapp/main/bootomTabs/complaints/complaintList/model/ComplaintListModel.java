@@ -116,6 +116,11 @@ public class ComplaintListModel implements Serializable {
         @Expose
         private String currentStatus;
 
+        private String currentLat, currentLng, customerPay,
+                companyPay,focAmount,returnByCompany,payToFreelancer,
+                pumpSrNo, motorSrNo,controllerSrNo,category,closureReason,defectType,relatedTo,remark;
+        private  boolean isDataSavedLocally;
+
         public String getCaddress() {
             return caddress;
         }
@@ -428,6 +433,134 @@ public class ComplaintListModel implements Serializable {
             return this;
         }
 
+        public String getCurrentLat() {
+            return currentLat;
+        }
+
+        public void setCurrentLat(String currentLat) {
+            this.currentLat = currentLat;
+        }
+
+        public String getCurrentLng() {
+            return currentLng;
+        }
+
+        public void setCurrentLng(String currentLng) {
+            this.currentLng = currentLng;
+        }
+
+        public String getCustomerPay() {
+            return customerPay;
+        }
+
+        public void setCustomerPay(String customerPay) {
+            this.customerPay = customerPay;
+        }
+
+        public String getCompanyPay() {
+            return companyPay;
+        }
+
+        public void setCompanyPay(String companyPay) {
+            this.companyPay = companyPay;
+        }
+
+        public String getFocAmount() {
+            return focAmount;
+        }
+
+        public void setFocAmount(String focAmount) {
+            this.focAmount = focAmount;
+        }
+
+        public String getReturnByCompany() {
+            return returnByCompany;
+        }
+
+        public void setReturnByCompany(String returnByCompany) {
+            this.returnByCompany = returnByCompany;
+        }
+
+        public String getPayToFreelancer() {
+            return payToFreelancer;
+        }
+
+        public void setPayToFreelancer(String payToFreelancer) {
+            this.payToFreelancer = payToFreelancer;
+        }
+
+        public String getPumpSrNo() {
+            return pumpSrNo;
+        }
+
+        public void setPumpSrNo(String pumpSrNo) {
+            this.pumpSrNo = pumpSrNo;
+        }
+
+        public String getMotorSrNo() {
+            return motorSrNo;
+        }
+
+        public void setMotorSrNo(String motorSrNo) {
+            this.motorSrNo = motorSrNo;
+        }
+
+        public String getControllerSrNo() {
+            return controllerSrNo;
+        }
+
+        public void setControllerSrNo(String controllerSrNo) {
+            this.controllerSrNo = controllerSrNo;
+        }
+
+        public String getCategory() {
+            return category;
+        }
+
+        public void setCategory(String category) {
+            this.category = category;
+        }
+
+        public String getClosureReason() {
+            return closureReason;
+        }
+
+        public void setClosureReason(String closureReason) {
+            this.closureReason = closureReason;
+        }
+
+        public String getDefectType() {
+            return defectType;
+        }
+
+        public void setDefectType(String defectType) {
+            this.defectType = defectType;
+        }
+
+        public String getRelatedTo() {
+            return relatedTo;
+        }
+
+        public void setRelatedTo(String relatedTo) {
+            this.relatedTo = relatedTo;
+        }
+
+        public String getRemark() {
+            return remark;
+        }
+
+        public void setRemark(String remark) {
+            this.remark = remark;
+        }
+
+        public boolean isDataSavedLocally() {
+            return isDataSavedLocally;
+        }
+
+        public void setDataSavedLocally(boolean dataSavedLocally) {
+            isDataSavedLocally = dataSavedLocally;
+        }
+
         @Override
         public String toString() {
             return "Datum{" +
@@ -455,6 +588,22 @@ public class ComplaintListModel implements Serializable {
                     ", lat='" + lat + '\'' +
                     ", lng='" + lng + '\'' +
                     ", currentStatus='" + currentStatus + '\'' +
+                    ", currentLat='" + currentLat + '\'' +
+                    ", currentLng='" + currentLng + '\'' +
+                    ", customerPay='" + customerPay + '\'' +
+                    ", companyPay='" + companyPay + '\'' +
+                    ", focAmount='" + focAmount + '\'' +
+                    ", returnByCompany='" + returnByCompany + '\'' +
+                    ", payToFreelancer='" + payToFreelancer + '\'' +
+                    ", pumpSrNo='" + pumpSrNo + '\'' +
+                    ", motorSrNo='" + motorSrNo + '\'' +
+                    ", controllerSrNo='" + controllerSrNo + '\'' +
+                    ", category='" + category + '\'' +
+                    ", closureReason='" + closureReason + '\'' +
+                    ", defectType='" + defectType + '\'' +
+                    ", relatedTo='" + relatedTo + '\'' +
+                    ", remark='" + remark + '\'' +
+                    ", isDataSavedLocally='" + isDataSavedLocally + '\'' +
                     '}';
         }
     }

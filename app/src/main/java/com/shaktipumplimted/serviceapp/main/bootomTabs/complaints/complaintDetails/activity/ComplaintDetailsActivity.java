@@ -1,7 +1,17 @@
 package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.activity;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_MEDIA_IMAGES;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.os.Build.VERSION.SDK_INT;
+
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
@@ -24,6 +34,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.mlkit.vision.barcode.common.Barcode;
@@ -32,6 +44,7 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.shaktipumplimted.serviceapp.R;
+import com.shaktipumplimted.serviceapp.Utils.GpsTracker;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.Utils.common.model.CommonRespModel;
 import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
@@ -57,6 +70,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ComplaintDetailsActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+    private static final int REQUEST_CODE_PERMISSION = 101;
 
     Toolbar toolbar;
     TextInputEditText complaintNo, customerName, customerMobileNo, customerAddress, materialCodeTxt, materialNameTxt,
@@ -69,6 +83,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     GmsBarcodeScannerOptions options;
     GmsBarcodeScanner scanner;
     ComplaintListModel.Datum complaintListModel;
+    List<ComplaintListModel.Datum>complaintArrayList;
     DatabaseHelper databaseHelper;
    int scannerCode;
     APIInterface apiInterface;
@@ -77,7 +92,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     List<SpinnerDataModel> complaintRelatedToList  = new ArrayList<>();
     List<SpinnerDataModel> complaintClosureList  = new ArrayList<>();
     String selectedCategory = "",selectedDefect = "",selectedComplaintRelated = "",selectedClosureReason = "";
-
+    GpsTracker gpsTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +107,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     private void Init() {
         apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
         databaseHelper = new DatabaseHelper(this);
+        gpsTracker = new GpsTracker(getApplicationContext());
         toolbar = findViewById(R.id.toolbar);
         complaintNo = findViewById(R.id.complaintNo);
         customerName = findViewById(R.id.customerName);
@@ -161,6 +177,18 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     private void retriveValue() {
         if (getIntent().getExtras() != null) {
             complaintListModel = (ComplaintListModel.Datum) getIntent().getSerializableExtra(Constant.complaintData);
+
+            if (Utility.isInternetOn(getApplicationContext())) {
+                if (databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CATEGORY) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_DEFECT)
+                        && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_RELATED) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CLOSURE)) {
+                    setDropdown();
+                } else {
+                    getDropdownsList();
+                }
+            } else {
+                setDropdown();
+            }
+
             complaintNo.setText(complaintListModel.getCmpno());
             customerName.setText(complaintListModel.getCstname());
             customerMobileNo.setText(complaintListModel.getMblno());
@@ -169,18 +197,32 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
             materialNameTxt.setText(complaintListModel.getMaktx());
             billNoTxt.setText(complaintListModel.getVbeln());
             billDateTxt.setText(complaintListModel.getFkdat());
+
+            if(complaintListModel.isDataSavedLocally()){
+                customerPayExt.setText(complaintListModel.getCustomerPay());
+                companyPayExt.setText(complaintListModel.getCompanyPay());
+                focAmountExt.setText(complaintListModel.getFocAmount());
+                returnByCompanyExt.setText(complaintListModel.getReturnByCompany());
+                payToFreelancerExt.setText(complaintListModel.getPayToFreelancer());
+                pumpSerialTxt.setText(complaintListModel.getPumpSrNo());
+                motorSerialTxt.setText(complaintListModel.getMotorSrNo());
+                controllerSerialTxt.setText(complaintListModel.getControllerSrNo());
+                remarkTxt.setText(complaintListModel.getRemark());
+
+                selectedCategory = complaintListModel.getCategory();
+                selectedClosureReason = complaintListModel.getClosureReason();
+                selectedDefect = complaintListModel.getDefectType();
+                selectedComplaintRelated = complaintListModel.getRelatedTo();
+                categorySpinner.setSelection(Utility.selectedPosition(complaintCategoryList, selectedCategory));
+                closureReasonSpinner.setSelection(Utility.selectedPosition(complaintClosureList, selectedClosureReason));
+                defectTypeSpinner.setSelection(Utility.selectedPosition(complaintDefectList, selectedDefect));
+                complaintRelatedToSpinner.setSelection(Utility.selectedPosition(complaintRelatedToList, selectedComplaintRelated));
+            }
+
+
         }
 
-        if (Utility.isInternetOn(getApplicationContext())) {
-            if (databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CATEGORY) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_DEFECT)
-                    && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_RELATED) && databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_CLOSURE)) {
-                setDropdown();
-            } else {
-                getDropdownsList();
-            }
-        } else {
-            setDropdown();
-        }
+
     }
 
     private void getDropdownsList() {
@@ -291,6 +333,8 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     private void setSpinnerAdapter(List<SpinnerDataModel> spinnerList, Spinner spinner) {
         SpinnerAdapter spinnerAdapter = new com.shaktipumplimted.serviceapp.Utils.common.adapter.SpinnerAdapter(ComplaintDetailsActivity.this, spinnerList);
         spinner.setAdapter(spinnerAdapter);
+
+
     }
 
 
@@ -329,7 +373,16 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                 break;
 
             case R.id.closeComplaintBtn:
-                Validation(2);
+                if (checkPermission()) {
+                    if (gpsTracker.canGetLocation()) {
+                        Validation(2);
+                    } else {
+                        gpsTracker.showSettingsAlert();
+                    }
+                } else {
+                    requestPermission();
+                }
+
                 break;
         }
 
@@ -401,6 +454,77 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
                 break;
             case 2:
+                if (customerPayExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_customer_pay), getApplicationContext());
+                }else if (companyPayExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_company_pay), getApplicationContext());
+                }else if (focAmountExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_foc_amt), getApplicationContext());
+                }else if (returnByCompanyExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_return_company), getApplicationContext());
+                }else if (payToFreelancerExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.payToFreelancer), getApplicationContext());
+                }else if (pumpSerialTxt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_pump_serial_number), getApplicationContext());
+                }else if (motorSerialTxt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_motor_serial_number), getApplicationContext());
+                }else if (controllerSerialTxt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_controller_serial_number), getApplicationContext());
+                } else if (selectedCategory.isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.select_category_first), getApplicationContext());
+                } else if (selectedDefect.trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.select_defect_type_first), getApplicationContext());
+                } else if (selectedComplaintRelated.trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.select_comp_related_first), getApplicationContext());
+                } else if (returnByCompanyExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_return_company), getApplicationContext());
+                } else if (remarkTxt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.CustomerCommentClosureRemark), getApplicationContext());
+                } else if (Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId).isEmpty() ||
+                        Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId).equals("00000000")) {
+                    Utility.ShowToast(getResources().getString(R.string.yourReportingSapID), getApplicationContext());
+                }else {
+                    ComplaintListModel.Datum complaintModel = new ComplaintListModel.Datum();
+                    complaintModel.setCmpno(complaintListModel.getCmpno());
+                    complaintModel.setCaddress(complaintListModel.getCaddress());
+                    complaintModel.setMblno(complaintListModel.getMblno());
+                    complaintModel.setCstname(complaintListModel.getCstname());
+                    complaintModel.setPernr(complaintListModel.getPernr());
+                    complaintModel.setEname(complaintListModel.getEname());
+                    complaintModel.setStatus(complaintListModel.getStatus());
+                    complaintModel.setMatnr(complaintListModel.getMatnr());
+                    complaintModel.setMaktx(complaintListModel.getMaktx());
+                    complaintModel.setVbeln(complaintListModel.getVbeln());
+
+                    complaintModel.setFkdat(complaintListModel.getFkdat());
+                    complaintModel.setFwrdTo(complaintListModel.getFwrdTo());
+                    complaintModel.setFdate(complaintListModel.getFdate());
+                    complaintModel.setAction(complaintListModel.getAction());
+                    complaintModel.setCmpPenRe(complaintListModel.getCmpPenRe());
+                    complaintModel.setLat(complaintListModel.getLat());
+                    complaintModel.setLng(complaintListModel.getLng());
+                    complaintModel.setCurrentStatus(complaintListModel.getCurrentStatus());
+                    complaintModel.setCurrentLng(String.valueOf(gpsTracker.getLatitude()));
+                    complaintModel.setCurrentLng(String.valueOf(gpsTracker.getLongitude()));
+
+                    complaintModel.setCustomerPay(customerPayExt.getText().toString().trim());
+                    complaintModel.setCompanyPay(companyPayExt.getText().toString().trim());
+                    complaintModel.setFocAmount(focAmountExt.getText().toString().trim());
+                    complaintModel.setReturnByCompany(returnByCompanyExt.getText().toString().trim());
+                    complaintModel.setPayToFreelancer(payToFreelancerExt.getText().toString().trim());
+                    complaintModel.setPumpSrNo(pumpSerialTxt.getText().toString().trim());
+                    complaintModel.setMotorSrNo(motorSerialTxt.getText().toString().trim());
+                    complaintModel.setControllerSrNo(controllerSerialTxt.getText().toString().trim());
+                    complaintModel.setCategory(selectedCategory);
+                    complaintModel.setClosureReason(selectedClosureReason);
+                    complaintModel.setDefectType(selectedDefect);
+                    complaintModel.setRelatedTo(selectedComplaintRelated);
+                    complaintModel.setRemark(remarkTxt.getText().toString().trim());
+                    complaintModel.setDataSavedLocally(true);
+
+                    databaseHelper.updateComplaintDetailsData(complaintModel);
+                    Utility.ShowToast(getResources().getString(R.string.dataSavedLocally),getApplicationContext());
+                }
 
                 break;
         }
@@ -584,5 +708,77 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         }
         return (super.onOptionsItemSelected(item));
     }
+    /*--------------------------------------------Check Permission-------------------------------------------------------*/
+
+
+    private void requestPermission() {
+        if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA, Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_CODE_PERMISSION);
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_PERMISSION);
+
+        }
+    }
+
+    private boolean checkPermission() {
+        int FineLocation = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_FINE_LOCATION);
+        int CoarseLocation = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_COARSE_LOCATION);
+        int Camera = ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA);
+        int ReadExternalStorage = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);
+        int WriteExternalStorage = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
+        int ReadMediaImages = ContextCompat.checkSelfPermission(getApplicationContext(), READ_MEDIA_IMAGES);
+
+
+        if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return CoarseLocation == PackageManager.PERMISSION_GRANTED
+                    && Camera == PackageManager.PERMISSION_GRANTED && ReadMediaImages == PackageManager.PERMISSION_GRANTED;
+        } else {
+            return FineLocation == PackageManager.PERMISSION_GRANTED && CoarseLocation == PackageManager.PERMISSION_GRANTED
+                    && Camera == PackageManager.PERMISSION_GRANTED && ReadExternalStorage == PackageManager.PERMISSION_GRANTED
+                    && WriteExternalStorage == PackageManager.PERMISSION_GRANTED;
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_CODE_PERMISSION:
+                if (grantResults.length > 0) {
+
+                    if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+                        boolean CoarseLocationAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                        boolean Camera = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                        boolean ReadMediaImages = grantResults[2] == PackageManager.PERMISSION_GRANTED;
+
+                        if (!CoarseLocationAccepted && !Camera && !ReadMediaImages) {
+                            Utility.ShowToast(getResources().getString(R.string.allow_all_permission), getApplicationContext());
+                        }
+                    } else {
+                        boolean FineLocationAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                        boolean CoarseLocationAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                        boolean Camera = grantResults[2] == PackageManager.PERMISSION_GRANTED;
+                        boolean ReadPhoneStorage = grantResults[3] == PackageManager.PERMISSION_GRANTED;
+                        boolean WritePhoneStorage = grantResults[4] == PackageManager.PERMISSION_GRANTED;
+
+
+                        if (!FineLocationAccepted && !CoarseLocationAccepted && !Camera && !ReadPhoneStorage && !WritePhoneStorage) {
+                            Utility.ShowToast(getResources().getString(R.string.allow_all_permission), getApplicationContext());
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
 
 }

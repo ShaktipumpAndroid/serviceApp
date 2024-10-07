@@ -213,7 +213,6 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
         markAttendanceModel.setAttendanceTime(Utility.getCurrentTime());
         markAttendanceModel.setAttendanceImg(imagePath);
 
-
         if (markAttendanceStatus.equals("1")) {
             markAttendanceModel.setAttendanceStatus(Constant.attendanceIN);
             attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_in_time) + Utility.getCurrentDate() + "\n" + Utility.getCurrentTime());
