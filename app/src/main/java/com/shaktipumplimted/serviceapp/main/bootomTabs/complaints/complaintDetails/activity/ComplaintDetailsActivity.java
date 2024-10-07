@@ -531,9 +531,6 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
     }
 
-
-
-
     /*--------------------------------------------Scanner Code-------------------------------------------------------*/
 
     public void ScanCode(int scannerCode) {
@@ -617,8 +614,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
         okBtn.setOnClickListener(v -> {alertDialog.dismiss();
             if(Utility.isInternetOn(getApplicationContext())){
-
-                 complaintForward();
+                    complaintForward();
             }else {
                 Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
             }

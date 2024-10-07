@@ -32,6 +32,7 @@ public class APIS {
     public static final String DSR_DROPDOWN = "search_help.htm";
     public static final String DSR_SAVE = "dsr_save.htm";
     public static final String COMPLAINT_FORWARD = "compliant_forward_to.htm";
+    public static final String CHECK_OUT_DROPDOWN = "checkout_activity.htm";
 
 
     public static final String TRAVEL_REPORT = "travel_report_api.htm";

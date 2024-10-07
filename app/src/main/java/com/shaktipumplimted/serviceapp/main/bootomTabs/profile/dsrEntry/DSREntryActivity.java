@@ -173,11 +173,11 @@ public class DSREntryActivity extends AppCompatActivity implements View.OnClickL
             case R.id.submitBtn:
                 if(databaseHelper.isRecordExist(DatabaseHelper.TABLE_DSR_RECORD,DatabaseHelper.KEY_DSR_DATE,Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd",Utility.getCurrentDate()))){
                     Utility.ShowToast(getResources().getString(R.string.Dsr_already_filled),getApplicationContext());
-                }else{
+                } else{
                     if(Utility.isInternetOn(getApplicationContext())){
-                        /*if(selectedActivity.isEmpty()){
+                        if(selectedActivity.isEmpty()){
                             Utility.ShowToast(getResources().getString(R.string.pls_select_activity),getApplicationContext());
-                        } else*/ if (outcomeExt.getText().toString().isEmpty()) {
+                        } else if (outcomeExt.getText().toString().isEmpty()) {
                             Utility.ShowToast(getResources().getString(R.string.pls_enter_outcome),getApplicationContext());
                         } else if (purposeExt.getText().toString().isEmpty()) {
                             Utility.ShowToast(getResources().getString(R.string.pls_enter_purpose),getApplicationContext());
@@ -206,9 +206,20 @@ public class DSREntryActivity extends AppCompatActivity implements View.OnClickL
         dsrDetailsModel.setLat(latitude);
         dsrDetailsModel.setLng(longitude);
         databaseHelper.insertDsrData(dsrDetailsModel);
+        onBackPressed();
+        Utility.ShowToast(getResources().getString(R.string.dataSavedLocally), getApplicationContext());
     }
 
     private void saveData() throws JSONException {
+        DsrDetailsModel dsrDetailsModel = new DsrDetailsModel();
+        dsrDetailsModel.setDsrActivity(selectedActivity);
+        dsrDetailsModel.setDsrOutcome(outcomeExt.getText().toString().trim());
+        dsrDetailsModel.setDsrPurpose(purposeExt.getText().toString().trim());
+        dsrDetailsModel.setDate(Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd",Utility.getCurrentDate()));
+        dsrDetailsModel.setTime(Utility.getFormattedTime("hh:mm a", "hhmmss",Utility.getCurrentTime()));
+        dsrDetailsModel.setLat(latitude);
+        dsrDetailsModel.setLng(longitude);
+        databaseHelper.insertDsrData(dsrDetailsModel);
         Utility.showProgressDialogue(this);
         JSONArray jsonArray = new JSONArray();
         JSONObject jsonObject = new JSONObject();
@@ -253,7 +264,7 @@ public class DSREntryActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if(view.getId()==R.id.operationSpinner){
+        if(parent.getId()==R.id.operationSpinner){
             selectedActivity = dsrList.get(position).getId();
             Log.e("selected==>",selectedActivity);
         }

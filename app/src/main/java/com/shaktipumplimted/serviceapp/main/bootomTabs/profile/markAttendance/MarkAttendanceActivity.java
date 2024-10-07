@@ -159,11 +159,14 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
         switch (v.getId()){
             case R.id.attendanceInBtn:
                 markAttendance("1");
-
                 break;
 
             case R.id.attendanceOutBtn:
-                markAttendance("2");
+                if(databaseHelper.isRecordExist(DatabaseHelper.TABLE_DSR_RECORD, DatabaseHelper.KEY_DSR_DATE,Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd",Utility.getCurrentDate()))){
+                    markAttendance("2");
+                }else {
+                    Utility.ShowToast(getResources().getString(R.string.pls_fill_dsr_entry),getApplicationContext());
+                }
                 break;
         }
     }
@@ -261,6 +264,7 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
                     Utility.hideProgressDialogue();
                     CommonRespModel commonRespModel = new Gson().fromJson(result, CommonRespModel.class);
                     if (commonRespModel.getStatus().equals(Constant.TRUE)) {
+                        databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_DSR_RECORD,DatabaseHelper.KEY_DSR_DATE,Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd",Utility.getCurrentDate()));
                         onBackPressed();
                         Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
                     } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {

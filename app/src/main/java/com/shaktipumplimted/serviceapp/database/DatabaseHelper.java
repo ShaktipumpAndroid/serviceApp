@@ -48,6 +48,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_DSR_RECORD = "tbl_dsr_record";
 
     public static final String TABLE_COMPLAINT_FORWARD_PERSON_DATA = "tbl_complaint_forward_data";
+    public static final String TABLE_CHECK_OUT_DROPDOWN = "tbl_check_out_dropdown";
 
     /*------------------------------------------------KET IDS--------------------------------------------------------*/
 
@@ -252,6 +253,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + TABLE_DSR_DROPWODN + "(" + KEY_ID + " TEXT,"
             + KEY_NAME + " TEXT)";
 
+    private static final String CREATE_TABLE_CHECK_OUT_DROPDOWN = "CREATE TABLE "
+            + TABLE_CHECK_OUT_DROPDOWN + "(" + KEY_ID + " TEXT,"
+            + KEY_NAME + " TEXT)";
+
 
 
     /*-----------------------------------------------------Local Conveyance Tables---------------------------------------------*/
@@ -362,6 +367,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_DSR_RECORD);
         db.execSQL(CREATE_TABLE_COMPLAINT_FORWARD_PERSON_DATA);
         db.execSQL(CREATE_TABLE_PENDING_REASON_IMAGES);
+        db.execSQL(CREATE_TABLE_CHECK_OUT_DROPDOWN);
         db.execSQL(CREATE_TABLE_ATTENDANCE_HISTORY_DATA);
 
     }
@@ -384,6 +390,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PENDING_REASON_IMAGE_DATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DSR_DROPWODN);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DSR_RECORD);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHECK_OUT_DROPDOWN);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE_HISTORY_DATA);
           onCreate(db);
     }
@@ -957,7 +964,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.close();
     }
 
+    public ArrayList<DsrDetailsModel> getAllDsrEntry() {
+        ArrayList<DsrDetailsModel> spinnerArrayList = new ArrayList<DsrDetailsModel>();
+        SQLiteDatabase database = this.getWritableDatabase();
+        if (doesTableExist(database, TABLE_DSR_RECORD)) {
+            String selectQuery = "SELECT  *  FROM " + TABLE_DSR_RECORD;
+            Cursor mcursor = database.rawQuery(selectQuery, null);
 
+            spinnerArrayList.clear();
+            DsrDetailsModel dsrDetailsModel;
+            if (mcursor.getCount() > 0) {
+                for (int i = 0; i < mcursor.getCount(); i++) {
+                    mcursor.moveToNext();
+                    dsrDetailsModel = new DsrDetailsModel();
+                    dsrDetailsModel.setUniqId(mcursor.getString(0));
+                    dsrDetailsModel.setDsrActivity(mcursor.getString(1));
+                    dsrDetailsModel.setDate(mcursor.getString(2));
+                    dsrDetailsModel.setLat(mcursor.getString(3));
+                    dsrDetailsModel.setLng(mcursor.getString(4));
+                    dsrDetailsModel.setTime(mcursor.getString(5));
+                    dsrDetailsModel.setDsrPurpose(mcursor.getString(6));
+                    dsrDetailsModel.setDsrOutcome(mcursor.getString(7));
+
+                    spinnerArrayList.add(dsrDetailsModel);
+                }
+            }
+            mcursor.close();
+            database.close();
+        }
+        return  spinnerArrayList;
+    }
 
 
 
