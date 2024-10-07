@@ -257,7 +257,49 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                     if (complaintListModel.getStatus().equals(Constant.TRUE)) {
                         for(int i=0;i<complaintListModel.getData().size();i++){
                             if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_DATA, DatabaseHelper.KEY_COMPLAINT_NUMBER, complaintListModel.getData().get(i).getCmpno())) {
-                                databaseHelper.insertComplaintDetailsData(complaintListModel.getData().get(i));
+
+                                ComplaintListModel.Datum complaintModel = new ComplaintListModel.Datum();
+                                complaintModel.setCmpno(complaintListModel.getData().get(i).getCmpno());
+                                complaintModel.setCaddress(complaintListModel.getData().get(i).getCaddress());
+                                complaintModel.setMblno(complaintListModel.getData().get(i).getMblno());
+                                complaintModel.setCstname(complaintListModel.getData().get(i).getCstname());
+                                complaintModel.setPernr(complaintListModel.getData().get(i).getPernr());
+                                complaintModel.setEname(complaintListModel.getData().get(i).getEname());
+                                complaintModel.setStatus(complaintListModel.getData().get(i).getStatus());
+                                complaintModel.setMatnr(complaintListModel.getData().get(i).getMatnr());
+                                complaintModel.setMaktx(complaintListModel.getData().get(i).getMaktx());
+                                complaintModel.setVbeln(complaintListModel.getData().get(i).getVbeln());
+
+                                complaintModel.setFkdat(complaintListModel.getData().get(i).getFkdat());
+                                complaintModel.setFwrdTo(complaintListModel.getData().get(i).getFwrdTo());
+                                complaintModel.setFdate(complaintListModel.getData().get(i).getFdate());
+                                complaintModel.setAction(complaintListModel.getData().get(i).getAction());
+                                complaintModel.setCmpPenRe(complaintListModel.getData().get(i).getCmpPenRe());
+                                complaintModel.setLat(complaintListModel.getData().get(i).getLat());
+                                complaintModel.setLng(complaintListModel.getData().get(i).getLng());
+                                complaintModel.setCurrentStatus(complaintListModel.getData().get(i).getCurrentStatus());
+                                complaintModel.setCurrentLng("");
+                                complaintModel.setCurrentLng("");
+
+                                complaintModel.setCustomerPay("");
+                                complaintModel.setCompanyPay("");
+                                complaintModel.setFocAmount("");
+                                complaintModel.setReturnByCompany("");
+                                complaintModel.setPayToFreelancer("");
+                                complaintModel.setPumpSrNo("");
+                                complaintModel.setMotorSrNo("");
+                                complaintModel.setControllerSrNo("");
+                                complaintModel.setCategory("");
+                                complaintModel.setClosureReason("");
+                                complaintModel.setDefectType("");
+                                complaintModel.setRelatedTo("");
+                                complaintModel.setRemark("");
+                                complaintModel.setCurrentDate("");
+                                complaintModel.setCurrentTime("");
+                                complaintModel.setDataSavedLocally(false);
+
+
+                                    databaseHelper.insertComplaintDetailsData(complaintModel);
                             }
                         }
                         setStatusAdapter();

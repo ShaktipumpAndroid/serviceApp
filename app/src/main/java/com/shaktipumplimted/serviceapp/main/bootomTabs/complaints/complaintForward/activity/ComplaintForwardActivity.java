@@ -1,6 +1,7 @@
 package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +27,7 @@ import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.Utils.common.model.CommonRespModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
+import com.shaktipumplimted.serviceapp.main.MainActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.adapter.ComplaintForwardAdapter;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.model.CompForwardListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
@@ -282,8 +284,11 @@ public class ComplaintForwardActivity extends AppCompatActivity implements Compo
                 if (response.isSuccessful()) {
                     CommonRespModel commonRespModel = response.body();
                     if (commonRespModel.getStatus().equals(Constant.TRUE)) {
-                        onBackPressed();
-                        Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.putExtra(Constant.APICALL,Constant.TRUE);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
                     } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
                         Utility.hideProgressDialogue();
                         Utility.ShowToast(getResources().getString(R.string.something_went_wrong), ComplaintForwardActivity.this);

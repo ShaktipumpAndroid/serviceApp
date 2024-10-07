@@ -67,4 +67,10 @@ public class Constant {
     public static String mobileNumber = "mobileNumber";
     public static String verificationCode = "verificationCode";
 
+    public static String replacement ="3";
+    public static String pump = "PUMP";
+    public static String motor = "MOTOR";
+    public static String controller = "CONTROLLER";
+    public static String pump_motor = "PUMP&MOTOR";
+    public static String motor_controller = "MOT&CONT";
 }

@@ -118,7 +118,7 @@ public class ComplaintListModel implements Serializable {
 
         private String currentLat, currentLng, customerPay,
                 companyPay,focAmount,returnByCompany,payToFreelancer,
-                pumpSrNo, motorSrNo,controllerSrNo,category,closureReason,defectType,relatedTo,remark;
+                pumpSrNo, motorSrNo,controllerSrNo,category,closureReason,defectType,relatedTo,remark,currentDate,currentTime;
         private  boolean isDataSavedLocally;
 
         public String getCaddress() {
@@ -553,6 +553,22 @@ public class ComplaintListModel implements Serializable {
             this.remark = remark;
         }
 
+        public String getCurrentDate() {
+            return currentDate;
+        }
+
+        public void setCurrentDate(String currentDate) {
+            this.currentDate = currentDate;
+        }
+
+        public String getCurrentTime() {
+            return currentTime;
+        }
+
+        public void setCurrentTime(String currentTime) {
+            this.currentTime = currentTime;
+        }
+
         public boolean isDataSavedLocally() {
             return isDataSavedLocally;
         }
@@ -603,6 +619,8 @@ public class ComplaintListModel implements Serializable {
                     ", defectType='" + defectType + '\'' +
                     ", relatedTo='" + relatedTo + '\'' +
                     ", remark='" + remark + '\'' +
+                    ", currentDate='" + currentDate + '\'' +
+                    ", currentTime='" + currentTime + '\'' +
                     ", isDataSavedLocally='" + isDataSavedLocally + '\'' +
                     '}';
         }

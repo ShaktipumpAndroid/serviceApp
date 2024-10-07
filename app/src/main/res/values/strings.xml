@@ -225,6 +225,7 @@
     <string name="quantity">Quantity</string>
     <string name="visitComplaint">If you want to visit this complaint please start your journey first!</string>
     <string name="dataSavedLocally">Your complaint data saved locally</string>
+    <string name="select_closure_reason">Please select complaint closure reason first</string>
 
     <string-array name="login_type_array">
         <item>@string/select_login_type</item>

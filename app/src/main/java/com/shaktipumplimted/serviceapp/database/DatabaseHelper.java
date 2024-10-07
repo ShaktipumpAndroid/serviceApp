@@ -154,6 +154,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_CMP_RELATED_TO = "related_to";
 
     public static final String KEY_CMP_REMARK = "complaint_remark";
+    public static final String KEY_CURRENT_DATE = "current_date";
+    public static final String KEY_CURRENT_TIME = "current_time";
 
     public static final String KEY_DATA_SAVED_LOCALLY = "data_saved_locally";
 
@@ -322,6 +324,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_CMP_DEFECT_TYPE + " TEXT,"
             + KEY_CMP_RELATED_TO + " TEXT,"
             + KEY_CMP_REMARK + " TEXT,"
+            + KEY_CURRENT_DATE + " TEXT,"
+            + KEY_CURRENT_TIME + " TEXT,"
             + KEY_DATA_SAVED_LOCALLY + " TEXT)";
 
 
@@ -730,7 +734,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_CMP_DEFECT_TYPE, complaintListModel.getDefectType());
         contentValues.put(KEY_CMP_RELATED_TO, complaintListModel.getRelatedTo());
         contentValues.put(KEY_CMP_REMARK, complaintListModel.getRemark());
-        contentValues.put(KEY_DATA_SAVED_LOCALLY, "false");
+        contentValues.put(KEY_CURRENT_DATE, complaintListModel.getCurrentDate());
+        contentValues.put(KEY_CURRENT_TIME, complaintListModel.getCurrentTime());
+        contentValues.put(KEY_DATA_SAVED_LOCALLY, String.valueOf(complaintListModel.isDataSavedLocally()));
 
         database.insert(TABLE_COMPLAINT_DATA, null, contentValues);
         database.close();
@@ -773,10 +779,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_CMP_DEFECT_TYPE, complaintListModel.getDefectType());
         contentValues.put(KEY_CMP_RELATED_TO, complaintListModel.getRelatedTo());
         contentValues.put(KEY_CMP_REMARK, complaintListModel.getRemark());
+        contentValues.put(KEY_CURRENT_DATE, complaintListModel.getCurrentDate());
+        contentValues.put(KEY_CURRENT_TIME, complaintListModel.getCurrentTime());
+
         contentValues.put(KEY_DATA_SAVED_LOCALLY, String.valueOf(complaintListModel.isDataSavedLocally()));
 
         String where = KEY_COMPLAINT_NUMBER + "='" + complaintListModel.getCmpno() + "'";
-        database.update(TABLE_ATTENDANCE_HISTORY_DATA, contentValues, where, null);
+        database.update(TABLE_COMPLAINT_DATA, contentValues, where, null);
         database.close();
     }
 
@@ -836,6 +845,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     complaintModel.setDefectType(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_DEFECT_TYPE)));
                     complaintModel.setRelatedTo(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_RELATED_TO)));
                     complaintModel.setRemark(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_REMARK)));
+                    complaintModel.setCurrentDate(mcursor.getString(mcursor.getColumnIndex(KEY_CURRENT_DATE)));
+                    complaintModel.setCurrentTime(mcursor.getString(mcursor.getColumnIndex(KEY_CURRENT_TIME)));
                     complaintModel.setDataSavedLocally(Boolean.parseBoolean(mcursor.getString(mcursor.getColumnIndex(KEY_DATA_SAVED_LOCALLY))));
                     complaintModelList.add(complaintModel);
                 }

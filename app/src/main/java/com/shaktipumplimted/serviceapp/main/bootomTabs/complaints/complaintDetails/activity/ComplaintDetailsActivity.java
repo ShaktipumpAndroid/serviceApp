@@ -24,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -75,7 +74,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     Toolbar toolbar;
     TextInputEditText complaintNo, customerName, customerMobileNo, customerAddress, materialCodeTxt, materialNameTxt,
             serialNoTxt, billNoTxt, billDateTxt, customerPayExt, companyPayExt, focAmountExt, returnByCompanyExt, payToFreelancerExt, remarkTxt;
-    EditText pumpSerialTxt, motorSerialTxt, controllerSerialTxt;
+    TextView pumpSerialTxt, motorSerialTxt, controllerSerialTxt;
     Spinner categorySpinner, closureReasonSpinner, defectTypeSpinner, complaintRelatedToSpinner;
     ImageView pumpScanBtn, motorScanBtn, controllerScanBtn;
     LinearLayout pendingReasonBtn, forwardForApprovalBtn, forwardComplaintBtn, closeComplaintBtn;
@@ -83,9 +82,9 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     GmsBarcodeScannerOptions options;
     GmsBarcodeScanner scanner;
     ComplaintListModel.Datum complaintListModel;
-    List<ComplaintListModel.Datum>complaintArrayList;
+    List<ComplaintListModel.Datum> complaintArrayList;
     DatabaseHelper databaseHelper;
-   int scannerCode;
+    int scannerCode;
     APIInterface apiInterface;
     List<SpinnerDataModel> complaintCategoryList  = new ArrayList<>();
     List<SpinnerDataModel> complaintDefectList  = new ArrayList<>();
@@ -464,71 +463,191 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                     Utility.ShowToast(getResources().getString(R.string.enter_return_company), getApplicationContext());
                 }else if (payToFreelancerExt.getText().toString().trim().isEmpty()) {
                     Utility.ShowToast(getResources().getString(R.string.payToFreelancer), getApplicationContext());
-                }else if (pumpSerialTxt.getText().toString().trim().isEmpty()) {
-                    Utility.ShowToast(getResources().getString(R.string.enter_pump_serial_number), getApplicationContext());
-                }else if (motorSerialTxt.getText().toString().trim().isEmpty()) {
-                    Utility.ShowToast(getResources().getString(R.string.enter_motor_serial_number), getApplicationContext());
-                }else if (controllerSerialTxt.getText().toString().trim().isEmpty()) {
-                    Utility.ShowToast(getResources().getString(R.string.enter_controller_serial_number), getApplicationContext());
+                } else if (returnByCompanyExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_return_company), getApplicationContext());
                 } else if (selectedCategory.isEmpty()) {
                     Utility.ShowToast(getResources().getString(R.string.select_category_first), getApplicationContext());
                 } else if (selectedDefect.trim().isEmpty()) {
                     Utility.ShowToast(getResources().getString(R.string.select_defect_type_first), getApplicationContext());
                 } else if (selectedComplaintRelated.trim().isEmpty()) {
                     Utility.ShowToast(getResources().getString(R.string.select_comp_related_first), getApplicationContext());
-                } else if (returnByCompanyExt.getText().toString().trim().isEmpty()) {
-                    Utility.ShowToast(getResources().getString(R.string.enter_return_company), getApplicationContext());
+                } else if (selectedClosureReason.trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.select_closure_reason), getApplicationContext());
                 } else if (remarkTxt.getText().toString().trim().isEmpty()) {
                     Utility.ShowToast(getResources().getString(R.string.CustomerCommentClosureRemark), getApplicationContext());
-                } else if (Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId).isEmpty() ||
-                        Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId).equals("00000000")) {
-                    Utility.ShowToast(getResources().getString(R.string.yourReportingSapID), getApplicationContext());
-                }else {
-                    ComplaintListModel.Datum complaintModel = new ComplaintListModel.Datum();
-                    complaintModel.setCmpno(complaintListModel.getCmpno());
-                    complaintModel.setCaddress(complaintListModel.getCaddress());
-                    complaintModel.setMblno(complaintListModel.getMblno());
-                    complaintModel.setCstname(complaintListModel.getCstname());
-                    complaintModel.setPernr(complaintListModel.getPernr());
-                    complaintModel.setEname(complaintListModel.getEname());
-                    complaintModel.setStatus(complaintListModel.getStatus());
-                    complaintModel.setMatnr(complaintListModel.getMatnr());
-                    complaintModel.setMaktx(complaintListModel.getMaktx());
-                    complaintModel.setVbeln(complaintListModel.getVbeln());
+                } else {
 
-                    complaintModel.setFkdat(complaintListModel.getFkdat());
-                    complaintModel.setFwrdTo(complaintListModel.getFwrdTo());
-                    complaintModel.setFdate(complaintListModel.getFdate());
-                    complaintModel.setAction(complaintListModel.getAction());
-                    complaintModel.setCmpPenRe(complaintListModel.getCmpPenRe());
-                    complaintModel.setLat(complaintListModel.getLat());
-                    complaintModel.setLng(complaintListModel.getLng());
-                    complaintModel.setCurrentStatus(complaintListModel.getCurrentStatus());
-                    complaintModel.setCurrentLng(String.valueOf(gpsTracker.getLatitude()));
-                    complaintModel.setCurrentLng(String.valueOf(gpsTracker.getLongitude()));
+                    if (selectedCategory.equals(Constant.replacement)) {
 
-                    complaintModel.setCustomerPay(customerPayExt.getText().toString().trim());
-                    complaintModel.setCompanyPay(companyPayExt.getText().toString().trim());
-                    complaintModel.setFocAmount(focAmountExt.getText().toString().trim());
-                    complaintModel.setReturnByCompany(returnByCompanyExt.getText().toString().trim());
-                    complaintModel.setPayToFreelancer(payToFreelancerExt.getText().toString().trim());
-                    complaintModel.setPumpSrNo(pumpSerialTxt.getText().toString().trim());
-                    complaintModel.setMotorSrNo(motorSerialTxt.getText().toString().trim());
-                    complaintModel.setControllerSrNo(controllerSerialTxt.getText().toString().trim());
-                    complaintModel.setCategory(selectedCategory);
-                    complaintModel.setClosureReason(selectedClosureReason);
-                    complaintModel.setDefectType(selectedDefect);
-                    complaintModel.setRelatedTo(selectedComplaintRelated);
-                    complaintModel.setRemark(remarkTxt.getText().toString().trim());
-                    complaintModel.setDataSavedLocally(true);
+                        if (selectedComplaintRelated.equals(Constant.pump)) {
+                            if (pumpSerialTxt.getText().toString().trim().isEmpty()) {
+                                Utility.ShowToast(getResources().getString(R.string.enter_pump_serial_number), getApplicationContext());
+                            } else {
+                                saveCloseComplaintDatabase();
+                            }
+                        }
+                        if (selectedComplaintRelated.equals(Constant.motor)) {
+                            if (motorSerialTxt.getText().toString().trim().isEmpty()) {
+                                Utility.ShowToast(getResources().getString(R.string.enter_motor_serial_number), getApplicationContext());
+                            } else {
+                                saveCloseComplaintDatabase();
+                            }
+                        }
+                        if (selectedComplaintRelated.equals(Constant.controller)) {
+                            if (controllerSerialTxt.getText().toString().trim().isEmpty()) {
+                                Utility.ShowToast(getResources().getString(R.string.enter_controller_serial_number), getApplicationContext());
+                            } else {
+                                saveCloseComplaintDatabase();
+                            }
+                        }
+                        if (selectedComplaintRelated.equals(Constant.pump_motor)) {
+                            if (pumpSerialTxt.getText().toString().trim().isEmpty()) {
+                                Utility.ShowToast(getResources().getString(R.string.enter_pump_serial_number), getApplicationContext());
+                            } else if (motorSerialTxt.getText().toString().trim().isEmpty()) {
+                                Utility.ShowToast(getResources().getString(R.string.enter_motor_serial_number), getApplicationContext());
+                            } else {
+                                saveCloseComplaintDatabase();
+                            }
+                        }
+                        if (selectedComplaintRelated.equals(Constant.motor_controller)) {
+                            if (motorSerialTxt.getText().toString().trim().isEmpty()) {
+                                Utility.ShowToast(getResources().getString(R.string.enter_motor_serial_number), getApplicationContext());
+                            } else if (controllerSerialTxt.getText().toString().trim().isEmpty()) {
+                                Utility.ShowToast(getResources().getString(R.string.enter_controller_serial_number), getApplicationContext());
+                            } else {
+                                saveCloseComplaintDatabase();
+                            }
+                        }
+                    } else {
+                        saveCloseComplaintDatabase();
+                    }
 
-                    databaseHelper.updateComplaintDetailsData(complaintModel);
-                    Utility.ShowToast(getResources().getString(R.string.dataSavedLocally),getApplicationContext());
+
                 }
 
                 break;
         }
 
+    }
+
+    private void saveCloseComplaintDatabase() {
+        ComplaintListModel.Datum complaintModel = new ComplaintListModel.Datum();
+        complaintModel.setCmpno(complaintListModel.getCmpno());
+        complaintModel.setCaddress(complaintListModel.getCaddress());
+        complaintModel.setMblno(complaintListModel.getMblno());
+        complaintModel.setCstname(complaintListModel.getCstname());
+        complaintModel.setPernr(complaintListModel.getPernr());
+        complaintModel.setEname(complaintListModel.getEname());
+        complaintModel.setStatus(complaintListModel.getStatus());
+        complaintModel.setMatnr(complaintListModel.getMatnr());
+        complaintModel.setMaktx(complaintListModel.getMaktx());
+        complaintModel.setVbeln(complaintListModel.getVbeln());
+
+        complaintModel.setFkdat(complaintListModel.getFkdat());
+        complaintModel.setFwrdTo(complaintListModel.getFwrdTo());
+        complaintModel.setFdate(complaintListModel.getFdate());
+        complaintModel.setAction(complaintListModel.getAction());
+        complaintModel.setCmpPenRe(complaintListModel.getCmpPenRe());
+        complaintModel.setLat(complaintListModel.getLat());
+        complaintModel.setLng(complaintListModel.getLng());
+        complaintModel.setCurrentStatus(complaintListModel.getCurrentStatus());
+        complaintModel.setCurrentLat(String.valueOf(gpsTracker.getLatitude()));
+        complaintModel.setCurrentLng(String.valueOf(gpsTracker.getLongitude()));
+
+        complaintModel.setCustomerPay(customerPayExt.getText().toString().trim());
+        complaintModel.setCompanyPay(companyPayExt.getText().toString().trim());
+        complaintModel.setFocAmount(focAmountExt.getText().toString().trim());
+        complaintModel.setReturnByCompany(returnByCompanyExt.getText().toString().trim());
+        complaintModel.setPayToFreelancer(payToFreelancerExt.getText().toString().trim());
+        complaintModel.setPumpSrNo(pumpSerialTxt.getText().toString().trim());
+        complaintModel.setMotorSrNo(motorSerialTxt.getText().toString().trim());
+        complaintModel.setControllerSrNo(controllerSerialTxt.getText().toString().trim());
+        complaintModel.setCategory(selectedCategory);
+        complaintModel.setClosureReason(selectedClosureReason);
+        complaintModel.setDefectType(selectedDefect);
+        complaintModel.setRelatedTo(selectedComplaintRelated);
+        complaintModel.setRemark(remarkTxt.getText().toString().trim());
+        complaintModel.setCurrentDate(Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd", Utility.getCurrentDate()));
+        complaintModel.setCurrentTime(Utility.getFormattedTime("hh:mm a", "HHmmss", Utility.getCurrentTime()));
+        complaintModel.setDataSavedLocally(true);
+
+        databaseHelper.updateComplaintDetailsData(complaintModel);
+
+
+        if (Utility.isInternetOn(getApplicationContext())) {
+            closeComplaintAPI(complaintModel);
+        } else {
+            Utility.ShowToast(getResources().getString(R.string.dataSavedLocally), getApplicationContext());
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.putExtra(Constant.APICALL,Constant.TRUE);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    private void closeComplaintAPI(ComplaintListModel.Datum complaintModel) {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonObject.put("cmpno", complaintModel.getCmpno());
+            jsonObject.put("category", complaintModel.getCategory());
+            jsonObject.put("closer_reson", complaintModel.getClosureReason());
+            jsonObject.put("defect", complaintModel.getDefectType());
+            jsonObject.put("cmpln_related_to", complaintModel.getRelatedTo());
+            jsonObject.put("customer", complaintModel.getCustomerPay());
+            jsonObject.put("company", complaintModel.getCompanyPay());
+            jsonObject.put("pay_freelancer", complaintModel.getPayToFreelancer());
+            jsonObject.put("re_company", complaintModel.getReturnByCompany());
+            jsonObject.put("focamt", complaintModel.getFocAmount());
+            jsonObject.put("ZFEEDRMRK", complaintModel.getRemark());
+            jsonObject.put("ZFEEDF", complaintModel.getRemark());
+            jsonObject.put("cr_date", complaintModel.getCurrentDate());
+            jsonObject.put("cr_time", complaintModel.getCurrentTime());
+            jsonObject.put("latitude", complaintModel.getCurrentLat());
+            jsonObject.put("longitude", complaintModel.getCurrentLng());
+            jsonObject.put("p_serialno", complaintModel.getPumpSrNo());
+            jsonObject.put("m_serialno", complaintModel.getMotorSrNo());
+            jsonObject.put("c_serialno", complaintModel.getControllerSrNo());
+            jsonArray.put(jsonObject);
+
+            Log.e("jsonArray====>", jsonArray.toString());
+          /*  Call<CommonRespModel> call3 = apiInterface.complaintCloseEngineer(Utility.getSharedPreferences(this, Constant.accessToken), jsonArray.toString());
+            call3.enqueue(new Callback<CommonRespModel>() {
+                @Override
+                public void onResponse(@NonNull Call<CommonRespModel> call, @NonNull Response<CommonRespModel> response) {
+                    Utility.hideProgressDialogue();
+                    if (response.isSuccessful()) {
+                        CommonRespModel commonRespModel = response.body();
+                        if (commonRespModel.getStatus().equals(Constant.TRUE)) {
+                            Utility.ShowToast(commonRespModel.getMessage(),getApplicationContext() );
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.putExtra(Constant.APICALL,Constant.TRUE);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+
+                            finish();
+                        } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
+                            Utility.hideProgressDialogue();
+                            Utility.ShowToast(getResources().getString(R.string.something_went_wrong), getApplicationContext());
+                        } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {
+                            Utility.logout(getApplicationContext());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<CommonRespModel> call, @NonNull Throwable t) {
+                    call.cancel();
+                    Utility.hideProgressDialogue();
+                    Log.e("Error====>", t.getMessage().toString().trim());
+                }
+            });*/
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
