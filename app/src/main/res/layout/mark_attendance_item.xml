@@ -11,24 +11,21 @@
     app:cardCornerRadius="@dimen/_10sdp"
     app:cardElevation="@dimen/_2sdp">
 
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_margin="@dimen/_8sdp"
+    android:weightSum="1">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_10sdp"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="1">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:weightSum="2">
-
+        android:layout_weight=".2">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -52,8 +49,7 @@
                 android:id="@+id/attendanceInLinear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_weight="1">
+                android:layout_marginTop="@dimen/_5sdp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -73,33 +69,69 @@
 
             </LinearLayout>
 
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/attendanceOutLinear"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:layout_weight="1">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed-medium"
-                android:text="@string/attendance_out_time"
-                android:textColor="@color/colorPrimary" />
-
-            <TextView
-                android:id="@+id/attendanceOutTimeTxt"
+            <LinearLayout
+                android:id="@+id/attendanceOutLinear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:fontFamily="sans-serif-condensed"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_10sdp" />
+                android:layout_marginTop="@dimen/_5sdp">
 
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:text="@string/attendance_out_time"
+                    android:textColor="@color/colorPrimary" />
+
+                <TextView
+                    android:id="@+id/attendanceOutTimeTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:fontFamily="sans-serif-condensed"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_10sdp" />
+
+            </LinearLayout>
+
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sync_linear"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_weight=".8">
+
+        <RelativeLayout
+            android:id="@+id/syncBtn"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/travelImg"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_centerHorizontal="true"
+                android:src="@mipmap/sync_data"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sync"
+                android:gravity="center"
+                android:textColor="@color/colorPrimary"
+                android:fontFamily="sans-serif-condensed"
+                android:layout_below="@+id/travelImg"
+                android:textSize="@dimen/_10sdp"/>
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>
+
 
 </androidx.cardview.widget.CardView>

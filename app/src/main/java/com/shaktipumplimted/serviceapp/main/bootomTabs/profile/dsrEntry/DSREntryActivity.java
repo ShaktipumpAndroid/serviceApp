@@ -20,8 +20,6 @@ import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.Utils.common.model.CommonRespModel;
 import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.activity.ComplaintDetailsActivity;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.model.ComplaintDropdownModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.DsrDetailsModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.DsrDropdownModel;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
@@ -182,21 +180,20 @@ public class DSREntryActivity extends AppCompatActivity implements View.OnClickL
                         } else if (purposeExt.getText().toString().isEmpty()) {
                             Utility.ShowToast(getResources().getString(R.string.pls_enter_purpose),getApplicationContext());
                         } else{
-                            try {
-                                saveData();
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            }
+
+                                saveLocally("0");
+
+
                         }
                     }else{
-                        saveLocally();
+                        saveLocally("0");
                     }
                 }
                 break;
         }
     }
 
-    private void saveLocally() {
+    private void saveLocally(String value) {
         DsrDetailsModel dsrDetailsModel = new DsrDetailsModel();
         dsrDetailsModel.setDsrActivity(selectedActivity);
         dsrDetailsModel.setDsrOutcome(outcomeExt.getText().toString().trim());
@@ -205,21 +202,30 @@ public class DSREntryActivity extends AppCompatActivity implements View.OnClickL
         dsrDetailsModel.setTime(Utility.getFormattedTime("hh:mm a", "hhmmss",Utility.getCurrentTime()));
         dsrDetailsModel.setLat(latitude);
         dsrDetailsModel.setLng(longitude);
-        databaseHelper.insertDsrData(dsrDetailsModel);
-        onBackPressed();
-        Utility.ShowToast(getResources().getString(R.string.dataSavedLocally), getApplicationContext());
+        if(value.equals("0")) {
+            dsrDetailsModel.setDataSavedLocally(true);
+            databaseHelper.insertDsrData(dsrDetailsModel);
+            if(Utility.isInternetOn(getApplicationContext())) {
+                try {
+                    saveData();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }else {
+                onBackPressed();
+                Utility.ShowToast(getResources().getString(R.string.dataSavedLocally), getApplicationContext());
+            }
+
+        }else {
+            dsrDetailsModel.setDataSavedLocally(false);
+            databaseHelper.updateDsrData(dsrDetailsModel);
+            onBackPressed();
+        }
+
     }
 
     private void saveData() throws JSONException {
-        DsrDetailsModel dsrDetailsModel = new DsrDetailsModel();
-        dsrDetailsModel.setDsrActivity(selectedActivity);
-        dsrDetailsModel.setDsrOutcome(outcomeExt.getText().toString().trim());
-        dsrDetailsModel.setDsrPurpose(purposeExt.getText().toString().trim());
-        dsrDetailsModel.setDate(Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd",Utility.getCurrentDate()));
-        dsrDetailsModel.setTime(Utility.getFormattedTime("hh:mm a", "hhmmss",Utility.getCurrentTime()));
-        dsrDetailsModel.setLat(latitude);
-        dsrDetailsModel.setLng(longitude);
-        databaseHelper.insertDsrData(dsrDetailsModel);
         Utility.showProgressDialogue(this);
         JSONArray jsonArray = new JSONArray();
         JSONObject jsonObject = new JSONObject();
@@ -242,7 +248,8 @@ public class DSREntryActivity extends AppCompatActivity implements View.OnClickL
                 if (response.isSuccessful()) {
                     CommonRespModel commonRespModel = response.body();
                     if (commonRespModel.getStatus().equals(Constant.TRUE)) {
-                        onBackPressed();
+
+                       saveLocally("1");
                         Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
                     } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
                         Utility.hideProgressDialogue();

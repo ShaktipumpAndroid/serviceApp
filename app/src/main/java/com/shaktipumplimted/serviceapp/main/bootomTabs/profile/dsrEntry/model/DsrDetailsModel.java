@@ -3,6 +3,8 @@ package com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model;
 public class DsrDetailsModel {
     String uniqId,dsrActivity,dsrPurpose,dsrOutcome,date,time,lat,lng;
 
+    boolean isDataSavedLocally;
+
     public String getUniqId() {
         return uniqId;
     }
@@ -65,5 +67,28 @@ public class DsrDetailsModel {
 
     public void setLng(String lng) {
         this.lng = lng;
+    }
+
+    public boolean isDataSavedLocally() {
+        return isDataSavedLocally;
+    }
+
+    public void setDataSavedLocally(boolean dataSavedLocally) {
+        isDataSavedLocally = dataSavedLocally;
+    }
+
+    @Override
+    public String toString() {
+        return "DsrDetailsModel{" +
+                "uniqId='" + uniqId + '\'' +
+                ", dsrActivity='" + dsrActivity + '\'' +
+                ", dsrPurpose='" + dsrPurpose + '\'' +
+                ", dsrOutcome='" + dsrOutcome + '\'' +
+                ", date='" + date + '\'' +
+                ", time='" + time + '\'' +
+                ", lat='" + lat + '\'' +
+                ", lng='" + lng + '\'' +
+                ", isDataSavedLocally=" + isDataSavedLocally +
+                '}';
     }
 }

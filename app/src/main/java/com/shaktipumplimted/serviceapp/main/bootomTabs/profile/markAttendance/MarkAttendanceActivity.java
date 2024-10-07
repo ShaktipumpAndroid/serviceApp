@@ -108,7 +108,8 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
 
 
         if (Utility.isInternetOn(getApplicationContext())) {
-            getAttendanceData();
+                getAttendanceData();
+
         } else {
             setMarkAttendanceData();
             Utility.ShowToast(getResources().getString(R.string.checkInternetConnection), getApplicationContext());
@@ -118,7 +119,7 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
 
     private void setMarkAttendanceData() {
 
-        markAttendanceList = databaseHelper.getAllMarkAttendanceData(false, Utility.getCurrentDate());
+        markAttendanceList = databaseHelper.getAllMarkAttendanceData(false, Utility.getCurrentDate(), false);
         allAttendanceList = databaseHelper.getAllAttendanceHistoryData();
         if (allAttendanceList.size() > 0) {
 
@@ -194,7 +195,7 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
                         Bundle bundle = result.getData().getExtras();
                         imagePath = bundle.get(Constant.file).toString();
                         latitude = bundle.get(Constant.latitude).toString();
-                        longitude = bundle.get(Constant.latitude).toString();
+                        longitude = bundle.get(Constant.longitude).toString();
                         address = bundle.get(Constant.address).toString();
 
                         saveInLocalDatabase();
@@ -212,6 +213,9 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
         markAttendanceModel.setAttendanceDate(Utility.getCurrentDate());
         markAttendanceModel.setAttendanceTime(Utility.getCurrentTime());
         markAttendanceModel.setAttendanceImg(imagePath);
+        markAttendanceModel.setLatitude(latitude);
+        markAttendanceModel.setLongitude(longitude);
+        markAttendanceModel.setDataSavedLocally(true);
 
         if (markAttendanceStatus.equals("1")) {
             markAttendanceModel.setAttendanceStatus(Constant.attendanceIN);
@@ -221,18 +225,18 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
             markAttendanceModel.setAttendanceStatus(Constant.attendanceOut);
             attendanceInTimeTxt.setText(getResources().getString(R.string.attendance_out_time) + Utility.getCurrentDate() + "\n" + Utility.getCurrentTime());
         }
-
+        Log.e("markAttendanceModel====>", markAttendanceModel.toString());
         databaseHelper.insertMarkAttendanceData(markAttendanceModel);
         if (Utility.isInternetOn(getApplicationContext())) {
-            SaveAttendance();
+            SaveAttendance(markAttendanceModel);
         } else {
             Utility.ShowToast(getResources().getString(R.string.checkInternetConnection), getApplicationContext());
         }
     }
 
-    private void SaveAttendance() {
-        markAttendanceList = databaseHelper.getAllMarkAttendanceData(false,Utility.getCurrentDate());
-        if (markAttendanceStatus.equals("1")){
+    private void SaveAttendance(MarkAttendanceModel markAttendanceModel) {
+        markAttendanceList = databaseHelper.getAllMarkAttendanceData(false, Utility.getCurrentDate(), false);
+        if (markAttendanceStatus.equals("1")) {
             timestatus = "in";
         } else if (markAttendanceStatus.equals("2")) {
             timestatus = "out";
@@ -264,7 +268,24 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
                     Utility.hideProgressDialogue();
                     CommonRespModel commonRespModel = new Gson().fromJson(result, CommonRespModel.class);
                     if (commonRespModel.getStatus().equals(Constant.TRUE)) {
-                        databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_DSR_RECORD,DatabaseHelper.KEY_DSR_DATE,Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd",Utility.getCurrentDate()));
+
+                        if (!markAttendanceStatus.equals("1")) {
+                            databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_DSR_RECORD, DatabaseHelper.KEY_DSR_DATE, Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd", Utility.getCurrentDate()));
+                        }
+
+                        if (databaseHelper.isRecordExist(DatabaseHelper.TABLE_MARK_ATTENDANCE_DATA, DatabaseHelper.KEY_ATTENDANCE_DATE, markAttendanceModel.getAttendanceDate())) {
+                            MarkAttendanceModel markAttendanceModel1 = new MarkAttendanceModel();
+                            markAttendanceModel1.setAttendanceDate(markAttendanceModel.getAttendanceDate());
+                            markAttendanceModel1.setAttendanceTime(markAttendanceModel.getAttendanceTime());
+                            markAttendanceModel1.setAttendanceImg(markAttendanceModel.getAttendanceImg());
+                            markAttendanceModel1.setAttendanceStatus(markAttendanceModel.getAttendanceStatus());
+                            markAttendanceModel1.setLatitude(markAttendanceModel.getLatitude());
+                            markAttendanceModel1.setLongitude(markAttendanceModel.getLongitude());
+                            markAttendanceModel1.setDataSavedLocally(false);
+
+                            databaseHelper.updateMarkAttendanceData(markAttendanceModel1);
+                        }
+
                         onBackPressed();
                         Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
                     } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
@@ -434,9 +455,12 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
             case 0:
                 MarkAttendanceModel markAttendanceModel = new MarkAttendanceModel();
                 markAttendanceModel.setAttendanceDate(response.getServerDateIn());
-                markAttendanceModel.setAttendanceTime(Utility.getFormattedTime("HH:mm:ss","h:mm a",response.getServerTimeIn()));
+                markAttendanceModel.setAttendanceTime(Utility.getFormattedTime("HH:mm:ss", "h:mm a", response.getServerTimeIn()));
                 markAttendanceModel.setAttendanceImg(imagePath);
                 markAttendanceModel.setAttendanceStatus(attendanceStatus);
+                markAttendanceModel.setLatitude("");
+                markAttendanceModel.setLongitude("");
+                markAttendanceModel.setDataSavedLocally(false);
                 databaseHelper.insertMarkAttendanceData(markAttendanceModel);
                 break;
             case 1:
@@ -445,6 +469,9 @@ public class MarkAttendanceActivity extends AppCompatActivity implements View.On
                 markAttendanceModel1.setAttendanceTime(Utility.getFormattedTime("HH:mm:ss", "h:mm a", response.getServerTimeOut()));
                 markAttendanceModel1.setAttendanceImg(imagePath);
                 markAttendanceModel1.setAttendanceStatus(attendanceStatus);
+                markAttendanceModel1.setLatitude("");
+                markAttendanceModel1.setLongitude("");
+                markAttendanceModel1.setDataSavedLocally(false);
                 databaseHelper.insertMarkAttendanceData(markAttendanceModel1);
                 break;
             case 3:

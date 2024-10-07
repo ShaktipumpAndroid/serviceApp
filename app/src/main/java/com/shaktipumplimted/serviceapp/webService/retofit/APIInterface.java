@@ -68,7 +68,7 @@ public interface APIInterface {
     Call<PhotoListModel> getComplaintPhotoList(@Query("token") String token, @Query("cmpno") String cmpno, @Query("page") String page);
 
     @GET(APIS.COMPLAINT_CLOSURE_ENGINEER)
-    Call<CommonRespModel> complaintCloseEngineer(@Query("token") String token,@Query("CLOUSER_COMPLAINT") String closeCompArray );
+    Call<CommonRespModel> complaintCloseEngineer(@Query("token") String token,@Query("closure_compliant") String closeCompArray );
 
     @GET(APIS.GET_ATTENDANCE_DATA)
     Call<AttendanceDataModel> getAttendanceData(@Query("token") String token);

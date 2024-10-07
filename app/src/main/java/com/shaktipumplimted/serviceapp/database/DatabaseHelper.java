@@ -6,7 +6,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Build;
 import android.util.Log;
 
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
@@ -14,7 +13,6 @@ import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintForward.model.CompForwardListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintStatusModel;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.pendingReason.model.PendingReasonListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.DsrDetailsModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.LocalConveyanceModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.AllAttendanceRecordModel;
@@ -93,6 +91,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_ATTENDANCE_IN_IMG = "attendance_in_img";
     public static final String KEY_ATTENDANCE_IN_TIME = "attendance_in_time";
     public static final String KEY_ATTENDANCE_OUT_TIME = "attendance_out_time";
+    public static final String KEY_ATTENDANCE_LAT = "attendance_latitude";
+    public static final String KEY_ATTENDANCE_LNG = "attendance_longitude";
 
     public static final String KEY_COMPLAINT_STATUS_ID = "complaint_status_id";
     public static final String KEY_COMPLAINT_STATUS = "complaint_status";
@@ -284,7 +284,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_ATTENDANCE_DATE + " TEXT,"
             + KEY_ATTENDANCE_TIME + " TEXT,"
             + KEY_ATTENDANCE_STATUS + " TEXT,"
-            + KEY_ATTENDANCE_IN_IMG + " TEXT)";
+            + KEY_ATTENDANCE_IN_IMG + " TEXT,"
+            + KEY_ATTENDANCE_LAT + " TEXT,"
+            + KEY_ATTENDANCE_LNG + " TEXT,"
+            + KEY_DATA_SAVED_LOCALLY + " TEXT)";
 
     private static final String CREATE_TABLE_ATTENDANCE_HISTORY_DATA = "CREATE TABLE "
             + TABLE_ATTENDANCE_HISTORY_DATA + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
@@ -343,7 +346,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_DSR_LNG + " TEXT,"
             + KEY_DSR_TIME + " TEXT,"
             + KEY_DSR_PURPOSE + " TEXT,"
-            + KEY_DSR_OUTCOME + " TEXT)";
+            + KEY_DSR_OUTCOME + " TEXT,"
+            + KEY_DATA_SAVED_LOCALLY + " TEXT)";
 
 
 
@@ -566,19 +570,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_ATTENDANCE_TIME, markAttendanceModel.getAttendanceTime());
         contentValues.put(KEY_ATTENDANCE_STATUS, markAttendanceModel.getAttendanceStatus());
         contentValues.put(KEY_ATTENDANCE_IN_IMG, markAttendanceModel.getAttendanceImg());
+        contentValues.put(KEY_ATTENDANCE_LAT, markAttendanceModel.getLatitude());
+        contentValues.put(KEY_ATTENDANCE_LNG, markAttendanceModel.getLongitude());
+        contentValues.put(KEY_DATA_SAVED_LOCALLY, String.valueOf(markAttendanceModel.isDataSavedLocally()));
 
         database.insert(TABLE_MARK_ATTENDANCE_DATA, null, contentValues);
         database.close();
     }
 
-    public ArrayList<MarkAttendanceModel> getAllMarkAttendanceData(boolean isAllData,String date) {
+    public void updateMarkAttendanceData(MarkAttendanceModel markAttendanceModel) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_ATTENDANCE_DATE, markAttendanceModel.getAttendanceDate());
+        contentValues.put(KEY_ATTENDANCE_TIME, markAttendanceModel.getAttendanceTime());
+        contentValues.put(KEY_ATTENDANCE_STATUS, markAttendanceModel.getAttendanceStatus());
+        contentValues.put(KEY_ATTENDANCE_IN_IMG, markAttendanceModel.getAttendanceImg());
+        contentValues.put(KEY_ATTENDANCE_LAT, markAttendanceModel.getLatitude());
+        contentValues.put(KEY_ATTENDANCE_LNG, markAttendanceModel.getLongitude());
+        contentValues.put(KEY_DATA_SAVED_LOCALLY, String.valueOf(markAttendanceModel.isDataSavedLocally()));
+
+        String where = KEY_ATTENDANCE_DATE + "='" + markAttendanceModel.getAttendanceDate() + "'";
+        database.update(TABLE_MARK_ATTENDANCE_DATA, contentValues, where, null);
+
+        database.close();
+    }
+
+    public ArrayList<MarkAttendanceModel> getAllMarkAttendanceData(boolean isAllData,String date,boolean isUnsyncData) {
         String selectQuery;
         ArrayList<MarkAttendanceModel> imageModelArrayList = new ArrayList<MarkAttendanceModel>();
         SQLiteDatabase database = this.getWritableDatabase();
         if (doesTableExist(database, TABLE_MARK_ATTENDANCE_DATA)) {
 
-            if(isAllData) {
-                selectQuery = "SELECT * FROM " + TABLE_MARK_ATTENDANCE_DATA;
+            if(isAllData && isUnsyncData) {
+                selectQuery = "SELECT * FROM " + TABLE_MARK_ATTENDANCE_DATA + " WHERE " + KEY_DATA_SAVED_LOCALLY + " == '" + String.valueOf(isUnsyncData) + "'";
             }else {
                 selectQuery = "SELECT * FROM " + TABLE_MARK_ATTENDANCE_DATA + " WHERE " + KEY_ATTENDANCE_DATE + " == '" + date + "'";
             }
@@ -595,6 +619,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     markAttendanceModel.setAttendanceTime(mcursor.getString(2));
                     markAttendanceModel.setAttendanceStatus(mcursor.getString(3));
                     markAttendanceModel.setAttendanceImg(mcursor.getString(4));
+                    markAttendanceModel.setLatitude(mcursor.getString(5));
+                    markAttendanceModel.setLongitude(mcursor.getString(6));
+                    markAttendanceModel.setDataSavedLocally(Boolean.parseBoolean(mcursor.getString(7)));
 
                     imageModelArrayList.add(markAttendanceModel);
                 }
@@ -970,16 +997,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_DSR_TIME, dsrDetailsModel.getTime());
         contentValues.put(KEY_DSR_LAT, dsrDetailsModel.getLat());
         contentValues.put(KEY_DSR_LNG, dsrDetailsModel.getLng());
+        contentValues.put(KEY_DATA_SAVED_LOCALLY, String.valueOf(dsrDetailsModel.isDataSavedLocally()));
 
         database.insert(TABLE_DSR_RECORD, null, contentValues);
         database.close();
     }
 
-    public ArrayList<DsrDetailsModel> getAllDsrEntry() {
+    public void updateDsrData(DsrDetailsModel dsrDetailsModel) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_DSR_ACTIVITY, dsrDetailsModel.getDsrActivity());
+        contentValues.put(KEY_DSR_PURPOSE, dsrDetailsModel.getDsrPurpose());
+        contentValues.put(KEY_DSR_OUTCOME, dsrDetailsModel.getDsrOutcome());
+        contentValues.put(KEY_DSR_DATE, dsrDetailsModel.getDate());
+        contentValues.put(KEY_DSR_TIME, dsrDetailsModel.getTime());
+        contentValues.put(KEY_DSR_LAT, dsrDetailsModel.getLat());
+        contentValues.put(KEY_DSR_LNG, dsrDetailsModel.getLng());
+        contentValues.put(KEY_DATA_SAVED_LOCALLY, String.valueOf(dsrDetailsModel.isDataSavedLocally()));
+
+        String where = KEY_DSR_DATE + "='" + dsrDetailsModel.getDate() + "'";
+        database.update(TABLE_DSR_RECORD, contentValues, where, null);
+
+        database.close();
+    }
+
+    public ArrayList<DsrDetailsModel> getAllDsrEntry(boolean isSavedLocally) {
         ArrayList<DsrDetailsModel> spinnerArrayList = new ArrayList<DsrDetailsModel>();
         SQLiteDatabase database = this.getWritableDatabase();
         if (doesTableExist(database, TABLE_DSR_RECORD)) {
-            String selectQuery = "SELECT  *  FROM " + TABLE_DSR_RECORD;
+
+            String selectQuery = "SELECT  *  FROM " + TABLE_DSR_RECORD +" WHERE " + KEY_DATA_SAVED_LOCALLY + " == '" + isSavedLocally + "'";
             Cursor mcursor = database.rawQuery(selectQuery, null);
 
             spinnerArrayList.clear();
@@ -996,6 +1043,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     dsrDetailsModel.setTime(mcursor.getString(5));
                     dsrDetailsModel.setDsrPurpose(mcursor.getString(6));
                     dsrDetailsModel.setDsrOutcome(mcursor.getString(7));
+                    dsrDetailsModel.setDataSavedLocally(Boolean.parseBoolean(mcursor.getString(8)));
 
                     spinnerArrayList.add(dsrDetailsModel);
                 }

@@ -13,73 +13,81 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.shaktipumplimted.serviceapp.R;
-import com.shaktipumplimted.serviceapp.Utils.Utility;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.DsrDetailsModel;
-import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.AttendanceDataModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.MarkAttendanceModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model.MarkAttendanceModel;
+import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
-import org.json.JSONException;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.ViewHolder> {
-
     Context mContext;
-    private List<MarkAttendanceModel> attendanceModelList;
+    private List<MarkAttendanceModel> searchList;
+    private List<MarkAttendanceModel> attendanceArrayList;
     private static ItemClickListener itemClickListener;
 
-    public AttendanceAdapter(Context mContext, List<MarkAttendanceModel> dsrList) {
-        this.mContext = mContext;
-        this.attendanceModelList = dsrList;
+
+    public AttendanceAdapter(Context context, List<MarkAttendanceModel> listdata) {
+        this.mContext = context;
+        this.attendanceArrayList = listdata;
+        this.searchList = new ArrayList<>();
+        this.searchList.addAll(listdata);
     }
+
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AttendanceAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View listItem = layoutInflater.inflate(R.layout.dsr_item, parent, false);
+        View listItem = layoutInflater.inflate(R.layout.mark_attendance_item, parent, false);
         return new AttendanceAdapter.ViewHolder(listItem);
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+    public void onBindViewHolder(AttendanceAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        final MarkAttendanceModel response = attendanceArrayList.get(position);
 
-        MarkAttendanceModel markAttendanceModel = attendanceModelList.get(position);
-        holder.dateTxt.setText(Utility.getFormattedDate("yyyyMMdd","dd/MM/yyyy",markAttendanceModel.getAttendanceDate()));
-//        holder.dsrActivityTxt.setText(markAttendanceModel.getAttendanceStatus());
-//        holder.dsrOutcomeTxt.setText(dsrDetailsModel.getDsrOutcome());
-//        holder.dsrAgendaTxt.setText(dsrDetailsModel.getDsrPurpose());
+        holder.attendanceDateTxt.setText(response.getAttendanceDate());
+        if(response.getAttendanceStatus().equals(Constant.attendanceIN)) {
+            holder.attendanceInTimeTxt.setText(response.getAttendanceTime());
+            holder.attendanceOutLinear.setVisibility(View.GONE);
+        }
+        if(response.getAttendanceStatus().equals(Constant.attendanceOut)) {
+            holder.attendanceOutTimeTxt.setText(response.getAttendanceTime());
+            holder.attendanceInLinear.setVisibility(View.GONE);
+        }
 
-        holder.dsr_item.setOnClickListener(new View.OnClickListener() {
+        holder.attendanceItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    itemClickListener.SetOnItemClickListener(markAttendanceModel,position);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
+                itemClickListener.SetOnItemClickListener(response,position);
             }
         });
     }
 
+
     @Override
     public int getItemCount() {
-        return attendanceModelList.size();
+        return attendanceArrayList.size();
     }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView dsrActivityTxt, dsrOutcomeTxt, dsrAgendaTxt, dateTxt;
-        private CardView dsr_item;
-
+        private TextView attendanceDateTxt,attendanceInTimeTxt,attendanceOutTimeTxt;
+        private CardView attendanceItem;
+        LinearLayout attendanceInLinear,attendanceOutLinear,sync_linear;
         public ViewHolder(View itemView) {
             super(itemView);
-            dsr_item = itemView.findViewById(R.id.dsr_item);
-            dsrActivityTxt = itemView.findViewById(R.id.dsrActivityTxt);
-            dsrOutcomeTxt = itemView.findViewById(R.id.dsrOutcomeTxt);
-            dsrAgendaTxt = itemView.findViewById(R.id.dsrAgendaTxt);
-            dateTxt = itemView.findViewById(R.id.dateTxt);
-
+            attendanceItem = itemView.findViewById(R.id.attendanceItem);
+            attendanceDateTxt = itemView.findViewById(R.id.attendanceDateTxt);
+            attendanceInTimeTxt = itemView.findViewById(R.id.attendanceInTimeTxt);
+            attendanceOutTimeTxt = itemView.findViewById(R.id.attendanceOutTimeTxt);
+            attendanceInLinear = itemView.findViewById(R.id.attendanceInLinear);
+            attendanceOutLinear = itemView.findViewById(R.id.attendanceOutLinear);
+            sync_linear = itemView.findViewById(R.id.sync_linear);
+            sync_linear.setVisibility(View.VISIBLE);
         }
     }
 
@@ -90,8 +98,6 @@ public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.Vi
     }
 
     public interface ItemClickListener {
-        void SetOnItemClickListener(MarkAttendanceModel response, int position) throws JSONException;
+        void SetOnItemClickListener(MarkAttendanceModel response, int position);
     }
-
-
 }

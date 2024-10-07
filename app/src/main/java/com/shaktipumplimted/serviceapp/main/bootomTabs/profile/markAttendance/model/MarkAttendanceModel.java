@@ -1,8 +1,9 @@
 package com.shaktipumplimted.serviceapp.main.bootomTabs.profile.markAttendance.model;
 
 public class MarkAttendanceModel {
-    String uniqId,attendanceDate,attendanceTime,attendanceStatus,attendanceImg;
+    String uniqId,attendanceDate,attendanceTime,attendanceStatus,attendanceImg,latitude,longitude;
 
+    boolean isDataSavedLocally;
     public String getUniqId() {
         return uniqId;
     }
@@ -43,6 +44,30 @@ public class MarkAttendanceModel {
         this.attendanceImg = attendanceImg;
     }
 
+    public boolean isDataSavedLocally() {
+        return isDataSavedLocally;
+    }
+
+    public void setDataSavedLocally(boolean dataSavedLocally) {
+        isDataSavedLocally = dataSavedLocally;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
     @Override
     public String toString() {
         return "MarkAttendanceModel{" +
@@ -51,6 +76,9 @@ public class MarkAttendanceModel {
                 ", attendanceTime='" + attendanceTime + '\'' +
                 ", attendanceStatus='" + attendanceStatus + '\'' +
                 ", attendanceImg='" + attendanceImg + '\'' +
+                ", latitude='" + latitude + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", isDataSavedLocally=" + isDataSavedLocally +
                 '}';
     }
 }

@@ -332,12 +332,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     private void setSpinnerAdapter(List<SpinnerDataModel> spinnerList, Spinner spinner) {
         SpinnerAdapter spinnerAdapter = new com.shaktipumplimted.serviceapp.Utils.common.adapter.SpinnerAdapter(ComplaintDetailsActivity.this, spinnerList);
         spinner.setAdapter(spinnerAdapter);
-
-
     }
-
-
-
 
     /*--------------------------------------------On Click Listner-------------------------------------------------------*/
 
@@ -570,30 +565,29 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         complaintModel.setCurrentDate(Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd", Utility.getCurrentDate()));
         complaintModel.setCurrentTime(Utility.getFormattedTime("hh:mm a", "HHmmss", Utility.getCurrentTime()));
         complaintModel.setDataSavedLocally(true);
-
         databaseHelper.updateComplaintDetailsData(complaintModel);
 
 
         if (Utility.isInternetOn(getApplicationContext())) {
             closeComplaintAPI(complaintModel);
-        } else {
+        }else {
             Utility.ShowToast(getResources().getString(R.string.dataSavedLocally), getApplicationContext());
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.putExtra(Constant.APICALL,Constant.TRUE);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
         }
+
     }
 
     private void closeComplaintAPI(ComplaintListModel.Datum complaintModel) {
+        Utility.showProgressDialogue(this);
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         try {
             jsonObject.put("cmpno", complaintModel.getCmpno());
             jsonObject.put("category", complaintModel.getCategory());
-            jsonObject.put("closer_reson", complaintModel.getClosureReason());
+            jsonObject.put("closer_reason", complaintModel.getClosureReason());
             jsonObject.put("defect", complaintModel.getDefectType());
             jsonObject.put("cmpln_related_to", complaintModel.getRelatedTo());
             jsonObject.put("customer", complaintModel.getCustomerPay());
@@ -613,7 +607,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
             jsonArray.put(jsonObject);
 
             Log.e("jsonArray====>", jsonArray.toString());
-          /*  Call<CommonRespModel> call3 = apiInterface.complaintCloseEngineer(Utility.getSharedPreferences(this, Constant.accessToken), jsonArray.toString());
+            Call<CommonRespModel> call3 = apiInterface.complaintCloseEngineer(Utility.getSharedPreferences(this, Constant.accessToken), jsonArray.toString());
             call3.enqueue(new Callback<CommonRespModel>() {
                 @Override
                 public void onResponse(@NonNull Call<CommonRespModel> call, @NonNull Response<CommonRespModel> response) {
@@ -621,13 +615,11 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                     if (response.isSuccessful()) {
                         CommonRespModel commonRespModel = response.body();
                         if (commonRespModel.getStatus().equals(Constant.TRUE)) {
-                            Utility.ShowToast(commonRespModel.getMessage(),getApplicationContext() );
+                            databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_COMPLAINT_DATA, DatabaseHelper.KEY_COMPLAINT_NUMBER, complaintListModel.getCmpno());
+                            Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.putExtra(Constant.APICALL,Constant.TRUE);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-
+                            intent.putExtra(Constant.APICALL,Constant.TRUE);
+                            startActivity(intent);
                             finish();
                         } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
                             Utility.hideProgressDialogue();
@@ -644,7 +636,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                     Utility.hideProgressDialogue();
                     Log.e("Error====>", t.getMessage().toString().trim());
                 }
-            });*/
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
