@@ -29,6 +29,7 @@ import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,9 +51,15 @@ import com.shaktipumplimted.serviceapp.Utils.common.activity.PhotoViewerActivity
 import com.shaktipumplimted.serviceapp.Utils.common.activity.SurfaceCameraActivity;
 import com.shaktipumplimted.serviceapp.Utils.common.adapter.ImageSelectionAdapter;
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
+import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.activity.ComplaintDetailsActivity;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.model.ComplaintDropdownModel;
+import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customerDetails.checkOut.model.CheckOutDropdownModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.routes.customersList.model.CustomerListModel;
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
+import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
+import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -60,6 +67,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CheckOutActivity extends AppCompatActivity implements ImageSelectionAdapter.ImageSelectionListener, View.OnClickListener, AdapterView.OnItemSelectedListener {
     private static final int REQUEST_CODE_PERMISSION = 101;
@@ -84,6 +95,8 @@ public class CheckOutActivity extends AppCompatActivity implements ImageSelectio
     int selectedIndex;
     boolean isUpdate = false;
     String selectedFollowUpDate = "";
+    APIInterface apiInterface;
+    List<SpinnerDataModel> checkOutDropdownList  = new ArrayList<>();
 
     public final static SimpleDateFormat dateFormat =
             new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
@@ -102,6 +115,7 @@ public class CheckOutActivity extends AppCompatActivity implements ImageSelectio
     }
 
     private void Init() {
+        apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         toolbar = findViewById(R.id.toolbar);
         activitySpinner = findViewById(R.id.activitySpinner);
@@ -130,8 +144,73 @@ public class CheckOutActivity extends AppCompatActivity implements ImageSelectio
     private void retrieveValue() {
         if (getIntent().getExtras() != null) {
             customerListModel = (CustomerListModel) getIntent().getSerializableExtra(Constant.customerDetails);
-
         }
+
+
+        if (Utility.isInternetOn(getApplicationContext())) {
+            if (databaseHelper.isDataAvailable(DatabaseHelper.TABLE_CHECK_OUT_DROPDOWN)) {
+                setDropdown();
+            } else {
+                getDropdownsList();
+            }
+        } else {
+            setDropdown();
+        }
+    }
+
+    private void getDropdownsList() {
+        checkOutDropdownList  = new ArrayList<>();
+        Utility.showProgressDialogue(this);
+        Call<CheckOutDropdownModel> call3 = apiInterface.getCheckOutDropdown(Utility.getSharedPreferences(this, Constant.accessToken));
+        call3.enqueue(new Callback<CheckOutDropdownModel>() {
+            @Override
+            public void onResponse(@NonNull Call<CheckOutDropdownModel> call, @NonNull Response<CheckOutDropdownModel> response) {
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    CheckOutDropdownModel checkOutDropdownModel = response.body();
+
+                    if (checkOutDropdownModel.getStatus().equals(Constant.TRUE)) {
+
+                        if (checkOutDropdownModel.getResponse().size() > 0) {
+
+                            for (int i = 0; i < checkOutDropdownModel.getResponse().size(); i++) {
+                                if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_CHECK_OUT_DROPDOWN, DatabaseHelper.KEY_ID, checkOutDropdownModel.getResponse().get(i).getHelpCode())) {
+                                    SpinnerDataModel spinnerDataModel = new SpinnerDataModel();
+                                    spinnerDataModel.setId(checkOutDropdownModel.getResponse().get(i).getHelpCode());
+                                    spinnerDataModel.setName(checkOutDropdownModel.getResponse().get(i).getHelpName());
+                                    databaseHelper.insertSpinnerData(spinnerDataModel, DatabaseHelper.TABLE_CHECK_OUT_DROPDOWN);
+                                }
+                            }
+
+                        }
+                        setDropdown();
+                    } else if (checkOutDropdownModel.getStatus().equals(Constant.FALSE)) {
+                        Utility.hideProgressDialogue();
+                        Utility.ShowToast(getResources().getString(R.string.something_went_wrong), CheckOutActivity.this);
+                    } else if (checkOutDropdownModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CheckOutDropdownModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                Log.e("Error====>", t.getMessage().toString().trim());
+
+            }
+        });
+    }
+
+    private void setDropdown() {
+        checkOutDropdownList.add(new SpinnerDataModel("00", getResources().getString(R.string.select_closure)));
+        checkOutDropdownList.addAll(databaseHelper.getSpinnerData(DatabaseHelper.TABLE_CHECK_OUT_DROPDOWN));
+
+        SpinnerAdapter spinnerAdapter = new com.shaktipumplimted.serviceapp.Utils.common.adapter.SpinnerAdapter(CheckOutActivity.this, checkOutDropdownList);
+        activitySpinner.setAdapter(spinnerAdapter);
+
+
     }
 
     @Override

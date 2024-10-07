@@ -219,5 +219,12 @@
     <string name="visitComplaint">If you want to visit this complaint please start your journey first!</string>
     <string name="dataSavedLocally">Your complaint data saved locally</string>
     <string name="select_closure_reason">Please select complaint closure reason first</string>
+    <string name="dsrDate">DSR date</string>
+    <string name="dsrActivity">DSR activity</string>
+    <string name="dsrOutcome">DSR outcome</string>
+    <string name="dsrAgenda">DSR agenda</string>
+    <string name="attendance">Attendance</string>
+    <string name="contact_admin_assign">Contact admin for assigning responsible person</string>
+    <string name="pls_fill_dsr_entry">Please fill DSR entry first</string>
 
 </resources>
