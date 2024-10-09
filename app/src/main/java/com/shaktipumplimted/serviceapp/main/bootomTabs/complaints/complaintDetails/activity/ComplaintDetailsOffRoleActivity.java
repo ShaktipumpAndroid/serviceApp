@@ -43,6 +43,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
 import com.shaktipumplimted.serviceapp.R;
 import com.shaktipumplimted.serviceapp.Utils.FileUtils;
 import com.shaktipumplimted.serviceapp.Utils.GpsTracker;
@@ -50,9 +51,11 @@ import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.Utils.common.activity.PhotoViewerActivity;
 import com.shaktipumplimted.serviceapp.Utils.common.activity.SurfaceCameraActivity;
 import com.shaktipumplimted.serviceapp.Utils.common.adapter.ImageSelectionAdapter;
+import com.shaktipumplimted.serviceapp.Utils.common.model.CommonRespModel;
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
 import com.shaktipumplimted.serviceapp.Utils.common.model.SpinnerDataModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
+import com.shaktipumplimted.serviceapp.main.MainActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.model.ComplaintDropdownModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.DistanceCalculateModel;
@@ -60,6 +63,12 @@ import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.m
 import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
+import com.shaktipumplimted.serviceapp.webService.uploadImages.UploadImageAPIS;
+import com.shaktipumplimted.serviceapp.webService.uploadImages.interfaces.ActionListenerCallback;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -79,8 +88,9 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
     TextView submitBtn;
     Spinner categorySpinner;
     List<SpinnerDataModel> complaintCategoryList = new ArrayList<>();
-    String selectedCategory = "", imagePath = "",distance="";
+    String selectedCategory = "", imagePath = "", solarInstDistance = "";
     ComplaintListModel.Datum complaintListModel;
+    ComplaintListModel.Datum complaintModel;
     DatabaseHelper databaseHelper;
 
     ImageView imgIcon;
@@ -88,8 +98,8 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
     GpsTracker gpsTracker;
     Context mContext;
     List<LocalConveyanceModel> localConveyanceList = new ArrayList<>();
-    APIInterface apiInterface,apiInterface1;
-
+    APIInterface apiInterface, apiInterface1;
+    LocalConveyanceModel localConveyanceModel;
     RecyclerView complaintImgList;
     List<ImageModel> imageArrayList = new ArrayList<>();
     List<ImageModel> imageList = new ArrayList<>();
@@ -103,6 +113,7 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
     int selectedIndex;
     boolean isUpdate = false, isSelectedAllImages = false, isEndTravelImg = false;
     LocalConveyanceModel localConveyance;
+    UploadImageAPIS uploadImageAPIS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +128,7 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
     private void Init() {
         mContext = this;
         localConveyanceList = new ArrayList<>();
-
+        uploadImageAPIS = new UploadImageAPIS(getApplicationContext());
         apiInterface = APIClient.getRetrofit(getApplicationContext()).create(APIInterface.class);
         apiInterface1 = APIClient.getRetrofitDirection(getApplicationContext()).create(APIInterface.class);
         databaseHelper = new DatabaseHelper(this);
@@ -246,10 +257,15 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
     private void SetAdapter() {
         imageArrayList = new ArrayList<>();
         itemNameList = new ArrayList<>();
-        itemNameList.add(getResources().getString(R.string.attechformphoto1));
-        itemNameList.add(getResources().getString(R.string.attechformphoto2));
-        itemNameList.add(getResources().getString(R.string.attechformphoto3));
-        itemNameList.add(getResources().getString(R.string.attechformphoto4));
+        itemNameList.add(getResources().getString(R.string.others));
+        itemNameList.add(getResources().getString(R.string.old_prd_srnr));
+        itemNameList.add(getResources().getString(R.string.site_error_defect));
+        itemNameList.add(getResources().getString(R.string.discharge_img));
+        itemNameList.add(getResources().getString(R.string.site_image_farmer_img));
+        itemNameList.add(getResources().getString(R.string.fir_field));
+        itemNameList.add(getResources().getString(R.string.cust_form));
+        itemNameList.add(getResources().getString(R.string.approval_img));
+        itemNameList.add(getResources().getString(R.string.CMC));
 
 
         for (int i = 0; i < itemNameList.size(); i++) {
@@ -351,6 +367,7 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
             } else {
                 Intent i_display_image = new Intent(ComplaintDetailsOffRoleActivity.this, PhotoViewerActivity.class);
                 i_display_image.putExtra(Constant.imagePath, imageArrayList.get(selectedIndex).getImagePath());
+                i_display_image.putExtra(Constant.Images,"0");
                 startActivity(i_display_image);
             }
         });
@@ -394,7 +411,8 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
                         if (isEndTravelImg) {
                             imagePath = bundle.get(Constant.file).toString();
                             imgIcon.setImageResource(R.mipmap.tick_icon);
-                        }else {
+                            localConveyanceSavedOffline("1");
+                        } else {
                             UpdateArrayList(bundle.get(Constant.file).toString(), bundle.getString(Constant.latitude), bundle.getString(Constant.longitude));
 
                         }
@@ -558,7 +576,17 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.submitBtn:
-                closeComplaint();
+                   closeComplaint();
+                break;
+
+            case R.id.startLocImg:
+                isEndTravelImg = true;
+                if (checkPermission()) {
+                    cameraIntent();
+                } else {
+                    requestPermission();
+                }
+
                 break;
         }
 
@@ -589,43 +617,99 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
         if (checkPermission()) {
             if (gpsTracker.canGetLocation()) {
                 localConveyanceList = databaseHelper.getAllLocalConveyanceData(true);
-                 localConveyance = localConveyanceList.get(localConveyanceList.size() - 1);
+                if (!localConveyanceList.isEmpty()) {
+                    localConveyance = localConveyanceList.get(localConveyanceList.size() - 1);
+                    localConveyanceSavedOffline("0");
+                    if (Utility.isInternetOn(getApplicationContext())) {
+                        if (complaintListModel.getLat() != null && !complaintListModel.getLat().isEmpty()) {
+                            getCalculatedDistance(complaintListModel.getLat(), complaintListModel.getLng(),
+                                    String.valueOf(gpsTracker.getLatitude()),
+                                    String.valueOf(gpsTracker.getLongitude()));
+                        } else {
+                            getCalculatedDistance2(localConveyance.getStartLatitude(), localConveyance.getStartLongitude(),
+                                    String.valueOf(gpsTracker.getLatitude()),
+                                    String.valueOf(gpsTracker.getLongitude()));
+                        }
 
-                if (Utility.isInternetOn(getApplicationContext())) {
-                    if(complaintListModel.getLat()!=null && !complaintListModel.getLat().isEmpty()) {
-                        getCalculatedDistance(complaintListModel.getLat(), complaintListModel.getLng(),
-                                String.valueOf(gpsTracker.getLatitude()),
-                                String.valueOf(gpsTracker.getLongitude()));
-                    }else {
-                        getCalculatedDistance2(localConveyance.getStartLatitude(), localConveyance.getStartLongitude(),
-                                String.valueOf(gpsTracker.getLatitude()),
-                                String.valueOf(gpsTracker.getLongitude()));
+                    } else {
+                        Utility.ShowToast(getResources().getString(R.string.dataSavedLocally), getApplicationContext());
+                        Utility.setSharedPreference(getApplicationContext(), Constant.localConveyanceJourneyStart, "false");
+                        localConveyanceSavedOffline("0");
                     }
-                } else {
-                    Utility.ShowToast(getResources().getString(R.string.dataSavedLocally), getApplicationContext());
-                    LocalConveyanceModel localConveyanceModel = new LocalConveyanceModel();
-                    localConveyanceModel.setStartLatitude(localConveyance.getStartLatitude());
-                    localConveyanceModel.setStartLongitude(localConveyance.getStartLongitude());
-                    localConveyanceModel.setEndLatitude(String.valueOf(gpsTracker.getLatitude()));
-                    localConveyanceModel.setEndLongitude(String.valueOf(gpsTracker.getLongitude()));
-                    localConveyanceModel.setStartAddress(localConveyance.getStartAddress());
-                    localConveyanceModel.setEndAddress("");
-                    localConveyanceModel.setStartDate(localConveyance.getStartDate());
-                    localConveyanceModel.setStartTime(localConveyance.getStartTime());
-                    localConveyanceModel.setEndDate(Utility.getCurrentDate());
-                    localConveyanceModel.setEndTime(Utility.getCurrentTime());
-                    localConveyanceModel.setStartImgPath(localConveyance.getStartImgPath());
-                    localConveyanceModel.setEndImgPath(imagePath);
-                    localConveyanceModel.setTravelMode(complaintListModel.getCmpno());
-                    databaseHelper.updateLocalConveyanceData(localConveyanceModel);
-                    Utility.setSharedPreference(getApplicationContext(), Constant.localConveyanceJourneyStart, "false");
+                }else {
+                    Utility.ShowToast(getResources().getString(R.string.visitComplaint),getApplicationContext());
                 }
-            } else {
-                gpsTracker.showSettingsAlert();
-            }
+                } else {
+                    gpsTracker.showSettingsAlert();
+                }
+
         } else {
             requestPermission();
         }
+    }
+
+    private void localConveyanceSavedOffline(String value) {
+        localConveyanceModel = new LocalConveyanceModel();
+        localConveyanceModel.setStartLatitude(localConveyance.getStartLatitude());
+        localConveyanceModel.setStartLongitude(localConveyance.getStartLongitude());
+        localConveyanceModel.setEndLatitude(String.valueOf(gpsTracker.getLatitude()));
+        localConveyanceModel.setEndLongitude(String.valueOf(gpsTracker.getLongitude()));
+        localConveyanceModel.setStartAddress(localConveyance.getStartAddress());
+        localConveyanceModel.setEndAddress("");
+        localConveyanceModel.setStartDate(localConveyance.getStartDate());
+        localConveyanceModel.setStartTime(localConveyance.getStartTime());
+        localConveyanceModel.setEndDate(Utility.getCurrentDate());
+        localConveyanceModel.setEndTime(Utility.getCurrentTime());
+        localConveyanceModel.setStartImgPath(localConveyance.getStartImgPath());
+        localConveyanceModel.setEndImgPath(imagePath);
+        localConveyanceModel.setTravelMode(complaintListModel.getCmpno());
+        databaseHelper.updateLocalConveyanceData(localConveyanceModel);
+        if(value.equals("0")){
+
+        complaintSavedOffline();
+        }
+    }
+
+    private void complaintSavedOffline() {
+        complaintModel = new ComplaintListModel.Datum();
+        complaintModel.setCmpno(complaintListModel.getCmpno());
+        complaintModel.setCaddress(complaintListModel.getCaddress());
+        complaintModel.setMblno(complaintListModel.getMblno());
+        complaintModel.setCstname(complaintListModel.getCstname());
+        complaintModel.setPernr(complaintListModel.getPernr());
+        complaintModel.setEname(complaintListModel.getEname());
+        complaintModel.setStatus(complaintListModel.getStatus());
+        complaintModel.setMatnr(complaintListModel.getMatnr());
+        complaintModel.setMaktx(complaintListModel.getMaktx());
+        complaintModel.setVbeln(complaintListModel.getVbeln());
+        complaintModel.setFkdat(complaintListModel.getFkdat());
+        complaintModel.setFwrdTo(complaintListModel.getFwrdTo());
+        complaintModel.setFdate(complaintListModel.getFdate());
+        complaintModel.setAction(complaintListModel.getAction());
+        complaintModel.setCmpPenRe(complaintListModel.getCmpPenRe());
+        complaintModel.setLat(complaintListModel.getLat());
+        complaintModel.setLng(complaintListModel.getLng());
+        complaintModel.setCurrentStatus(complaintListModel.getCurrentStatus());
+        complaintModel.setCurrentLat(String.valueOf(gpsTracker.getLatitude()));
+        complaintModel.setCurrentLng(String.valueOf(gpsTracker.getLongitude()));
+        complaintModel.setCustomerPay("");
+        complaintModel.setCompanyPay("");
+        complaintModel.setFocAmount("");
+        complaintModel.setReturnByCompany("");
+        complaintModel.setPayToFreelancer("");
+        complaintModel.setPumpSrNo("");
+        complaintModel.setMotorSrNo("");
+        complaintModel.setControllerSrNo("");
+        complaintModel.setCategory(selectedCategory);
+        complaintModel.setClosureReason("");
+        complaintModel.setDefectType("");
+        complaintModel.setRelatedTo("");
+        complaintModel.setRemark(remarkTxt.getText().toString().trim());
+        complaintModel.setCurrentDate(Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd", Utility.getCurrentDate()));
+        complaintModel.setCurrentTime(Utility.getFormattedTime("hh:mm a", "HHmmss", Utility.getCurrentTime()));
+        complaintModel.setDistance(complaintListModel.getDistance());
+        complaintModel.setDataSavedLocally(true);
+        databaseHelper.updateComplaintDetailsData(complaintModel);
     }
 
     private void getCalculatedDistance(String startLat, String startLong, String endLat, String endLong) {
@@ -641,7 +725,7 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
 
                     Log.e("distanceCalculate====>", String.valueOf(distanceCalculateModel.getRoutes().get(0).getLegs().get(0).getDistance().getText()));
 
-                    distance = String.valueOf(distanceCalculateModel.getRoutes().get(0).getLegs().get(0).getDistance().getText());
+                    solarInstDistance = String.valueOf(distanceCalculateModel.getRoutes().get(0).getLegs().get(0).getDistance().getText());
 
                     getCalculatedDistance2(localConveyance.getStartLatitude(), localConveyance.getStartLongitude(),
                             String.valueOf(gpsTracker.getLatitude()),
@@ -673,7 +757,7 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
                 if (response.isSuccessful()) {
                     DistanceCalculateModel distanceCalculateModel = response.body();
 
-                    saveTravelPopup(distanceCalculateModel.getRoutes(),startLat,startLong,endLat,endLong);
+                    saveTravelPopup(distanceCalculateModel.getRoutes(), startLat, startLong, endLat, endLong);
                 }
 
             }
@@ -726,43 +810,189 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
         imgIcon = layout.findViewById(R.id.imgIcon);
         startLocImg = layout.findViewById(R.id.startLocImg);
         TextView confirmBtn = layout.findViewById(R.id.confirmBtn);
-        TextView cancelBtn  = layout.findViewById(R.id.cancelBtn);
-
+        TextView cancelBtn = layout.findViewById(R.id.cancelBtn);
 
 
         startLatitudeLayout.setHint(getResources().getString(R.string.startLatitude));
-            startLongitudeLayout.setHint(getResources().getString(R.string.startLongitude));
-            startAddressLayout.setHint(getResources().getString(R.string.startAddress));
-            startLocImgTxt.setText(getResources().getString(R.string.endLocImg));
-            endtLatitudeLayout.setVisibility(View.VISIBLE);
-            endLongitudeLayout.setVisibility(View.VISIBLE);
-            endAddressLayout.setVisibility(View.VISIBLE);
-            travelModeLayout.setVisibility(View.VISIBLE);
-            distanceLayout.setVisibility(View.VISIBLE);
-            startLocImg.setVisibility(View.GONE);
+        startLongitudeLayout.setHint(getResources().getString(R.string.startLongitude));
+        startAddressLayout.setHint(getResources().getString(R.string.startAddress));
+        startLocImgTxt.setText(getResources().getString(R.string.endLocImg));
+        endtLatitudeLayout.setVisibility(View.VISIBLE);
+        endLongitudeLayout.setVisibility(View.VISIBLE);
+        endAddressLayout.setVisibility(View.VISIBLE);
+        travelModeLayout.setVisibility(View.VISIBLE);
+        distanceLayout.setVisibility(View.VISIBLE);
+        startLocImg.setVisibility(View.VISIBLE);
 
-            startLatitudeExt.setText(startLat);
-            startLongitudeExt.setText(startLong);
-            startAddressExt.setText(routes.get(0).getLegs().get(0).getStartAddress());
-            endLatitudeExt.setText(endLat);
-            endLongitudeExt.setText(endLong);
-            endAddressExt.setText(routes.get(0).getLegs().get(0).getEndAddress());
-            distanceEdt.setText(distance);
-            travelModeEdt.setText(complaintListModel.getCmpno());
+        startLatitudeExt.setText(startLat);
+
+        startLongitudeExt.setText(startLong);
+        startAddressExt.setText(routes.get(0).getLegs().get(0).getStartAddress());
+        endLatitudeExt.setText(endLat);
+        endLongitudeExt.setText(endLong);
+        endAddressExt.setText(routes.get(0).getLegs().get(0).getEndAddress());
+        distanceEdt.setText(routes.get(0).getLegs().get(0).getDistance().getText());
+        travelModeEdt.setText(complaintListModel.getCmpno());
         travelModeEdt.setEnabled(false);
 
         confirmBtn.setOnClickListener(v -> {
             alertDialog.dismiss();
 
-            Utility.setSharedPreference(getApplicationContext(), Constant.localConveyanceJourneyStart, "false");
-                //    saveData(response,travelModeEdt.getText().toString().trim());
 
+
+            /*Utility.setSharedPreference(getApplicationContext(), Constant.localConveyanceJourneyStart, "false");
+            databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_LOCAL_CONVEYANCE_DATA, DatabaseHelper.KEY_START_TIME, localConveyance.getStartTime());
+            */
+
+            saveData(localConveyanceModel,distanceEdt.getText().toString().trim());
 
 
         });
 
         cancelBtn.setOnClickListener(v -> alertDialog.dismiss());
+        startLocImg.setOnClickListener(this);
+    }
 
+
+    private void saveData(LocalConveyanceModel response, String travelDistance) {
+        Utility.showProgressDialogue(this);
+        try {
+            JSONArray jsonArray = new JSONArray();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("begda", Utility.getFormattedDate("dd.MM.yyyy","yyyyMMdd",response.getStartDate()));
+            jsonObject.put("endda", Utility.getFormattedDate("dd.MM.yyyy","yyyyMMdd",response.getEndDate()));
+            jsonObject.put("start_time", Utility.getFormattedTime("hh:mm a","hhmmss",response.getStartTime()));
+            jsonObject.put("end_time", Utility.getFormattedTime("hh:mm a","hhmmss",response.getEndTime()));
+            jsonObject.put("start_lat", response.getStartLatitude());
+            jsonObject.put("end_lat", response.getEndLatitude());
+            jsonObject.put("start_long", response.getStartLongitude());
+            jsonObject.put("end_long", response.getEndLongitude());
+            jsonObject.put("start_location", response.getStartAddress());
+            jsonObject.put("end_location", Utility.getAddressFromLatLng(getApplicationContext(),response.getEndLatitude(),response.getEndLongitude()));
+            jsonObject.put("travel_MODE",complaintListModel.getCmpno());
+            jsonObject.put("distance", travelDistance);
+            jsonObject.put("lat_long", response.getStartLatitude()+","+response.getStartLongitude());
+
+            if(response.getStartImgPath()!=null &&!response.getStartImgPath().isEmpty()) {
+                jsonObject.put("PHOTO1", Utility.getBase64FromPath(getApplicationContext(), response.getStartImgPath()));
+            }else {
+                jsonObject.put("PHOTO1","");
+            }
+            if(imagePath!=null && !imagePath.isEmpty()) {
+                jsonObject.put("PHOTO2", Utility.getBase64FromPath(getApplicationContext(),imagePath));
+            }else {
+                jsonObject.put("PHOTO2","");
+            }
+            jsonArray.put(jsonObject);
+
+            Log.e("json===>",jsonArray.toString());
+            uploadImageAPIS.setActionListener(jsonArray, Constant.localConveyance, new ActionListenerCallback() {
+                @Override
+                public void onActionSuccess(String result) {
+                    Utility.hideProgressDialogue();
+
+                    CommonRespModel commonRespModel = new Gson().fromJson(result, CommonRespModel.class);
+                    if (commonRespModel.getStatus().equals(Constant.TRUE)) {
+
+                        databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_LOCAL_CONVEYANCE_DATA, DatabaseHelper.KEY_START_TIME, response.getStartTime());
+                        closeComplaintAPI(complaintModel);
+                        Utility.setSharedPreference(getApplicationContext(), Constant.localConveyanceJourneyStart, "false");
+                    } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
+                        Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
+                    } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
+
+                }
+
+                @Override
+                public void onActionFailure(String failureMessage) {
+                    Utility.hideProgressDialogue();
+                    try {
+                        JSONObject jsonObject = new JSONObject(failureMessage);
+                        if(jsonObject.getString("status").equals(Constant.FAILED)) {
+                            Utility.logout(getApplicationContext());
+                        }
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void closeComplaintAPI(ComplaintListModel.Datum complaintModel) {
+        Utility.showProgressDialogue(this);
+        try {
+            JSONArray jsonArray = new JSONArray();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmpno", complaintModel.getCmpno());
+            jsonObject.put("category", complaintModel.getCategory());
+            jsonObject.put("closer_reason", complaintModel.getClosureReason());
+            jsonObject.put("defect", complaintModel.getDefectType());
+            jsonObject.put("cmpln_related_to", complaintModel.getRelatedTo());
+            jsonObject.put("rm_code", Utility.getSharedPreferences(getApplicationContext(),Constant.reportingPersonName));
+            jsonObject.put("ZFEEDRMRK", complaintModel.getRemark());
+            jsonObject.put("ZFEEDF", complaintModel.getRemark());
+            jsonObject.put("cr_date", complaintModel.getCurrentDate());
+            jsonObject.put("cr_time", complaintModel.getCurrentTime());
+            jsonObject.put("latitude", complaintModel.getCurrentLat());
+            jsonObject.put("longitude", complaintModel.getCurrentLng());
+            jsonObject.put("distance", solarInstDistance);
+
+
+            for(int i=0; i<imageArrayList.size() ; i++){
+                if(imageArrayList.get(i).getImagePath()!=null && !imageArrayList.get(i).getImagePath().isEmpty()){
+                    jsonObject.put("photo"+imageArrayList.get(i).getPosition(), Utility.getBase64FromPath(getApplicationContext(),imageArrayList.get(i).getImagePath()));
+                }
+            }
+
+
+            jsonArray.put(jsonObject);
+            Log.e("json===>",jsonArray.toString());
+            uploadImageAPIS.setActionListener(jsonArray, Constant.OffrollClosure, new ActionListenerCallback() {
+                @Override
+                public void onActionSuccess(String result) {
+                    Utility.hideProgressDialogue();
+
+                    CommonRespModel commonRespModel = new Gson().fromJson(result, CommonRespModel.class);
+                    if (commonRespModel.getStatus().equals(Constant.TRUE)) {
+                        databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_COMPLAINT_DATA, DatabaseHelper.KEY_COMPLAINT_NUMBER, complaintListModel.getCmpno());
+                        databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA,DatabaseHelper.KEY_IMAGE_BILL_NO, complaintListModel.getCmpno());
+                        Utility.setSharedPreference(getApplicationContext(), Constant.localConveyanceJourneyStart, "false");
+                        Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.putExtra(Constant.APICALL,Constant.TRUE);
+                        startActivity(intent);
+                        finish();
+                    } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
+                        Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
+                    } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {
+                        Utility.logout(getApplicationContext());
+                    }
+
+                }
+
+                @Override
+                public void onActionFailure(String failureMessage) {
+                    Utility.hideProgressDialogue();
+                    try {
+                        JSONObject jsonObject = new JSONObject(failureMessage);
+                        if(jsonObject.getString("status").equals(Constant.FAILED)) {
+                            Utility.logout(getApplicationContext());
+                        }
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -31,6 +31,7 @@ public class APIS {
     public static final String MARK_ATTENDANCE = "attendanceinout.htm";
     public static final String GET_ATTENDANCE_DATA = "attendance_data_getapi.htm";
     public static final String LOCAL_CONVEYANCE = "local_conveyance.htm";
+    public static final String FREELANCER_CLOSURE = "freelancer_clousure_api.htm";
     public static final String DSR_DROPDOWN = "search_help.htm";
     public static final String DSR_SAVE = "dsr_save.htm";
     public static final String CHECK_OUT_DROPDOWN = "checkout_activity.htm";

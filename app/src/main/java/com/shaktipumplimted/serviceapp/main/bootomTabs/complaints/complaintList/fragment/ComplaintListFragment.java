@@ -280,7 +280,6 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                                 complaintModel.setCurrentStatus(complaintListModel.getData().get(i).getCurrentStatus());
                                 complaintModel.setCurrentLng("");
                                 complaintModel.setCurrentLng("");
-
                                 complaintModel.setCustomerPay("");
                                 complaintModel.setCompanyPay("");
                                 complaintModel.setFocAmount("");
@@ -296,6 +295,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                                 complaintModel.setRemark("");
                                 complaintModel.setCurrentDate("");
                                 complaintModel.setCurrentTime("");
+                                complaintModel.setDistance("");
                                 complaintModel.setDataSavedLocally(false);
 
 

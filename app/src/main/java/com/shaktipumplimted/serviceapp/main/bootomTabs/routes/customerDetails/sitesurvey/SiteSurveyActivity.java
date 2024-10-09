@@ -228,6 +228,7 @@ public class SiteSurveyActivity extends AppCompatActivity implements ImageSelect
             } else {
                 Intent i_display_image = new Intent(SiteSurveyActivity.this, PhotoViewerActivity.class);
                 i_display_image.putExtra(Constant.imagePath, imageArrayList.get(selectedIndex).getImagePath());
+                i_display_image.putExtra(Constant.Images,"0");
                 startActivity(i_display_image);
             }
         });
