@@ -44,6 +44,7 @@ public class Constant {
     public static final String markAttendance = "markAttendance";
     public static final String APICALL = "apiCall";
     public static final String localConveyance = "localConveyance";
+    public static final String OffrollClosure = "offrollClosure";
 
     /*------------------------------------data transfer Keys---------------------------------------*/
     public static String imagePath = "image";
@@ -74,4 +75,5 @@ public class Constant {
     public static String controller = "CONTROLLER";
     public static String pump_motor = "PUMP&MOTOR";
     public static String motor_controller = "MOT&CONT";
+
 }

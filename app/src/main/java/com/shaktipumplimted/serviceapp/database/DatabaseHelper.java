@@ -157,6 +157,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_CMP_REMARK = "complaint_remark";
     public static final String KEY_CURRENT_DATE = "current_date";
     public static final String KEY_CURRENT_TIME = "current_time";
+    public static final String KEY_DISTANCE = "distance";
 
     public static final String KEY_DATA_SAVED_LOCALLY = "data_saved_locally";
 
@@ -334,6 +335,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_CMP_REMARK + " TEXT,"
             + KEY_CURRENT_DATE + " TEXT,"
             + KEY_CURRENT_TIME + " TEXT,"
+            + KEY_DISTANCE + " TEXT,"
             + KEY_DATA_SAVED_LOCALLY + " TEXT)";
 
 
@@ -770,6 +772,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_CMP_REMARK, complaintListModel.getRemark());
         contentValues.put(KEY_CURRENT_DATE, complaintListModel.getCurrentDate());
         contentValues.put(KEY_CURRENT_TIME, complaintListModel.getCurrentTime());
+        contentValues.put(KEY_DISTANCE, complaintListModel.getDistance());
         contentValues.put(KEY_DATA_SAVED_LOCALLY, String.valueOf(complaintListModel.isDataSavedLocally()));
 
         database.insert(TABLE_COMPLAINT_DATA, null, contentValues);
@@ -815,6 +818,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_CMP_REMARK, complaintListModel.getRemark());
         contentValues.put(KEY_CURRENT_DATE, complaintListModel.getCurrentDate());
         contentValues.put(KEY_CURRENT_TIME, complaintListModel.getCurrentTime());
+        contentValues.put(KEY_DISTANCE, complaintListModel.getDistance());
 
         contentValues.put(KEY_DATA_SAVED_LOCALLY, String.valueOf(complaintListModel.isDataSavedLocally()));
 
@@ -881,6 +885,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     complaintModel.setRemark(mcursor.getString(mcursor.getColumnIndex(KEY_CMP_REMARK)));
                     complaintModel.setCurrentDate(mcursor.getString(mcursor.getColumnIndex(KEY_CURRENT_DATE)));
                     complaintModel.setCurrentTime(mcursor.getString(mcursor.getColumnIndex(KEY_CURRENT_TIME)));
+                    complaintModel.setDistance(mcursor.getString(mcursor.getColumnIndex(KEY_DISTANCE)));
                     complaintModel.setDataSavedLocally(Boolean.parseBoolean(mcursor.getString(mcursor.getColumnIndex(KEY_DATA_SAVED_LOCALLY))));
                     complaintModelList.add(complaintModel);
                 }

@@ -290,6 +290,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                                 complaintModel.setRemark("");
                                 complaintModel.setCurrentDate("");
                                 complaintModel.setCurrentTime("");
+                                complaintModel.setDistance("");
                                 complaintModel.setDataSavedLocally(false);
 
 

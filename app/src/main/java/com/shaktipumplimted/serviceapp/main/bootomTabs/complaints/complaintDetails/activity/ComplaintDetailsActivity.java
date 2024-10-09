@@ -636,6 +636,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         complaintModel.setRemark(remarkTxt.getText().toString().trim());
         complaintModel.setCurrentDate(Utility.getFormattedDate("dd.MM.yyyy", "yyyyMMdd", Utility.getCurrentDate()));
         complaintModel.setCurrentTime(Utility.getFormattedTime("hh:mm a", "HHmmss", Utility.getCurrentTime()));
+        complaintModel.setDistance(complaintListModel.getDistance());
         complaintModel.setDataSavedLocally(true);
         databaseHelper.updateComplaintDetailsData(complaintModel);
 

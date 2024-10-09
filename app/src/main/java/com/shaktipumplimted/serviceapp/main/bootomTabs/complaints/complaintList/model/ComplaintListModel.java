@@ -164,6 +164,14 @@ public class ComplaintListModel implements Serializable {
                 pumpSrNo, motorSrNo,controllerSrNo,remark,currentDate,currentTime;
         private  boolean isDataSavedLocally;
 
+        public String getDistance() {
+            return distance;
+        }
+
+        public void setDistance(String distance) {
+            this.distance = distance;
+        }
+
         public String getCaddress() {
             return caddress;
         }
@@ -687,7 +695,8 @@ public class ComplaintListModel implements Serializable {
                     ", remark='" + remark + '\'' +
                     ", currentDate='" + currentDate + '\'' +
                     ", currentTime='" + currentTime + '\'' +
-                    ", isDataSavedLocally='" + isDataSavedLocally + '\'' +
+                    ", distance='" + distance + '\'' +
+                    ", isDataSavedLocally=" + isDataSavedLocally +
                     '}';
         }
     }

@@ -235,6 +235,15 @@
     <string name="pls_fill_dsr_entry">Please fill DSR entry first</string>
     <string name="closecomplaints">Closing Complaints</string>
     <string name="approved">Approved</string>
+    <string name="others">Others</string>
+    <string name="old_prd_srnr">Old product serial number</string>
+    <string name="site_error_defect">Site error/defect image</string>
+    <string name="discharge_img">Discharge image</string>
+    <string name="site_image_farmer_img">Site image/Farmer image</string>
+    <string name="fir_field">FIR for field</string>
+    <string name="cust_form">Customer satisfaction form</string>
+    <string name="approval_img">Approval image</string>
+    <string name="CMC">CMC</string>
 
     <string-array name="login_type_array">
         <item>@string/select_login_type</item>

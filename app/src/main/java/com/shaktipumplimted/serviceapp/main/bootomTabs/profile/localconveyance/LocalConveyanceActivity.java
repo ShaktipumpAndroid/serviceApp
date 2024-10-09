@@ -361,16 +361,15 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             endAddressLayout.setVisibility(View.VISIBLE);
             travelModeLayout.setVisibility(View.VISIBLE);
             distanceLayout.setVisibility(View.VISIBLE);
-            startLocImg.setVisibility(View.GONE);
+            startLocImg.setVisibility(View.VISIBLE);
 
             startLatitudeExt.setText(response.getStartLatitude());
             startLongitudeExt.setText(response.getStartLongitude());
             startAddressExt.setText(response.getStartAddress());
             endLatitudeExt.setText(response.getEndLatitude());
             endLongitudeExt.setText(response.getEndLongitude());
-            endAddressExt.setText(response.getEndAddress());
+            endAddressExt.setText(Utility.getAddressFromLatLng(getApplicationContext(),response.getEndLatitude(),response.getEndLongitude()));
             distanceEdt.setText(distance);
-            endAddressExt.setText(response.getEndAddress());
             if(response.getTravelMode()!=null && !response.getTravelMode().isEmpty()){
                 travelModeEdt.setEnabled(false);
                 travelModeEdt.setText(response.getTravelMode());
