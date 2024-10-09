@@ -61,6 +61,10 @@ public class UploadImageAPIS {
                 new syncData(jsonArray, APIS.BASEURL + APIS.LOCAL_CONVEYANCE + "?token="
                         + Utility.getSharedPreferences(mContext, Constant.accessToken), "data", callBack).execute();
                 break;
+            case Constant.OffrollClosure:
+                new syncData(jsonArray, APIS.BASEURL + APIS.FREELANCER_CLOSURE + "?token="
+                        + Utility.getSharedPreferences(mContext, Constant.accessToken), "data", callBack).execute();
+                break;
         }
 
     }

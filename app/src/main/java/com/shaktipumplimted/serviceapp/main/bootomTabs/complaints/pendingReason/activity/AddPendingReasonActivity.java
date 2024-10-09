@@ -342,6 +342,7 @@ public class AddPendingReasonActivity extends AppCompatActivity implements View.
             } else {
                 Intent i_display_image = new Intent(AddPendingReasonActivity.this, PhotoViewerActivity.class);
                 i_display_image.putExtra(Constant.imagePath, imageArrayList.get(selectedIndex).getImagePath());
+                i_display_image.putExtra(Constant.Images, "0");
                 startActivity(i_display_image);
             }
         });

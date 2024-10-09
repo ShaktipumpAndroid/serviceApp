@@ -362,6 +362,7 @@ public class CheckOutActivity extends AppCompatActivity implements ImageSelectio
             } else {
                 Intent i_display_image = new Intent(CheckOutActivity.this, PhotoViewerActivity.class);
                 i_display_image.putExtra(Constant.imagePath, imageArrayList.get(selectedIndex).getImagePath());
+                i_display_image.putExtra(Constant.Images,"0");
                 startActivity(i_display_image);
             }
         });

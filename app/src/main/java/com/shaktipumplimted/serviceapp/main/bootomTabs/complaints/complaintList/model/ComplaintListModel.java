@@ -116,10 +116,19 @@ public class ComplaintListModel implements Serializable {
         @Expose
         private String currentStatus;
 
+
         private String currentLat, currentLng, customerPay,
                 companyPay,focAmount,returnByCompany,payToFreelancer,
-                pumpSrNo, motorSrNo,controllerSrNo,category,closureReason,defectType,relatedTo,remark,currentDate,currentTime;
+                pumpSrNo, motorSrNo,controllerSrNo,category,closureReason,defectType,relatedTo,remark,currentDate,currentTime, distance;
         private  boolean isDataSavedLocally;
+
+        public String getDistance() {
+            return distance;
+        }
+
+        public void setDistance(String distance) {
+            this.distance = distance;
+        }
 
         public String getCaddress() {
             return caddress;
@@ -621,7 +630,8 @@ public class ComplaintListModel implements Serializable {
                     ", remark='" + remark + '\'' +
                     ", currentDate='" + currentDate + '\'' +
                     ", currentTime='" + currentTime + '\'' +
-                    ", isDataSavedLocally='" + isDataSavedLocally + '\'' +
+                    ", distance='" + distance + '\'' +
+                    ", isDataSavedLocally=" + isDataSavedLocally +
                     '}';
         }
     }
