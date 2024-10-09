@@ -74,12 +74,12 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     Toolbar toolbar;
     TextInputEditText complaintNo, customerName, customerMobileNo, customerAddress, materialCodeTxt, materialNameTxt,
             serialNoTxt, billNoTxt, billDateTxt, customerPayExt, companyPayExt, focAmountExt, returnByCompanyExt, payToFreelancerExt, remarkTxt;
-    TextView pumpSerialTxt, motorSerialTxt, controllerSerialTxt,approvedCompBtn;
+    TextView pumpSerialTxt, motorSerialTxt, controllerSerialTxt, approvedCompBtn;
     Spinner categorySpinner, closureReasonSpinner, defectTypeSpinner, complaintRelatedToSpinner;
     ImageView pumpScanBtn, motorScanBtn, controllerScanBtn;
     LinearLayout pendingReasonBtn, forwardForApprovalBtn, forwardComplaintBtn, closeComplaintBtn,
             pendingReasonBtn2, forwardForApprovalBtn2, forwardComplaintBtn2,
-            pumpLinear, motorLinear, controllerLinear, bottomLinear,bottomLinear1,bottomLinear2,bottomLinear3, categoryLinear, closeReasonLinear, defectLinear, complaintRelatedToLinear;
+            pumpLinear, motorLinear, controllerLinear, bottomLinear, bottomLinear1, bottomLinear2, bottomLinear3, categoryLinear, closeReasonLinear, defectLinear, complaintRelatedToLinear;
 
     GmsBarcodeScannerOptions options;
     GmsBarcodeScanner scanner;
@@ -219,9 +219,9 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
             billDateTxt.setText(complaintListModel.getFkdat());
 
 
-            if (complaintListModel.getStatus().equals(Constant.CLOSURE_COMPLAINTS)||
-                    complaintListModel.getStatus().equals(Constant.PENDING_FOR_CLOSURE)||
-                    complaintListModel.getStatus().equals(Constant.PENDING_FOR_APPROVAL)||
+            if (complaintListModel.getStatus().equals(Constant.CLOSURE_COMPLAINTS) ||
+                    complaintListModel.getStatus().equals(Constant.PENDING_FOR_CLOSURE) ||
+                    complaintListModel.getStatus().equals(Constant.PENDING_FOR_APPROVAL) ||
                     complaintListModel.getStatus().equals(Constant.APROPVED_COMPLAINTS)) {
                 customerPayExt.setText(complaintListModel.getCustomerPay());
                 companyPayExt.setText(complaintListModel.getCompanyPay());
@@ -242,7 +242,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                     closureReasonSpinner.setSelection(Utility.selectedPosition(complaintClosureList, selectedClosureReason));
                     closureReasonSpinner.setEnabled(false);
 
-                }else {
+                } else {
                     closeReasonLinear.setVisibility(View.GONE);
                 }
                 if (complaintListModel.getCategory() != null && !complaintListModel.getCategory().isEmpty()) {
@@ -250,14 +250,14 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                     defectTypeSpinner.setSelection(Utility.selectedPosition(complaintDefectList, selectedDefect));
                     defectTypeSpinner.setEnabled(false);
 
-                }else {
+                } else {
                     defectLinear.setVisibility(View.GONE);
                 }
                 if (complaintListModel.getCategory() != null && !complaintListModel.getCategory().isEmpty()) {
                     selectedComplaintRelated = complaintListModel.getRelatedTo();
                     complaintRelatedToSpinner.setSelection(Utility.selectedPosition(complaintRelatedToList, selectedComplaintRelated));
                     complaintRelatedToSpinner.setEnabled(false);
-                }else {
+                } else {
                     complaintRelatedToLinear.setVisibility(View.GONE);
                 }
 
@@ -267,16 +267,16 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
                 if (complaintListModel.getStatus().equals(Constant.CLOSURE_COMPLAINTS)) {
                     bottomLinear.setVisibility(View.GONE);
-                }else if(complaintListModel.getStatus().equals(Constant.PENDING_FOR_APPROVAL)){
+                } else if (complaintListModel.getStatus().equals(Constant.PENDING_FOR_APPROVAL)) {
                     bottomLinear1.setVisibility(View.GONE);
                     bottomLinear2.setVisibility(View.GONE);
                     bottomLinear3.setVisibility(View.VISIBLE);
-                }else if(complaintListModel.getStatus().equals(Constant.PENDING_FOR_CLOSURE)||complaintListModel.getStatus().equals(Constant.APROPVED_COMPLAINTS)){
+                } else if (complaintListModel.getStatus().equals(Constant.PENDING_FOR_CLOSURE) || complaintListModel.getStatus().equals(Constant.APROPVED_COMPLAINTS)) {
                     bottomLinear1.setVisibility(View.VISIBLE);
                     bottomLinear2.setVisibility(View.GONE);
                     bottomLinear3.setVisibility(View.GONE);
                 }
-            }else {
+            } else {
                 bottomLinear1.setVisibility(View.GONE);
                 bottomLinear2.setVisibility(View.VISIBLE);
                 bottomLinear3.setVisibility(View.GONE);
@@ -448,10 +448,68 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                 break;
 
             case R.id.approvedCompBtn:
-                
+                if (Utility.isInternetOn(getApplicationContext())) {
+                    Validation(3);
+
+                } else {
+                    Utility.ShowToast(getResources().getString(R.string.checkInternetConnection), getApplicationContext());
+                }
                 break;
         }
 
+    }
+
+    private void saveApproval() {
+        Utility.showProgressDialogue(this);
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonObject.put("rm_code", Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonName));
+            jsonObject.put("pend_apr_remark", remarkTxt.getText().toString().trim());
+            jsonObject.put("cmpno", complaintNo);
+            jsonObject.put("CUSAMT", customerPayExt.getText().toString().trim());
+            jsonObject.put("app_den_status", "APPROVED");
+            jsonObject.put("FOCAMT", focAmountExt.getText().toString().trim());
+            jsonObject.put("COMAMT", companyPayExt.getText().toString().trim());
+            jsonObject.put("PAY_TO_FREELANCER", payToFreelancerExt.getText().toString().trim());
+            jsonObject.put("RE_COMP", returnByCompanyExt.getText().toString().trim());
+
+            jsonArray.put(jsonObject);
+
+            Log.e("jsonArray====>", jsonArray.toString());
+            Call<CommonRespModel> call3 = apiInterface.saveApprovalApi(Utility.getSharedPreferences(this, Constant.accessToken), jsonArray.toString());
+            call3.enqueue(new Callback<CommonRespModel>() {
+                @Override
+                public void onResponse(@NonNull Call<CommonRespModel> call, @NonNull Response<CommonRespModel> response) {
+                    Utility.hideProgressDialogue();
+                    if (response.isSuccessful()) {
+                        CommonRespModel commonRespModel = response.body();
+                        if (commonRespModel.getStatus().equals(Constant.TRUE)) {
+                            databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_COMPLAINT_DATA, DatabaseHelper.KEY_COMPLAINT_NUMBER, complaintListModel.getCmpno());
+                            Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            intent.putExtra(Constant.APICALL, Constant.TRUE);
+                            startActivity(intent);
+                            finish();
+                        } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
+                            Utility.hideProgressDialogue();
+                            Utility.ShowToast(getResources().getString(R.string.something_went_wrong), getApplicationContext());
+                        } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {
+                            Utility.logout(getApplicationContext());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<CommonRespModel> call, @NonNull Throwable t) {
+                    call.cancel();
+                    Utility.hideProgressDialogue();
+                    Log.e("Error====>", t.getMessage().toString().trim());
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /*--------------------------------------------onItemSelected-------------------------------------------------------*/
@@ -522,13 +580,13 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
             case 2:
                 if (customerPayExt.getText().toString().trim().isEmpty()) {
                     Utility.ShowToast(getResources().getString(R.string.enter_customer_pay), getApplicationContext());
-                }else if (companyPayExt.getText().toString().trim().isEmpty()) {
+                } else if (companyPayExt.getText().toString().trim().isEmpty()) {
                     Utility.ShowToast(getResources().getString(R.string.enter_company_pay), getApplicationContext());
-                }else if (focAmountExt.getText().toString().trim().isEmpty()) {
+                } else if (focAmountExt.getText().toString().trim().isEmpty()) {
                     Utility.ShowToast(getResources().getString(R.string.enter_foc_amt), getApplicationContext());
-                }else if (returnByCompanyExt.getText().toString().trim().isEmpty()) {
+                } else if (returnByCompanyExt.getText().toString().trim().isEmpty()) {
                     Utility.ShowToast(getResources().getString(R.string.enter_return_company), getApplicationContext());
-                }else if (payToFreelancerExt.getText().toString().trim().isEmpty()) {
+                } else if (payToFreelancerExt.getText().toString().trim().isEmpty()) {
                     Utility.ShowToast(getResources().getString(R.string.payToFreelancer), getApplicationContext());
                 } else if (returnByCompanyExt.getText().toString().trim().isEmpty()) {
                     Utility.ShowToast(getResources().getString(R.string.enter_return_company), getApplicationContext());
@@ -593,6 +651,24 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                 }
 
                 break;
+
+            case 3:
+                if (customerPayExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_customer_pay), getApplicationContext());
+                } else if (companyPayExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_company_pay), getApplicationContext());
+                } else if (focAmountExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_foc_amt), getApplicationContext());
+                } else if (returnByCompanyExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.enter_return_company), getApplicationContext());
+                } else if (payToFreelancerExt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.payToFreelancer), getApplicationContext());
+                } else if (remarkTxt.getText().toString().trim().isEmpty()) {
+                    Utility.ShowToast(getResources().getString(R.string.CustomerCommentClosureRemark), getApplicationContext());
+                } else{
+                    saveApproval();
+                }
+                break;
         }
 
     }
@@ -643,10 +719,10 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
         if (Utility.isInternetOn(getApplicationContext())) {
             closeComplaintAPI(complaintModel);
-        }else {
+        } else {
             Utility.ShowToast(getResources().getString(R.string.dataSavedLocally), getApplicationContext());
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            intent.putExtra(Constant.APICALL,Constant.TRUE);
+            intent.putExtra(Constant.APICALL, Constant.TRUE);
             startActivity(intent);
             finish();
         }
@@ -691,7 +767,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                             databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_COMPLAINT_DATA, DatabaseHelper.KEY_COMPLAINT_NUMBER, complaintListModel.getCmpno());
                             Utility.ShowToast(commonRespModel.getMessage(), getApplicationContext());
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                            intent.putExtra(Constant.APICALL,Constant.TRUE);
+                            intent.putExtra(Constant.APICALL, Constant.TRUE);
                             startActivity(intent);
                             finish();
                         } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
@@ -796,11 +872,12 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
         messageTxt.setText(message);
 
-        okBtn.setOnClickListener(v -> {alertDialog.dismiss();
-            if(Utility.isInternetOn(getApplicationContext())){
-                    complaintForward();
-            }else {
-                Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
+        okBtn.setOnClickListener(v -> {
+            alertDialog.dismiss();
+            if (Utility.isInternetOn(getApplicationContext())) {
+                complaintForward();
+            } else {
+                Utility.ShowToast(getResources().getString(R.string.checkInternetConnection), getApplicationContext());
             }
 
         });
@@ -811,58 +888,58 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
 
     private void complaintForward() {
         try {
-        Utility.showProgressDialogue(this);
-        JSONArray jsonArray = new JSONArray();
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmpno",complaintListModel.getCmpno());
-        jsonObject.put("category",selectedCategory);
-        jsonObject.put("customer",customerPayExt.getText().toString().trim());
-        jsonObject.put("company",companyPayExt.getText().toString().trim());
-        jsonObject.put("pay_freelancer",payToFreelancerExt.getText().toString().trim());
-        jsonObject.put("re_comp",returnByCompanyExt.getText().toString().trim());
-        jsonObject.put("defect",selectedDefect);
-        jsonObject.put("relt_to",selectedComplaintRelated);
-        jsonObject.put("foc_amt",focAmountExt.getText().toString().trim());
-        jsonObject.put("pend_apr_pernr",Utility.getSharedPreferences(getApplicationContext(), Constant.userID));
-        jsonObject.put("await_apr_pernr",Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId));
-        jsonObject.put("await_apr_remark",remarkTxt.getText().toString().trim());
+            Utility.showProgressDialogue(this);
+            JSONArray jsonArray = new JSONArray();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmpno", complaintListModel.getCmpno());
+            jsonObject.put("category", selectedCategory);
+            jsonObject.put("customer", customerPayExt.getText().toString().trim());
+            jsonObject.put("company", companyPayExt.getText().toString().trim());
+            jsonObject.put("pay_freelancer", payToFreelancerExt.getText().toString().trim());
+            jsonObject.put("re_comp", returnByCompanyExt.getText().toString().trim());
+            jsonObject.put("defect", selectedDefect);
+            jsonObject.put("relt_to", selectedComplaintRelated);
+            jsonObject.put("foc_amt", focAmountExt.getText().toString().trim());
+            jsonObject.put("pend_apr_pernr", Utility.getSharedPreferences(getApplicationContext(), Constant.userID));
+            jsonObject.put("await_apr_pernr", Utility.getSharedPreferences(getApplicationContext(), Constant.reportingPersonSapId));
+            jsonObject.put("await_apr_remark", remarkTxt.getText().toString().trim());
 
-        jsonArray.put(jsonObject);
+            jsonArray.put(jsonObject);
 
-        Log.e("jsonArray===>",jsonArray.toString());
-        Call<CommonRespModel> call3 = apiInterface.complaintForwardApproval(Utility.getSharedPreferences(this, Constant.accessToken), jsonArray.toString());
-        call3.enqueue(new Callback<CommonRespModel>() {
-            @Override
-            public void onResponse(@NonNull Call<CommonRespModel> call, @NonNull Response<CommonRespModel> response) {
-                Utility.hideProgressDialogue();
-                if (response.isSuccessful()) {
-                    CommonRespModel commonRespModel = response.body();
+            Log.e("jsonArray===>", jsonArray.toString());
+            Call<CommonRespModel> call3 = apiInterface.complaintForwardApproval(Utility.getSharedPreferences(this, Constant.accessToken), jsonArray.toString());
+            call3.enqueue(new Callback<CommonRespModel>() {
+                @Override
+                public void onResponse(@NonNull Call<CommonRespModel> call, @NonNull Response<CommonRespModel> response) {
+                    Utility.hideProgressDialogue();
+                    if (response.isSuccessful()) {
+                        CommonRespModel commonRespModel = response.body();
 
-                    if (commonRespModel.getStatus().equals(Constant.TRUE)) {
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.putExtra(Constant.APICALL,Constant.TRUE);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
+                        if (commonRespModel.getStatus().equals(Constant.TRUE)) {
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            intent.putExtra(Constant.APICALL, Constant.TRUE);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
 
-                    } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
-                        Utility.hideProgressDialogue();
-                        Utility.ShowToast(getResources().getString(R.string.something_went_wrong), ComplaintDetailsActivity.this);
-                    } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {
-                        Utility.logout(getApplicationContext());
+                        } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
+                            Utility.hideProgressDialogue();
+                            Utility.ShowToast(getResources().getString(R.string.something_went_wrong), ComplaintDetailsActivity.this);
+                        } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {
+                            Utility.logout(getApplicationContext());
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<CommonRespModel> call, @NonNull Throwable t) {
-                call.cancel();
-                Utility.hideProgressDialogue();
-                Log.e("Error====>", t.getMessage().toString().trim());
+                @Override
+                public void onFailure(@NonNull Call<CommonRespModel> call, @NonNull Throwable t) {
+                    call.cancel();
+                    Utility.hideProgressDialogue();
+                    Log.e("Error====>", t.getMessage().toString().trim());
 
-            }
-        });
-        }catch (Exception e){
+                }
+            });
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -885,7 +962,7 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         switch (item.getItemId()) {
             case R.id.navigation_view_photo:
                 Intent intent = new Intent(getApplicationContext(), ComplaintPhotoListActivity.class);
-                intent.putExtra(Constant.complaintData,complaintListModel);
+                intent.putExtra(Constant.complaintData, complaintListModel);
                 startActivity(intent);
                 return true;
 

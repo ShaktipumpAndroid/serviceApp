@@ -39,6 +39,7 @@ public class APIS {
 
     public static final String TRAVEL_REPORT = "travel_report_api.htm";
     public static final String GATEPASS_REPORT ="gatepass_report_api.htm";
+    public static final String SAVE_APPROVAL ="save_complain_approval.htm";
 
     //Send OTP API
     public static final String sendVerificationOtpAPI = "sendhttp.php?authkey=393770756d707334373701";

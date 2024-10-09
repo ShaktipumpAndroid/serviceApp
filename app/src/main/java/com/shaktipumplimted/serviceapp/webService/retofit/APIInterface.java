@@ -99,6 +99,10 @@ public interface APIInterface {
     @GET(APIS.GATEPASS_REPORT)
     Call<GatePassReportModel> getGatePassReport(@Query("token") String token);
 
+
+    @GET(APIS.SAVE_APPROVAL)
+    Call<CommonRespModel> saveApprovalApi(@Query("token") String token, @Query("Save_final_approval") String data);
+
 }
 
 
