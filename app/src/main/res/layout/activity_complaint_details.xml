@@ -529,6 +529,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/categoryLinear"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
@@ -559,6 +560,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/closeReasonLinear"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
@@ -589,6 +591,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/defectLinear"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
@@ -619,10 +622,10 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/complaintRelatedToLinear"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
-
                     android:orientation="vertical">
 
                     <TextView
@@ -643,7 +646,6 @@
                             android:id="@+id/complaintRelatedToSpinner"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-
                             android:padding="@dimen/_10sdp" />
                     </RelativeLayout>
 
@@ -684,132 +686,273 @@
         android:id="@+id/bottomLinear"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_45sdp"
+        android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="@dimen/_10sdp"
-        android:background="@color/colorPrimary"
-        android:orientation="horizontal"
-        android:weightSum="4">
+        android:background="@color/colorPrimary">
 
         <LinearLayout
-            android:id="@+id/pendingReasonBtn"
+            android:id="@+id/bottomLinear1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:visibility="visible"
+            android:weightSum="4">
 
-            <ImageView
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:src="@mipmap/pending_reason" />
-
-            <TextView
+            <LinearLayout
+                android:id="@+id/pendingReasonBtn"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="monospace"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/pending_reason"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_8sdp" />
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@mipmap/pending_reason" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="monospace"
+                    android:gravity="center"
+                    android:text="@string/pending_reason"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8sdp" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="@dimen/_1sdp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:background="@color/white" />
+
+            <LinearLayout
+                android:id="@+id/forwardForApprovalBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@mipmap/forward_for_approval" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="monospace"
+                    android:gravity="center"
+                    android:text="@string/forward_for_approval"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8sdp" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="@dimen/_1sdp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:background="@color/white" />
+
+            <LinearLayout
+                android:id="@+id/forwardComplaintBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@mipmap/forward_comp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="monospace"
+                    android:gravity="center"
+                    android:text="@string/forward_complaint"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8sdp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="@dimen/_1sdp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:background="@color/white" />
+
+            <LinearLayout
+                android:id="@+id/closeComplaintBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:visibility="visible"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@mipmap/close_comp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="monospace"
+                    android:gravity="center"
+                    android:text="@string/complaint_closed"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8sdp" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
 
-        <View
-            android:layout_width="@dimen/_1sdp"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:background="@color/white" />
-
         <LinearLayout
-            android:id="@+id/forwardForApprovalBtn"
+            android:id="@+id/bottomLinear2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="3">
 
-            <ImageView
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:src="@mipmap/forward_for_approval" />
-
-            <TextView
+            <LinearLayout
+                android:id="@+id/pendingReasonBtn2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="monospace"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/forward_for_approval"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_8sdp" />
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@mipmap/pending_reason" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="monospace"
+                    android:gravity="center"
+                    android:text="@string/pending_reason"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8sdp" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="@dimen/_1sdp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:background="@color/white" />
+
+            <LinearLayout
+                android:id="@+id/forwardForApprovalBtn2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@mipmap/forward_for_approval" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="monospace"
+                    android:gravity="center"
+                    android:text="@string/forward_for_approval"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8sdp" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="@dimen/_1sdp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:background="@color/white" />
+
+            <LinearLayout
+                android:id="@+id/forwardComplaintBtn2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@mipmap/forward_comp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="monospace"
+                    android:gravity="center"
+                    android:text="@string/forward_complaint"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8sdp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="@dimen/_1sdp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:background="@color/white" />
+
+
+
 
         </LinearLayout>
 
-        <View
-            android:layout_width="@dimen/_1sdp"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:background="@color/white" />
-
         <LinearLayout
-            android:id="@+id/forwardComplaintBtn"
+            android:id="@+id/bottomLinear3"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:src="@mipmap/forward_comp" />
+            android:visibility="gone">
 
             <TextView
+                android:id="@+id/approvedCompBtn"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="monospace"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:gravity="center"
-                android:text="@string/forward_complaint"
+                android:text="@string/approved"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_8sdp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="@dimen/_1sdp"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:background="@color/white" />
-
-        <LinearLayout
-            android:id="@+id/closeComplaintBtn"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:src="@mipmap/close_comp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="monospace"
-                android:gravity="center"
-                android:text="@string/complaint_closed"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_8sdp" />
-
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textSize="@dimen/_12sdp"/>
         </LinearLayout>
     </LinearLayout>
+
+
+
+
 
 </RelativeLayout>

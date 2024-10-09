@@ -30,6 +30,7 @@ public class Constant {
     /*--------------------------------------------Complaint Status Key-------------------------------------------------------*/
     public static final String all = "All";
     public static final String REPLY = "REPLY";
+    public static final String COMPLETE = "COMPLETE";
     public static final String PENDING_FOR_CLOSURE = "Pending For Closure";
 
     public static final String PENDING_FOR_APPROVAL = "Pending For Approval";

@@ -4,8 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_grey"
+    android:background="@color/white"
     tools:context=".main.bootomTabs.profile.fragment.ProfileFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardlogo"
@@ -113,11 +120,12 @@
 
             </LinearLayout>
 
+
             <View
+                android:id="@+id/view1"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_1sdp"
                 android:background="@color/gray_color" />
-
 
             <LinearLayout
                 android:id="@+id/dsrEntryLinear"
@@ -168,6 +176,7 @@
             </LinearLayout>
 
             <View
+                android:id="@+id/view2"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_1sdp"
                 android:background="@color/gray_color" />
@@ -356,5 +365,6 @@
         android:textColor="@color/black"
         android:textSize="@dimen/_10sdp" />
 
+    </RelativeLayout>
 
 </RelativeLayout>

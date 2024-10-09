@@ -240,9 +240,6 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
 
     private void getcomplaintList() {
         complaintArrayList = new ArrayList<>();
-
-
-
         complaintStatusArrayList = new ArrayList<>();
 
         Utility.showProgressDialogue(getActivity());
@@ -265,11 +262,9 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                                 complaintModel.setCstname(complaintListModel.getData().get(i).getCstname());
                                 complaintModel.setPernr(complaintListModel.getData().get(i).getPernr());
                                 complaintModel.setEname(complaintListModel.getData().get(i).getEname());
-                                complaintModel.setStatus(complaintListModel.getData().get(i).getStatus());
                                 complaintModel.setMatnr(complaintListModel.getData().get(i).getMatnr());
                                 complaintModel.setMaktx(complaintListModel.getData().get(i).getMaktx());
                                 complaintModel.setVbeln(complaintListModel.getData().get(i).getVbeln());
-
                                 complaintModel.setFkdat(complaintListModel.getData().get(i).getFkdat());
                                 complaintModel.setFwrdTo(complaintListModel.getData().get(i).getFwrdTo());
                                 complaintModel.setFdate(complaintListModel.getData().get(i).getFdate());
@@ -280,26 +275,54 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                                 complaintModel.setCurrentStatus(complaintListModel.getData().get(i).getCurrentStatus());
                                 complaintModel.setCurrentLng("");
                                 complaintModel.setCurrentLng("");
-
-                                complaintModel.setCustomerPay("");
-                                complaintModel.setCompanyPay("");
-                                complaintModel.setFocAmount("");
-                                complaintModel.setReturnByCompany("");
-                                complaintModel.setPayToFreelancer("");
+                                complaintModel.setCustomerPay(complaintListModel.getData().get(i).getCustomerPay());
+                                complaintModel.setCompanyPay(complaintListModel.getData().get(i).getCustomerPay());
+                                complaintModel.setFocAmount(complaintListModel.getData().get(i).getFocAmount());
+                                complaintModel.setReturnByCompany(complaintListModel.getData().get(i).getReturnByCompany());
+                                complaintModel.setPayToFreelancer(complaintListModel.getData().get(i).getPayToFreelancer());
                                 complaintModel.setPumpSrNo("");
                                 complaintModel.setMotorSrNo("");
                                 complaintModel.setControllerSrNo("");
-                                complaintModel.setCategory("");
-                                complaintModel.setClosureReason("");
-                                complaintModel.setDefectType("");
-                                complaintModel.setRelatedTo("");
+                                complaintModel.setCategory(complaintListModel.getData().get(i).getCategory());
+                                complaintModel.setClosureReason(complaintListModel.getData().get(i).getClosureReason());
+                                complaintModel.setDefectType(complaintListModel.getData().get(i).getDefectType());
+                                complaintModel.setRelatedTo(complaintModel.getRelatedTo());
                                 complaintModel.setRemark("");
                                 complaintModel.setCurrentDate("");
                                 complaintModel.setCurrentTime("");
                                 complaintModel.setDataSavedLocally(false);
 
 
+                                if (complaintListModel.getData().get(i).getStatus().equals(Constant.COMPLETE)) {
+
+                                    if (!complaintListModel.getData().get(i).getAwait_apr_pernr().equals(Utility.getSharedPreferences(mContext, Constant.userID))
+                                            &&!complaintListModel.getData().get(i).getPend_apr_pernr().equals(Utility.getSharedPreferences(mContext, Constant.userID))
+                                            &&!complaintListModel.getData().get(i).getApproved().equals("X")) {
+                                        complaintModel.setStatus(Constant.PENDING_FOR_CLOSURE);
+                                    }
+                                    if (complaintListModel.getData().get(i).getPend_apr_pernr().equals(Utility.getSharedPreferences(mContext, Constant.userID))) {
+                                        // Log.e("Pending===>", "true" + "=====>" + complaintListModel.getData().get(i).getCmpno());
+                                        complaintModel.setStatus(Constant.PENDING_FOR_APPROVAL);
+                                    }
+                                    if (complaintListModel.getData().get(i).getAwait_apr_pernr().equals(Utility.getSharedPreferences(mContext, Constant.userID))) {
+                                        // Log.e("awaiting===>", "true" + "=====>" + complaintListModel.getData().get(i).getCmpno());
+                                        complaintModel.setStatus(Constant.AWAITING_FOR_APPROVAL);
+                                    }
+
+                                    if (!complaintListModel.getData().get(i).getApproved().equals("X")) {
+                                        //  Log.e("Approved===>", "true" + "=====>" + complaintListModel.getData().get(i).getCmpno());
+
+                                        complaintModel.setStatus(Constant.APROPVED_COMPLAINTS);
+                                    }
+
+
+                                } else {
+                                    complaintModel.setStatus(complaintListModel.getData().get(i).getStatus());
+                                }
+
+                                if(!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_DATA,DatabaseHelper.KEY_COMPLAINT_NUMBER,complaintListModel.getData().get(i).getCmpno())) {
                                     databaseHelper.insertComplaintDetailsData(complaintModel);
+                                }
                             }
                         }
                         setStatusAdapter();
@@ -346,7 +369,6 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
     }
     private void setComplaintAdapter(String status) {
         complaintArrayList = databaseHelper.getAllComplaintDetailData(status,"false");
-         Log.e("complaintArrayList", String.valueOf(complaintArrayList.toString()));
         if(complaintArrayList.size()>0) {
             noDataFound.setVisibility(View.GONE);
             compList.setVisibility(View.VISIBLE);
@@ -399,23 +421,26 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
 
     @Override
     public void SetOnItemClickListener(ComplaintListModel.Datum response, int position) {
-        if(Utility.isOnRoleApp()) {
-            Intent intent = new Intent(mContext, ComplaintDetailsActivity.class);
-            intent.putExtra(Constant.complaintData, response);
-            startActivity(intent);
-        }else {
-            if (Utility.isFreelancerLogin(mContext)) {
-                if (Utility.isTravelStart(getActivity())) {
-                    Intent intent = new Intent(mContext, ComplaintDetailsOffRoleActivity.class);
-                    intent.putExtra(Constant.complaintData, response);
-                    startActivity(intent);
-                } else {
-                    ShowAlertResponse();
-                }
-            } else {
+
+        if(!response.getStatus().equals(Constant.AWAITING_FOR_APPROVAL)) {
+            if (Utility.isOnRoleApp()) {
                 Intent intent = new Intent(mContext, ComplaintDetailsActivity.class);
                 intent.putExtra(Constant.complaintData, response);
                 startActivity(intent);
+            } else {
+                if (Utility.isFreelancerLogin(mContext)) {
+                    if (Utility.isTravelStart(getActivity())) {
+                        Intent intent = new Intent(mContext, ComplaintDetailsOffRoleActivity.class);
+                        intent.putExtra(Constant.complaintData, response);
+                        startActivity(intent);
+                    } else {
+                        ShowAlertResponse();
+                    }
+                } else {
+                    Intent intent = new Intent(mContext, ComplaintDetailsActivity.class);
+                    intent.putExtra(Constant.complaintData, response);
+                    startActivity(intent);
+                }
             }
         }
     }

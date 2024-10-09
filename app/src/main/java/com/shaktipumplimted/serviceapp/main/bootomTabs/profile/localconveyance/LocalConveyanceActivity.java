@@ -167,18 +167,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
         }
     }
 
-    private void saveTravel(String value, LocalConveyanceModel response) {
-        gpsTracker = new GpsTracker(this);
-        if (checkPermission()) {
-            if (gpsTracker.canGetLocation()) {
-                saveTravelPopup(value, response);
-            } else {
-                gpsTracker.showSettingsAlert();
-            }
-        } else {
-            requestPermission();
-        }
-    }
+
 
 
     private void cameraIntent() {
@@ -324,7 +313,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
         startLocImg.setOnClickListener(this);
 
     }
-    private void saveTravelPopup(String value, LocalConveyanceModel response) {
+    private void saveTravelPopup(LocalConveyanceModel response) {
         LayoutInflater inflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.start_end_popup,
@@ -362,7 +351,7 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
         startLocImg = layout.findViewById(R.id.startLocImg);
         TextView confirmBtn = layout.findViewById(R.id.confirmBtn);
         TextView cancelBtn  = layout.findViewById(R.id.cancelBtn);
-        if(value.equals("3")){
+
             startLatitudeLayout.setHint(getResources().getString(R.string.startLatitude));
             startLongitudeLayout.setHint(getResources().getString(R.string.startLongitude));
             startAddressLayout.setHint(getResources().getString(R.string.startAddress));
@@ -388,17 +377,16 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
             }else {
                 travelModeEdt.requestFocus();
             }
-        }
+
 
         confirmBtn.setOnClickListener(v -> {
             alertDialog.dismiss();
-             if (value.equals("3")) {
                 if(travelModeEdt.getText().toString().isEmpty()){
                     Utility.ShowToast(getResources().getString(R.string.pls_enter_travel_mode),getApplicationContext());
                 }else{
                     saveData(response,travelModeEdt.getText().toString().trim());
                 }
-            }
+
 
         });
 
@@ -586,7 +574,8 @@ public class LocalConveyanceActivity extends AppCompatActivity implements View.O
 
                     distance = String.valueOf(distanceCalculateModel.getRoutes().get(0).getLegs().get(0).getDistance().getText());
                     Log.e("distance2==>", distance);
-                    saveTravel("3",conveyanceModel);
+                    saveTravelPopup(conveyanceModel);
+
                 }
 
             }

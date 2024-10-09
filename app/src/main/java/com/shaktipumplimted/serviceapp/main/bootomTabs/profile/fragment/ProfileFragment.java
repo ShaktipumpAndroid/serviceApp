@@ -24,7 +24,7 @@ import com.shaktipumplimted.serviceapp.webService.extra.Constant;
 
 public class ProfileFragment extends Fragment implements View.OnClickListener {
 
-    View view;
+    View view,view1,view2;
     Context mContext;
     TextView userNameTxt, userEmailTxt, appVersionTxt;
     LinearLayout attendanceLinear, dsrEntryLinear, localConveyanceLinear, reportLinear, logoutLinear;
@@ -64,7 +64,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         localConveyanceLinear = view.findViewById(R.id.localConveyanceLinear);
         reportLinear = view.findViewById(R.id.reportLinear);
         logoutLinear = view.findViewById(R.id.logoutLinear);
-
+        view1 = view.findViewById(R.id.view1);
+        view2 = view.findViewById(R.id.view2);
         try {
              pInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
         }catch (Exception e){
@@ -73,6 +74,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         userNameTxt.setText(Utility.getSharedPreferences(getActivity(), Constant.userName));
         userEmailTxt.setText(Utility.getSharedPreferences(getActivity(), Constant.userEmail));
         appVersionTxt.setText(getResources().getString(R.string.app_version)+" "+pInfo.versionName);
+
+        if(!Utility.isOnRoleApp()){
+            attendanceLinear.setVisibility(View.GONE);
+            dsrEntryLinear.setVisibility(View.GONE);
+            view1.setVisibility(View.GONE);
+            view2.setVisibility(View.GONE);
+        }
     }
 
     @Override

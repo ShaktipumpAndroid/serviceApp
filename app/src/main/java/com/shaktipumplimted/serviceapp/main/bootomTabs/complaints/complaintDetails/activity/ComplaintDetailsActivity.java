@@ -74,10 +74,12 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     Toolbar toolbar;
     TextInputEditText complaintNo, customerName, customerMobileNo, customerAddress, materialCodeTxt, materialNameTxt,
             serialNoTxt, billNoTxt, billDateTxt, customerPayExt, companyPayExt, focAmountExt, returnByCompanyExt, payToFreelancerExt, remarkTxt;
-    TextView pumpSerialTxt, motorSerialTxt, controllerSerialTxt;
+    TextView pumpSerialTxt, motorSerialTxt, controllerSerialTxt,approvedCompBtn;
     Spinner categorySpinner, closureReasonSpinner, defectTypeSpinner, complaintRelatedToSpinner;
     ImageView pumpScanBtn, motorScanBtn, controllerScanBtn;
-    LinearLayout pendingReasonBtn, forwardForApprovalBtn, forwardComplaintBtn, closeComplaintBtn;
+    LinearLayout pendingReasonBtn, forwardForApprovalBtn, forwardComplaintBtn, closeComplaintBtn,
+            pendingReasonBtn2, forwardForApprovalBtn2, forwardComplaintBtn2,
+            pumpLinear, motorLinear, controllerLinear, bottomLinear,bottomLinear1,bottomLinear2,bottomLinear3, categoryLinear, closeReasonLinear, defectLinear, complaintRelatedToLinear;
 
     GmsBarcodeScannerOptions options;
     GmsBarcodeScanner scanner;
@@ -86,11 +88,11 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     DatabaseHelper databaseHelper;
     int scannerCode;
     APIInterface apiInterface;
-    List<SpinnerDataModel> complaintCategoryList  = new ArrayList<>();
-    List<SpinnerDataModel> complaintDefectList  = new ArrayList<>();
-    List<SpinnerDataModel> complaintRelatedToList  = new ArrayList<>();
-    List<SpinnerDataModel> complaintClosureList  = new ArrayList<>();
-    String selectedCategory = "",selectedDefect = "",selectedComplaintRelated = "",selectedClosureReason = "";
+    List<SpinnerDataModel> complaintCategoryList = new ArrayList<>();
+    List<SpinnerDataModel> complaintDefectList = new ArrayList<>();
+    List<SpinnerDataModel> complaintRelatedToList = new ArrayList<>();
+    List<SpinnerDataModel> complaintClosureList = new ArrayList<>();
+    String selectedCategory = "", selectedDefect = "", selectedComplaintRelated = "", selectedClosureReason = "";
     GpsTracker gpsTracker;
 
     @Override
@@ -130,7 +132,6 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         closureReasonSpinner = findViewById(R.id.closureReasonSpinner);
         defectTypeSpinner = findViewById(R.id.defectTypeSpinner);
         complaintRelatedToSpinner = findViewById(R.id.complaintRelatedToSpinner);
-
         pumpScanBtn = findViewById(R.id.pumpScanBtn);
         motorScanBtn = findViewById(R.id.motorScanBtn);
         controllerScanBtn = findViewById(R.id.controllerScanBtn);
@@ -138,6 +139,21 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         forwardForApprovalBtn = findViewById(R.id.forwardForApprovalBtn);
         forwardComplaintBtn = findViewById(R.id.forwardComplaintBtn);
         closeComplaintBtn = findViewById(R.id.closeComplaintBtn);
+        pendingReasonBtn2 = findViewById(R.id.pendingReasonBtn2);
+        forwardForApprovalBtn2 = findViewById(R.id.forwardForApprovalBtn2);
+        forwardComplaintBtn2 = findViewById(R.id.forwardComplaintBtn2);
+        pumpLinear = findViewById(R.id.pumpLinear);
+        motorLinear = findViewById(R.id.motorLinear);
+        controllerLinear = findViewById(R.id.controllerLinear);
+        bottomLinear = findViewById(R.id.bottomLinear);
+        bottomLinear1 = findViewById(R.id.bottomLinear1);
+        bottomLinear2 = findViewById(R.id.bottomLinear2);
+        bottomLinear3 = findViewById(R.id.bottomLinear3);
+        categoryLinear = findViewById(R.id.categoryLinear);
+        closeReasonLinear = findViewById(R.id.closeReasonLinear);
+        defectLinear = findViewById(R.id.defectLinear);
+        complaintRelatedToLinear = findViewById(R.id.complaintRelatedToLinear);
+        approvedCompBtn = findViewById(R.id.approvedCompBtn);
 
 
         setSupportActionBar(toolbar);
@@ -164,6 +180,11 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         forwardForApprovalBtn.setOnClickListener(this);
         forwardComplaintBtn.setOnClickListener(this);
         closeComplaintBtn.setOnClickListener(this);
+
+        pendingReasonBtn2.setOnClickListener(this);
+        forwardForApprovalBtn2.setOnClickListener(this);
+        forwardComplaintBtn2.setOnClickListener(this);
+        approvedCompBtn.setOnClickListener(this);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         categorySpinner.setOnItemSelectedListener(this);
@@ -197,25 +218,68 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
             billNoTxt.setText(complaintListModel.getVbeln());
             billDateTxt.setText(complaintListModel.getFkdat());
 
-            if(complaintListModel.isDataSavedLocally()){
+
+            if (complaintListModel.getStatus().equals(Constant.CLOSURE_COMPLAINTS)||
+                    complaintListModel.getStatus().equals(Constant.PENDING_FOR_CLOSURE)||
+                    complaintListModel.getStatus().equals(Constant.PENDING_FOR_APPROVAL)||
+                    complaintListModel.getStatus().equals(Constant.APROPVED_COMPLAINTS)) {
                 customerPayExt.setText(complaintListModel.getCustomerPay());
                 companyPayExt.setText(complaintListModel.getCompanyPay());
                 focAmountExt.setText(complaintListModel.getFocAmount());
                 returnByCompanyExt.setText(complaintListModel.getReturnByCompany());
                 payToFreelancerExt.setText(complaintListModel.getPayToFreelancer());
-                pumpSerialTxt.setText(complaintListModel.getPumpSrNo());
-                motorSerialTxt.setText(complaintListModel.getMotorSrNo());
-                controllerSerialTxt.setText(complaintListModel.getControllerSrNo());
                 remarkTxt.setText(complaintListModel.getRemark());
 
-                selectedCategory = complaintListModel.getCategory();
-                selectedClosureReason = complaintListModel.getClosureReason();
-                selectedDefect = complaintListModel.getDefectType();
-                selectedComplaintRelated = complaintListModel.getRelatedTo();
-                categorySpinner.setSelection(Utility.selectedPosition(complaintCategoryList, selectedCategory));
-                closureReasonSpinner.setSelection(Utility.selectedPosition(complaintClosureList, selectedClosureReason));
-                defectTypeSpinner.setSelection(Utility.selectedPosition(complaintDefectList, selectedDefect));
-                complaintRelatedToSpinner.setSelection(Utility.selectedPosition(complaintRelatedToList, selectedComplaintRelated));
+                if (complaintListModel.getCategory() != null && !complaintListModel.getCategory().isEmpty()) {
+                    selectedCategory = complaintListModel.getCategory();
+                    categorySpinner.setSelection(Utility.selectedPosition(complaintCategoryList, selectedCategory));
+                    categorySpinner.setEnabled(false);
+                } else {
+                    categoryLinear.setVisibility(View.GONE);
+                }
+                if (complaintListModel.getCategory() != null && !complaintListModel.getCategory().isEmpty()) {
+                    selectedClosureReason = complaintListModel.getClosureReason();
+                    closureReasonSpinner.setSelection(Utility.selectedPosition(complaintClosureList, selectedClosureReason));
+                    closureReasonSpinner.setEnabled(false);
+
+                }else {
+                    closeReasonLinear.setVisibility(View.GONE);
+                }
+                if (complaintListModel.getCategory() != null && !complaintListModel.getCategory().isEmpty()) {
+                    selectedDefect = complaintListModel.getDefectType();
+                    defectTypeSpinner.setSelection(Utility.selectedPosition(complaintDefectList, selectedDefect));
+                    defectTypeSpinner.setEnabled(false);
+
+                }else {
+                    defectLinear.setVisibility(View.GONE);
+                }
+                if (complaintListModel.getCategory() != null && !complaintListModel.getCategory().isEmpty()) {
+                    selectedComplaintRelated = complaintListModel.getRelatedTo();
+                    complaintRelatedToSpinner.setSelection(Utility.selectedPosition(complaintRelatedToList, selectedComplaintRelated));
+                    complaintRelatedToSpinner.setEnabled(false);
+                }else {
+                    complaintRelatedToLinear.setVisibility(View.GONE);
+                }
+
+                pumpLinear.setVisibility(View.GONE);
+                motorLinear.setVisibility(View.GONE);
+                controllerLinear.setVisibility(View.GONE);
+
+                if (complaintListModel.getStatus().equals(Constant.CLOSURE_COMPLAINTS)) {
+                    bottomLinear.setVisibility(View.GONE);
+                }else if(complaintListModel.getStatus().equals(Constant.PENDING_FOR_APPROVAL)){
+                    bottomLinear1.setVisibility(View.GONE);
+                    bottomLinear2.setVisibility(View.GONE);
+                    bottomLinear3.setVisibility(View.VISIBLE);
+                }else if(complaintListModel.getStatus().equals(Constant.PENDING_FOR_CLOSURE)||complaintListModel.getStatus().equals(Constant.APROPVED_COMPLAINTS)){
+                    bottomLinear1.setVisibility(View.VISIBLE);
+                    bottomLinear2.setVisibility(View.GONE);
+                    bottomLinear3.setVisibility(View.GONE);
+                }
+            }else {
+                bottomLinear1.setVisibility(View.GONE);
+                bottomLinear2.setVisibility(View.VISIBLE);
+                bottomLinear3.setVisibility(View.GONE);
             }
 
 
@@ -350,17 +414,21 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                 break;
 
             case R.id.pendingReasonBtn:
+            case R.id.pendingReasonBtn2:
                 Intent intent = new Intent(this, PendingReasonListActivity.class);
                 intent.putExtra(Constant.complaintData, complaintListModel);
                 startActivity(intent);
                 break;
 
+
             case R.id.forwardForApprovalBtn:
+            case R.id.forwardForApprovalBtn2:
                 Validation(1);
 
                 break;
 
             case R.id.forwardComplaintBtn:
+            case R.id.forwardComplaintBtn2:
                 Intent intent1 = new Intent(this, ComplaintForwardActivity.class);
                 intent1.putExtra(Constant.complaintData, complaintListModel);
                 startActivity(intent1);
@@ -377,6 +445,10 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
                     requestPermission();
                 }
 
+                break;
+
+            case R.id.approvedCompBtn:
+                
                 break;
         }
 

@@ -116,9 +116,52 @@ public class ComplaintListModel implements Serializable {
         @Expose
         private String currentStatus;
 
-        private String currentLat, currentLng, customerPay,
-                companyPay,focAmount,returnByCompany,payToFreelancer,
-                pumpSrNo, motorSrNo,controllerSrNo,category,closureReason,defectType,relatedTo,remark,currentDate,currentTime;
+        @SerializedName("approved")
+        @Expose
+        private String approved;
+
+        @SerializedName("await_apr_pernr")
+        @Expose
+        private String await_apr_pernr;
+
+        @SerializedName("pend_apr_pernr")
+        @Expose
+        private String pend_apr_pernr;
+
+        @SerializedName("beneficiary")
+        @Expose
+        private String beneficiary;
+        @SerializedName("cusamt")
+        @Expose
+        private String customerPay;
+        @SerializedName("focamt")
+        @Expose
+        private String focAmount;
+        @SerializedName("comamt")
+        @Expose
+        private String companyPay;
+        @SerializedName("pay_to_freelancer")
+        @Expose
+        private String payToFreelancer;
+        @SerializedName("re_comp")
+        @Expose
+        private String returnByCompany;
+        @SerializedName("catrgy")
+        @Expose
+        private String category;
+        @SerializedName("defect")
+        @Expose
+        private String defectType;
+        @SerializedName("cmpln_related_to")
+        @Expose
+        private String relatedTo;
+        @SerializedName("closer_reason")
+        @Expose
+        private String closureReason;
+
+
+        private String currentLat, currentLng,
+                pumpSrNo, motorSrNo,controllerSrNo,remark,currentDate,currentTime;
         private  boolean isDataSavedLocally;
 
         public String getCaddress() {
@@ -415,10 +458,6 @@ public class ComplaintListModel implements Serializable {
             this.lng = lng;
         }
 
-        public Datum withLng(String lng) {
-            this.lng = lng;
-            return this;
-        }
 
         public String getCurrentStatus() {
             return currentStatus;
@@ -428,9 +467,36 @@ public class ComplaintListModel implements Serializable {
             this.currentStatus = currentStatus;
         }
 
-        public Datum withCurrentStatus(String currentStatus) {
-            this.currentStatus = currentStatus;
-            return this;
+        public String getApproved() {
+            return approved;
+        }
+
+        public void setApproved(String approved) {
+            this.approved = approved;
+        }
+
+        public String getAwait_apr_pernr() {
+            return await_apr_pernr;
+        }
+
+        public void setAwait_apr_pernr(String await_apr_pernr) {
+            this.await_apr_pernr = await_apr_pernr;
+        }
+
+        public String getPend_apr_pernr() {
+            return pend_apr_pernr;
+        }
+
+        public void setPend_apr_pernr(String pend_apr_pernr) {
+            this.pend_apr_pernr = pend_apr_pernr;
+        }
+
+        public String getBeneficiary() {
+            return beneficiary;
+        }
+
+        public void setBeneficiary(String beneficiary) {
+            this.beneficiary = beneficiary;
         }
 
         public String getCurrentLat() {

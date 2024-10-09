@@ -529,10 +529,12 @@ public class Utility {
 
     public static int selectedPosition(List<SpinnerDataModel> array, String value){
         int position =0;
-        for (int i=0; i<array.size(); i++){
-            if(array.get(i).getId().equals(value)){
-                position = i;
-            }
+        for (int i=0; i<array.size(); i++) {
+            if (value != null && !value.isEmpty()){
+                if (array.get(i).getId().equals(value)) {
+                    position = i;
+                }
+        }
         }
 
 

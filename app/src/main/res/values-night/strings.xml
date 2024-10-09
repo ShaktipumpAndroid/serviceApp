@@ -227,5 +227,6 @@
     <string name="contact_admin_assign">Contact admin for assigning responsible person</string>
     <string name="pls_fill_dsr_entry">Please fill DSR entry first</string>
     <string name="closecomplaints">Closing Complaints</string>
+    <string name="approved">Approved</string>
 
 </resources>

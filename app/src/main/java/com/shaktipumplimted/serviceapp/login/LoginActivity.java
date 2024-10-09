@@ -120,7 +120,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if(!Utility.isOnRoleApp()) {
                     if (loginType.toString().isEmpty()) {
                         Snackbar.make(loginRl, getResources().getString(R.string.selectLoginType), Snackbar.LENGTH_LONG).show();
-                    } else if (loginType.trim().equals(Constant.SRV_CNTR_T)) {
+                    }/* else if (loginType.trim().equals(Constant.SRV_CNTR_T)) {
                         if (userNameExt.getText().toString().isEmpty()) {
                             Snackbar.make(loginRl, getResources().getString(R.string.EnterRegisteredMobileNumber), Snackbar.LENGTH_LONG).show();
                         } else if (Utility.isValidMobile(userNameExt.getText().toString().trim())) {
@@ -138,15 +138,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             apiCall(1);
                         }
                     }
-                }else {
-                    if (userNameExt.getText().toString().isEmpty()) {
+                }else {*/
+                }
+                     if (userNameExt.getText().toString().isEmpty()) {
                         Snackbar.make(loginRl, getResources().getString(R.string.enter_sap_code), Snackbar.LENGTH_LONG).show();
                     } else if (passwordExt.getText().toString().isEmpty()) {
                         Snackbar.make(loginRl, getResources().getString(R.string.enter_password), Snackbar.LENGTH_LONG).show();
                     } else {
                         apiCall(1);
                     }
-                }
+
 
                 break;
         }
@@ -181,20 +182,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             if (!loginTyepList.get(position).getName().equals(getResources().getString(R.string.selectLoginType))) {
                 if (loginTyepList.get(position).getName().equals(Constant.serviceCenterTech)) {
                     loginType = Constant.SRV_CNTR_T;
-                    userNameLayout.setHint(getResources().getString(R.string.EnterRegisteredMobileNumber));
+                  /*  userNameLayout.setHint(getResources().getString(R.string.EnterRegisteredMobileNumber));
                     loginBtn.setText(getResources().getString(R.string.sendOTP));
-                    passwordLayout.setVisibility(View.GONE);
+                    passwordLayout.setVisibility(View.GONE);*/
                 }else {
                     loginType = loginTyepList.get(position).getName().trim();
-                    userNameLayout.setHint(getResources().getString(R.string.enter_sap_code));
+                   /* userNameLayout.setHint(getResources().getString(R.string.enter_sap_code));
                     loginBtn.setText(getResources().getString(R.string.loginTxt));
-                    passwordLayout.setVisibility(View.VISIBLE);
+                    passwordLayout.setVisibility(View.VISIBLE);*/
                 }
             } else {
                 loginType = "";
-                userNameLayout.setHint(getResources().getString(R.string.enter_sap_code));
+               /* userNameLayout.setHint(getResources().getString(R.string.enter_sap_code));
                 loginBtn.setText(getResources().getString(R.string.loginTxt));
-                passwordLayout.setVisibility(View.VISIBLE);
+                passwordLayout.setVisibility(View.VISIBLE);*/
             }
 
             Log.e("loginType==>", loginType);
