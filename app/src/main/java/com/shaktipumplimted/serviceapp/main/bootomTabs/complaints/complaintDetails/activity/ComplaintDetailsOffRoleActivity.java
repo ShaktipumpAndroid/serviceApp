@@ -723,7 +723,7 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
                 if (response.isSuccessful()) {
                     DistanceCalculateModel distanceCalculateModel = response.body();
 
-                    Log.e("distanceCalculate====>", String.valueOf(distanceCalculateModel.getRoutes().get(0).getLegs().get(0).getDistance().getText()));
+                  //  Log.e("distanceCalculate====>", String.valueOf(distanceCalculateModel.getRoutes().get(0).getLegs().get(0).getDistance().getText()));
 
                     solarInstDistance = String.valueOf(distanceCalculateModel.getRoutes().get(0).getLegs().get(0).getDistance().getText());
 
@@ -837,15 +837,11 @@ public class ComplaintDetailsOffRoleActivity extends AppCompatActivity implement
 
         confirmBtn.setOnClickListener(v -> {
             alertDialog.dismiss();
-
-
-
-            /*Utility.setSharedPreference(getApplicationContext(), Constant.localConveyanceJourneyStart, "false");
-            databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_LOCAL_CONVEYANCE_DATA, DatabaseHelper.KEY_START_TIME, localConveyance.getStartTime());
-            */
-
-            saveData(localConveyanceModel,distanceEdt.getText().toString().trim());
-
+              if(Utility.isInternetOn(getApplicationContext())) {
+                  saveData(localConveyanceModel, distanceEdt.getText().toString().trim());
+              }else {
+                  Utility.ShowToast(getResources().getString(R.string.checkInternetConnection),getApplicationContext());
+              }
 
         });
 

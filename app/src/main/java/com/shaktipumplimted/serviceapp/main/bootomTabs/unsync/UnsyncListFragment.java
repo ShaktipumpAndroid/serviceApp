@@ -18,7 +18,6 @@ import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.Utils.common.model.CommonRespModel;
 import com.shaktipumplimted.serviceapp.Utils.common.model.ImageModel;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
-import com.shaktipumplimted.serviceapp.main.MainActivity;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList.model.ComplaintListModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.dsrEntry.model.DsrDetailsModel;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.profile.localconveyance.model.DistanceCalculateModel;
@@ -109,6 +108,7 @@ public class UnsyncListFragment extends Fragment implements DsrAdapter.ItemClick
 
 
     private void setDsrEntryData() {
+        dsrDetailsModelList = new ArrayList<>();
         if (databaseHelper.isDataAvailable(databaseHelper.TABLE_DSR_RECORD)) {
             dsrDetailsModelList = databaseHelper.getAllDsrEntry(true);
             if (dsrDetailsModelList.size() > 0) {
@@ -128,6 +128,7 @@ public class UnsyncListFragment extends Fragment implements DsrAdapter.ItemClick
     }
 
     private void setAttendanceData() {
+        attendanceModelList=  new ArrayList<>();
         if (databaseHelper.isDataAvailable(databaseHelper.TABLE_MARK_ATTENDANCE_DATA)) {
             attendanceModelList = databaseHelper.getAllMarkAttendanceData(true, "", true);
             if (attendanceModelList.size() > 0) {
@@ -145,6 +146,7 @@ public class UnsyncListFragment extends Fragment implements DsrAdapter.ItemClick
     }
 
     private void setComplaintCloseData() {
+        complaintlist = new ArrayList<>();
         if (databaseHelper.isDataAvailable(databaseHelper.TABLE_COMPLAINT_DATA)) {
             complaintlist = databaseHelper.getAllComplaintDetailData("", "true");
             if (complaintlist.size() > 0) {
@@ -317,7 +319,7 @@ public class UnsyncListFragment extends Fragment implements DsrAdapter.ItemClick
             jsonObject.put("image", Utility.getBase64FromPath(getActivity(), response.getAttendanceImg()));
 
             jsonArray.put(jsonObject);
-            Log.e("jsonArray====>", jsonArray.toString());
+          //  Log.e("jsonArray====>", jsonArray.toString());
             uploadImageAPIS.setActionListener(jsonArray, Constant.markAttendance, new ActionListenerCallback() {
                 @Override
                 public void onActionSuccess(String result) {
@@ -366,7 +368,7 @@ public class UnsyncListFragment extends Fragment implements DsrAdapter.ItemClick
     }
 
 
-    /*--------------------------------------------Sync Complaint Close------------------------------------------------------*/
+    /*--------------------------------------------Sync Complaint Close Engineer------------------------------------------------------*/
 
     private void closeComplaintAPI(ComplaintListModel.Datum complaintModel) {
         Utility.showProgressDialogue(getActivity());
@@ -427,6 +429,7 @@ public class UnsyncListFragment extends Fragment implements DsrAdapter.ItemClick
         }
     }
 
+    /*--------------------------------------------Sync Complaint Close Freelancer------------------------------------------------------*/
 
     private void getCalculatedDistance(String startLat, String startLong, String endLat, String endLong, ComplaintListModel.Datum complaintModel) {
         Utility.showProgressDialogue(getActivity());
@@ -493,7 +496,7 @@ public class UnsyncListFragment extends Fragment implements DsrAdapter.ItemClick
 
 
             jsonArray.put(jsonObject);
-            Log.e("json===>",jsonArray.toString());
+           // Log.e("json===>",jsonArray.toString());
             uploadImageAPIS.setActionListener(jsonArray, Constant.OffrollClosure, new ActionListenerCallback() {
                 @Override
                 public void onActionSuccess(String result) {
@@ -505,10 +508,7 @@ public class UnsyncListFragment extends Fragment implements DsrAdapter.ItemClick
                         databaseHelper.deleteSpecificItem(DatabaseHelper.TABLE_COMPLAINT_IMAGE_DATA,DatabaseHelper.KEY_IMAGE_BILL_NO, complaintModel.getCmpno());
                         Utility.setSharedPreference(getActivity(), Constant.localConveyanceJourneyStart, "false");
                         Utility.ShowToast(commonRespModel.getMessage(), getActivity());
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
-                        intent.putExtra(Constant.APICALL,Constant.TRUE);
-                        startActivity(intent);
-                        getActivity().finish();
+                        setComplaintCloseData();
                     } else if (commonRespModel.getStatus().equals(Constant.FALSE)) {
                         Utility.ShowToast(commonRespModel.getMessage(), getActivity());
                     } else if (commonRespModel.getStatus().equals(Constant.FAILED)) {

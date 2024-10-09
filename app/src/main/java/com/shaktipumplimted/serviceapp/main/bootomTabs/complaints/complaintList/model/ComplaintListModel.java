@@ -161,7 +161,7 @@ public class ComplaintListModel implements Serializable {
 
 
         private String currentLat, currentLng,
-                pumpSrNo, motorSrNo,controllerSrNo,remark,currentDate,currentTime;
+                pumpSrNo, motorSrNo,controllerSrNo,remark,currentDate,currentTime,distance;
         private  boolean isDataSavedLocally;
 
         public String getDistance() {
