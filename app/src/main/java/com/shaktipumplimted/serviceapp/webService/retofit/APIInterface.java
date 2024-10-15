@@ -48,6 +48,9 @@ public interface APIInterface {
     @GET(APIS.CUSTOMER_COMPLAINT)
     Call<ComplaintListModel> getComplaintList(@Query("token") String token);
 
+    @GET(APIS.CUSTOMER_COMPLAINT_FL_ST)
+    Call<ComplaintListModel> getComplaintList_FL_ST(@Query("swt") String swt,@Query("lat") String lat,@Query("long") String lng);
+
 
     @GET(APIS.PENDING_REASONS_API)
     Call<PendingReasonModel> getPendingReasonList(@Query("token") String token);

@@ -8,12 +8,16 @@ public class APIS {
     public static final String DIRECTIONBASEURL = "https://maps.googleapis.com/maps/api/";
     public static final String OTPBASEURL = "http://control.yourbulksms.com/api/";
 
+    public static final String COMPBASEURL_FL_ST =  "https://empportal.shaktipumps.com:3002/";
+
     public static final String DIRECTIONAPI = "directions/json";
     public static final String LOGIN =  "login.htm";
 
     public static final String STATUSLIST =  "listing_status.htm";
 
     public static final String CUSTOMER_COMPLAINT = "get_customer_complain.htm";
+
+    public static final String CUSTOMER_COMPLAINT_FL_ST = "find_optimal_complaints";
 
     public static final String COMPLAINT_FORWARD_PERSON_LIST_API = "complaint_frwdto_personapi.htm";
 

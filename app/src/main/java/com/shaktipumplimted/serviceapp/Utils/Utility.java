@@ -500,7 +500,7 @@ public class Utility {
         }else if(Utility.getSharedPreferences(context,Constant.loginType).equals(Constant.employee)){
             isFreelancerLogin = false;
         }
-        return true;
+        return isFreelancerLogin;
     }
 
     public static String getBase64FromPath(Context context,String Imagepath) {

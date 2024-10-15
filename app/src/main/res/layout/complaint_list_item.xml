@@ -61,7 +61,6 @@
                         android:id="@+id/pendingDays"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Pending Days 50"
                         android:fontFamily="sans-serif-condensed-medium"
                         android:textSize="@dimen/_12sdp"
                         android:textColor="@android:color/holo_red_dark"/>

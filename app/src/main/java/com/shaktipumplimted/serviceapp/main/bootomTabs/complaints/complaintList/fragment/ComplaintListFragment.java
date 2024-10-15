@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.shaktipumplimted.serviceapp.R;
+import com.shaktipumplimted.serviceapp.Utils.GpsTracker;
 import com.shaktipumplimted.serviceapp.Utils.Utility;
 import com.shaktipumplimted.serviceapp.database.DatabaseHelper;
 import com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintDetails.activity.ComplaintDetailsActivity;
@@ -35,6 +36,7 @@ import com.shaktipumplimted.serviceapp.webService.retofit.APIClient;
 import com.shaktipumplimted.serviceapp.webService.retofit.APIInterface;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
@@ -57,10 +59,11 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
     TextView noDataFound;
     SwipeRefreshLayout pullToRefresh;
     int selectedPosition = 0, prevPosition =0;
-    APIInterface apiInterface;
+    APIInterface apiInterface,apiInterface2;
     DatabaseHelper databaseHelper;
 
     AlertDialog alertDialog;
+    GpsTracker gpsTracker;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,6 +89,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
     private void Init(View view) {
         mContext = getActivity();
         apiInterface = APIClient.getRetrofit(getActivity()).create(APIInterface.class);
+        apiInterface2 = APIClient.getRetrofitForFLST(getActivity()).create(APIInterface.class);
         databaseHelper = new DatabaseHelper(getActivity());
         compStatusList = view.findViewById(R.id.compStatusList);
         compList = view.findViewById(R.id.compList);
@@ -103,14 +107,22 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
     private void listner() {
         pullToRefresh.setOnRefreshListener(() -> {
             pullToRefresh.setRefreshing(true);
-            getcomplaintList();
+            if(Utility.isOnRoleApp()) {
+                getcomplaintList();
+            }else {
+                getcomplaintList2();
+            }
         });
     }
     private void retrieveValue() {
         Bundle bundle = getArguments();
             if(bundle.getString(Constant.APICALL).equals(Constant.TRUE)){
                if(Utility.isInternetOn(getActivity())){
-                   getcomplaintList();
+                   if(Utility.isOnRoleApp()) {
+                       getcomplaintList();
+                   }else {
+                       getcomplaintList2();
+                   }
                }else {
                    setStatusAdapter();
                }
@@ -123,7 +135,11 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
     private void getLists() {
         if(Utility.isInternetOn(mContext)){
             if(!databaseHelper.isDataAvailable(DatabaseHelper.TABLE_COMPLAINT_DATA)){
-                getcomplaintList();
+                if(Utility.isOnRoleApp()) {
+                    getcomplaintList();
+                }else {
+                    getcomplaintList2();
+                }
             }else{
                 setStatusAdapter();
             }
@@ -341,6 +357,124 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
             public void onFailure(@NonNull Call<ComplaintListModel> call, @NonNull Throwable t) {
                 call.cancel();
                 Utility.hideProgressDialogue();
+                pullToRefresh.setRefreshing(false);
+                Log.e("Error====>", t.getMessage().toString().trim());
+
+            }
+        });
+    }
+
+    private void getcomplaintList2() {
+        gpsTracker = new GpsTracker(getActivity());
+        complaintArrayList = new ArrayList<>();
+        complaintStatusArrayList = new ArrayList<>();
+        String token = Utility.getSharedPreferences(getActivity(), Constant.accessToken);
+        List<String> strList = Arrays.asList(token.split("/"));
+        Utility.showProgressDialogue(getActivity());
+        Call<ComplaintListModel> call3 = apiInterface2.getComplaintList_FL_ST(strList.get(0),String.valueOf(gpsTracker.getLatitude()),String.valueOf(gpsTracker.getLongitude()));
+        call3.enqueue(new Callback<ComplaintListModel>() {
+            @Override
+            public void onResponse(@NonNull Call<ComplaintListModel> call, @NonNull Response<ComplaintListModel> response) {
+                Log.e("url===>", String.valueOf(call.request().url()));
+                Utility.hideProgressDialogue();
+                if (response.isSuccessful()) {
+                    ComplaintListModel complaintListModel = response.body();
+                    if (complaintListModel.getStatus().equals(Constant.TRUE)) {
+                        if(complaintListModel.getData().size()>0) {
+                            for (int i = 0; i < complaintListModel.getData().size(); i++) {
+                                if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_DATA, DatabaseHelper.KEY_COMPLAINT_NUMBER, complaintListModel.getData().get(i).getCmpno())) {
+
+                                    ComplaintListModel.Datum complaintModel = new ComplaintListModel.Datum();
+                                    complaintModel.setCmpno(complaintListModel.getData().get(i).getCmpno());
+                                    complaintModel.setCaddress(complaintListModel.getData().get(i).getCaddress());
+                                    complaintModel.setMblno(complaintListModel.getData().get(i).getMblno());
+                                    complaintModel.setCstname(complaintListModel.getData().get(i).getCstname());
+                                    complaintModel.setPernr(complaintListModel.getData().get(i).getPernr());
+                                    complaintModel.setEname(complaintListModel.getData().get(i).getEname());
+                                    complaintModel.setMatnr(complaintListModel.getData().get(i).getMatnr());
+                                    complaintModel.setMaktx(complaintListModel.getData().get(i).getMaktx());
+                                    complaintModel.setVbeln(complaintListModel.getData().get(i).getVbeln());
+                                    complaintModel.setFkdat(complaintListModel.getData().get(i).getFkdat());
+                                    complaintModel.setFwrdTo(complaintListModel.getData().get(i).getFwrdTo());
+                                    complaintModel.setFdate(complaintListModel.getData().get(i).getFdate());
+                                    complaintModel.setAction(complaintListModel.getData().get(i).getAction());
+                                    complaintModel.setCmpPenRe(complaintListModel.getData().get(i).getCmpPenRe());
+                                    complaintModel.setLat(complaintListModel.getData().get(i).getLat());
+                                    complaintModel.setLng(complaintListModel.getData().get(i).getLng());
+                                    complaintModel.setCurrentStatus(complaintListModel.getData().get(i).getCurrentStatus());
+                                    complaintModel.setCurrentLng("");
+                                    complaintModel.setCurrentLng("");
+                                    complaintModel.setCustomerPay(complaintListModel.getData().get(i).getCustomerPay());
+                                    complaintModel.setCompanyPay(complaintListModel.getData().get(i).getCompanyPay());
+                                    complaintModel.setFocAmount(complaintListModel.getData().get(i).getFocAmount());
+                                    complaintModel.setReturnByCompany(complaintListModel.getData().get(i).getReturnByCompany());
+                                    complaintModel.setPayToFreelancer(complaintListModel.getData().get(i).getPayToFreelancer());
+                                    complaintModel.setPumpSrNo("");
+                                    complaintModel.setMotorSrNo("");
+                                    complaintModel.setControllerSrNo("");
+                                    complaintModel.setCategory(complaintListModel.getData().get(i).getCategory());
+                                    complaintModel.setClosureReason(complaintListModel.getData().get(i).getClosureReason());
+                                    complaintModel.setDefectType(complaintListModel.getData().get(i).getDefectType());
+                                    complaintModel.setRelatedTo(complaintModel.getRelatedTo());
+                                    complaintModel.setRemark("");
+                                    complaintModel.setCurrentDate("");
+                                    complaintModel.setCurrentTime("");
+                                    complaintModel.setDistance("");
+                                    complaintModel.setDataSavedLocally(false);
+
+
+                                    if (complaintListModel.getData().get(i).getStatus().equals(Constant.COMPLETE)) {
+
+                                        if (!complaintListModel.getData().get(i).getAwait_apr_pernr().equals(Utility.getSharedPreferences(mContext, Constant.userID))
+                                                && !complaintListModel.getData().get(i).getPend_apr_pernr().equals(Utility.getSharedPreferences(mContext, Constant.userID))
+                                                && !complaintListModel.getData().get(i).getApproved().equals("X")) {
+                                            complaintModel.setStatus(Constant.PENDING_FOR_CLOSURE);
+                                        }
+                                        if (complaintListModel.getData().get(i).getPend_apr_pernr().equals(Utility.getSharedPreferences(mContext, Constant.userID))) {
+                                            // Log.e("Pending===>", "true" + "=====>" + complaintListModel.getData().get(i).getCmpno());
+                                            complaintModel.setStatus(Constant.PENDING_FOR_APPROVAL);
+                                        }
+                                        if (complaintListModel.getData().get(i).getAwait_apr_pernr().equals(Utility.getSharedPreferences(mContext, Constant.userID))) {
+                                            // Log.e("awaiting===>", "true" + "=====>" + complaintListModel.getData().get(i).getCmpno());
+                                            complaintModel.setStatus(Constant.AWAITING_FOR_APPROVAL);
+                                        }
+
+                                        if (!complaintListModel.getData().get(i).getApproved().equals("X")) {
+                                            //  Log.e("Approved===>", "true" + "=====>" + complaintListModel.getData().get(i).getCmpno());
+
+                                            complaintModel.setStatus(Constant.APROPVED_COMPLAINTS);
+                                        }
+
+
+                                    } else {
+                                        complaintModel.setStatus(complaintListModel.getData().get(i).getStatus());
+                                    }
+
+                                    if (!databaseHelper.isRecordExist(DatabaseHelper.TABLE_COMPLAINT_DATA, DatabaseHelper.KEY_COMPLAINT_NUMBER, complaintListModel.getData().get(i).getCmpno())) {
+                                        databaseHelper.insertComplaintDetailsData(complaintModel);
+                                    }
+                                }
+                            }
+                            setStatusAdapter();
+                            pullToRefresh.setRefreshing(false);
+                        }else {
+                            setStatusAdapter();
+                            pullToRefresh.setRefreshing(false);
+                        }
+                    }else if (complaintListModel.getStatus().equals(Constant.FALSE)){
+                        Utility.ShowToast(getResources().getString(R.string.something_went_wrong),getActivity());
+                    }else if (complaintListModel.getStatus().equals(Constant.FAILED)){
+                        Utility.logout(getActivity());
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ComplaintListModel> call, @NonNull Throwable t) {
+                call.cancel();
+                Utility.hideProgressDialogue();
+                pullToRefresh.setRefreshing(false);
                 Log.e("Error====>", t.getMessage().toString().trim());
 
             }
