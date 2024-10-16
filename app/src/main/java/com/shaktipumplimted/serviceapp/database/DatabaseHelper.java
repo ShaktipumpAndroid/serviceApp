@@ -158,8 +158,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_CURRENT_DATE = "current_date";
     public static final String KEY_CURRENT_TIME = "current_time";
     public static final String KEY_DISTANCE = "distance";
-
+    public static final String KEY_WARRANTY = "warranty";
+    public static final String KEY_SERIAL_NO = "serial_no";
+    public static final String KEY_BENEFICIARY_NO = "beneficiary_no";
     public static final String KEY_DATA_SAVED_LOCALLY = "data_saved_locally";
+
 
     /*----------------------------------------Complaint forward key code------------------------------------------------------*/
 
@@ -336,6 +339,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_CURRENT_DATE + " TEXT,"
             + KEY_CURRENT_TIME + " TEXT,"
             + KEY_DISTANCE + " TEXT,"
+            + KEY_WARRANTY + " TEXT,"
+            + KEY_SERIAL_NO + " TEXT,"
+            + KEY_BENEFICIARY_NO + " TEXT,"
             + KEY_DATA_SAVED_LOCALLY + " TEXT)";
 
 
@@ -773,7 +779,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_CURRENT_DATE, complaintListModel.getCurrentDate());
         contentValues.put(KEY_CURRENT_TIME, complaintListModel.getCurrentTime());
         contentValues.put(KEY_DISTANCE, complaintListModel.getDistance());
+        contentValues.put(KEY_WARRANTY, complaintListModel.getWarrantyTxt());
+        contentValues.put(KEY_SERIAL_NO, complaintListModel.getSernr());
+        contentValues.put(KEY_BENEFICIARY_NO,complaintListModel.getBeneficiary());
         contentValues.put(KEY_DATA_SAVED_LOCALLY, String.valueOf(complaintListModel.isDataSavedLocally()));
+
 
         database.insert(TABLE_COMPLAINT_DATA, null, contentValues);
         database.close();
@@ -819,7 +829,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_CURRENT_DATE, complaintListModel.getCurrentDate());
         contentValues.put(KEY_CURRENT_TIME, complaintListModel.getCurrentTime());
         contentValues.put(KEY_DISTANCE, complaintListModel.getDistance());
-
+        contentValues.put(KEY_WARRANTY, complaintListModel.getWarrantyTxt());
+        contentValues.put(KEY_SERIAL_NO, complaintListModel.getSernr());
+        contentValues.put(KEY_BENEFICIARY_NO,complaintListModel.getBeneficiary());
         contentValues.put(KEY_DATA_SAVED_LOCALLY, String.valueOf(complaintListModel.isDataSavedLocally()));
 
         String where = KEY_COMPLAINT_NUMBER + "='" + complaintListModel.getCmpno() + "'";
@@ -886,6 +898,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     complaintModel.setCurrentDate(mcursor.getString(mcursor.getColumnIndex(KEY_CURRENT_DATE)));
                     complaintModel.setCurrentTime(mcursor.getString(mcursor.getColumnIndex(KEY_CURRENT_TIME)));
                     complaintModel.setDistance(mcursor.getString(mcursor.getColumnIndex(KEY_DISTANCE)));
+                    complaintModel.setWarrantyTxt(mcursor.getString(mcursor.getColumnIndex(KEY_WARRANTY)));
+                    complaintModel.setSernr(mcursor.getString(mcursor.getColumnIndex(KEY_SERIAL_NO)));
+                    complaintModel.setBeneficiary(mcursor.getString(mcursor.getColumnIndex(KEY_BENEFICIARY_NO)));
                     complaintModel.setDataSavedLocally(Boolean.parseBoolean(mcursor.getString(mcursor.getColumnIndex(KEY_DATA_SAVED_LOCALLY))));
                     complaintModelList.add(complaintModel);
                 }

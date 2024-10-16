@@ -2,11 +2,13 @@ package com.shaktipumplimted.serviceapp.main.bootomTabs.complaints.complaintList
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -61,6 +63,13 @@ public class ComplaintListAdapter extends RecyclerView.Adapter<ComplaintListAdap
         }
         holder.complaintStatusTxt.setText(response.getStatus());
 
+       // Log.e("Beneficiary===>",response.getBeneficiary());
+        if(response.getBeneficiary()!=null && !response.getBeneficiary().isEmpty()) {
+            holder.beneficiaryTxt.setText(response.getBeneficiary());
+        }else {
+            holder.beneficiaryLinear.setVisibility(View.GONE);
+        }
+
         holder.complaintItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,8 +87,9 @@ public class ComplaintListAdapter extends RecyclerView.Adapter<ComplaintListAdap
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView complaintNo,customerNameTxt,mobileNoTxt,addressTxt,pendingDays,complaintStatusTxt;
+        private TextView complaintNo,customerNameTxt,mobileNoTxt,addressTxt,pendingDays,complaintStatusTxt,beneficiaryTxt;
         private CardView complaintItem;
+        LinearLayout  beneficiaryLinear;
         public ViewHolder(View itemView) {
             super(itemView);
             complaintItem = itemView.findViewById(R.id.complaintItem);
@@ -89,6 +99,8 @@ public class ComplaintListAdapter extends RecyclerView.Adapter<ComplaintListAdap
             addressTxt = itemView.findViewById(R.id.addressTxt);
             pendingDays = itemView.findViewById(R.id.pendingDays);
             complaintStatusTxt = itemView.findViewById(R.id.complaintStatusTxt);
+            beneficiaryTxt = itemView.findViewById(R.id.beneficiaryTxt);
+            beneficiaryLinear = itemView.findViewById(R.id.beneficiaryLinear);
 
         }
     }

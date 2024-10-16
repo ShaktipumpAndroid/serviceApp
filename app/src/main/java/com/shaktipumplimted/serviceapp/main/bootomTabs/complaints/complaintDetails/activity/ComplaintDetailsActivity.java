@@ -37,6 +37,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.mlkit.vision.barcode.common.Barcode;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions;
@@ -72,8 +73,9 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
     private static final int REQUEST_CODE_PERMISSION = 101;
 
     Toolbar toolbar;
+    TextInputLayout warrantyStatusLayout;
     TextInputEditText complaintNo, customerName, customerMobileNo, customerAddress, materialCodeTxt, materialNameTxt,
-            serialNoTxt, billNoTxt, billDateTxt, customerPayExt, companyPayExt, focAmountExt, returnByCompanyExt, payToFreelancerExt, remarkTxt;
+            serialNoTxt, billNoTxt, billDateTxt, customerPayExt, companyPayExt, focAmountExt, returnByCompanyExt, payToFreelancerExt, remarkTxt,warrantyTxt;
     TextView pumpSerialTxt, motorSerialTxt, controllerSerialTxt,approvedCompBtn;
     Spinner categorySpinner, closureReasonSpinner, defectTypeSpinner, complaintRelatedToSpinner;
     ImageView pumpScanBtn, motorScanBtn, controllerScanBtn;
@@ -154,7 +156,8 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
         defectLinear = findViewById(R.id.defectLinear);
         complaintRelatedToLinear = findViewById(R.id.complaintRelatedToLinear);
         approvedCompBtn = findViewById(R.id.approvedCompBtn);
-
+        warrantyTxt = findViewById(R.id.warrantyTxt);
+        warrantyStatusLayout = findViewById(R.id.warrantyStatusLayout);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -217,6 +220,13 @@ public class ComplaintDetailsActivity extends AppCompatActivity implements View.
             materialNameTxt.setText(complaintListModel.getMaktx());
             billNoTxt.setText(complaintListModel.getVbeln());
             billDateTxt.setText(complaintListModel.getFkdat());
+            serialNoTxt.setText(complaintListModel.getSernr());
+            if(complaintListModel.getWarrantyTxt()!=null && !complaintListModel.getWarrantyTxt().isEmpty()){
+                warrantyTxt.setText(complaintListModel.getWarrantyTxt());
+            }else {
+                warrantyStatusLayout.setVisibility(View.GONE);
+            }
+
 
 
             if (complaintListModel.getStatus().equals(Constant.CLOSURE_COMPLAINTS)||

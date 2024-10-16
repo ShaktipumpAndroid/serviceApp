@@ -237,5 +237,7 @@
     <string name="cust_form">Customer satisfaction form</string>
     <string name="approval_img">Approval image</string>
     <string name="CMC">CMC</string>
+    <string name="beneficiary">Beneficiary</string>
+    <string name="warrantyStatus">Warranty Status</string>
 
 </resources>

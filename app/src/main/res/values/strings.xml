@@ -244,6 +244,8 @@
     <string name="cust_form">Customer satisfaction form</string>
     <string name="approval_img">Approval image</string>
     <string name="CMC">CMC</string>
+    <string name="beneficiary">Beneficiary</string>
+    <string name="warrantyStatus">Warranty Status</string>
 
     <string-array name="login_type_array">
         <item>@string/select_login_type</item>

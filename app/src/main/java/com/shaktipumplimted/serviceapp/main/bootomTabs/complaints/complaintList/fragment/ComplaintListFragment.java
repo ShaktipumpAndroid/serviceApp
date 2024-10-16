@@ -307,6 +307,9 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                                 complaintModel.setCurrentDate("");
                                 complaintModel.setCurrentTime("");
                                 complaintModel.setDistance("");
+                                complaintModel.setWarrantyTxt(complaintListModel.getData().get(i).getWarrantyTxt());
+                                complaintModel.setSernr(complaintListModel.getData().get(i).getSernr());
+                                complaintModel.setBeneficiary(complaintListModel.getData().get(i).getBeneficiary());
                                 complaintModel.setDataSavedLocally(false);
 
 
@@ -370,7 +373,7 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
         complaintStatusArrayList = new ArrayList<>();
         String token = Utility.getSharedPreferences(getActivity(), Constant.accessToken);
         List<String> strList = Arrays.asList(token.split("/"));
-        Utility.showProgressDialogue(getActivity());
+         Utility.showProgressDialogue(getActivity());
         Call<ComplaintListModel> call3 = apiInterface2.getComplaintList_FL_ST(strList.get(0),String.valueOf(gpsTracker.getLatitude()),String.valueOf(gpsTracker.getLongitude()));
         call3.enqueue(new Callback<ComplaintListModel>() {
             @Override
@@ -420,6 +423,10 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
                                     complaintModel.setCurrentDate("");
                                     complaintModel.setCurrentTime("");
                                     complaintModel.setDistance("");
+                                    complaintModel.setWarrantyTxt(complaintListModel.getData().get(i).getWarrantyTxt());
+                                    complaintModel.setSernr(complaintListModel.getData().get(i).getSernr());
+                                    complaintModel.setBeneficiary(complaintListModel.getData().get(i).getBeneficiary());
+
                                     complaintModel.setDataSavedLocally(false);
 
 
@@ -495,7 +502,6 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
         complaintStatusArrayList.add( new ComplaintStatusModel.Datum("0005",Constant.APROPVED_COMPLAINTS,false));
         complaintStatusArrayList.add( new ComplaintStatusModel.Datum("0006",Constant.CLOSURE_COMPLAINTS,false));
 
-        Log.e("complaintStatus===>",complaintStatusArrayList.toString());
         complaintStatusAdapter = new ComplaintStatusAdapter(mContext, complaintStatusArrayList,selectedPosition);
         compStatusList.setHasFixedSize(true);
         complaintStatusAdapter.ItemClick(ComplaintListFragment.this);
@@ -520,8 +526,6 @@ public class ComplaintListFragment extends Fragment implements ComplaintStatusAd
 
     @Override
     public void SetOnItemClickListener(ComplaintStatusModel.Datum response, int position) {
-
-
         selectedPosition = position;
         ComplaintStatusModel.Datum complaintStatusModel = new ComplaintStatusModel.Datum();
         complaintStatusModel.setValpos(response.getValpos());

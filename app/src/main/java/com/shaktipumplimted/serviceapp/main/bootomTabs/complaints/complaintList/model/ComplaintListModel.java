@@ -158,6 +158,12 @@ public class ComplaintListModel implements Serializable {
         @SerializedName("closer_reason")
         @Expose
         private String closureReason;
+        @SerializedName("warranty_txt")
+        @Expose
+        private String warrantyTxt;
+        @SerializedName("sernr")
+        @Expose
+        private String sernr;
 
 
         private String currentLat, currentLng,
@@ -651,6 +657,22 @@ public class ComplaintListModel implements Serializable {
             isDataSavedLocally = dataSavedLocally;
         }
 
+        public String getWarrantyTxt() {
+            return warrantyTxt;
+        }
+
+        public void setWarrantyTxt(String warrantyTxt) {
+            this.warrantyTxt = warrantyTxt;
+        }
+
+        public String getSernr() {
+            return sernr;
+        }
+
+        public void setSernr(String sernr) {
+            this.sernr = sernr;
+        }
+
         @Override
         public String toString() {
             return "Datum{" +
@@ -697,6 +719,8 @@ public class ComplaintListModel implements Serializable {
                     ", currentTime='" + currentTime + '\'' +
                     ", distance='" + distance + '\'' +
                     ", isDataSavedLocally=" + isDataSavedLocally +
+                    ", warrantyTxt=" + warrantyTxt +
+                    ", sernr=" + sernr +
                     '}';
         }
     }
